@@ -9,6 +9,13 @@
     <Import_RootNamespace>Agencies.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)MyClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bootstrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingAccessors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keys\Keys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keys\PrivateKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Track.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
   </ItemGroup>
 </Project>

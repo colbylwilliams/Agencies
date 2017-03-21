@@ -9,6 +9,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Shared", "Agencies
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Domain", "Agencies.Domain\Agencies.Domain.shproj", "{45BB624E-E0AA-4864-B1D9-D35E4AEAE4BC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.Azure", "..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.shproj", "{049FF267-02CB-4168-9EC5-0768D053EF77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator

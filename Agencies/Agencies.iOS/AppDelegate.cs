@@ -1,58 +1,104 @@
-﻿using Foundation;
+﻿using System;
+
+using Foundation;
 using UIKit;
+using UserNotifications;
+
+using Microsoft.WindowsAzure.MobileServices;
+
+using NomadCode.Azure;
+
 
 namespace Agencies.iOS
 {
-	// The UIApplicationDelegate for the application. This class is responsible for launching the
-	// User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
 	[Register ("AppDelegate")]
-	public class AppDelegate : UIApplicationDelegate
+	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
 	{
-		// class-level declarations
 
-		public override UIWindow Window {
-			get;
-			set;
+		static bool processingNotification;
+
+
+		public override UIWindow Window { get; set; }
+
+
+		public AppDelegate ()
+		{
+			Bootstrap.Run ();
 		}
+
 
 		public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
 		{
-			// Override point for customization after application launch.
-			// If not required for your application you can safely delete this method
+			// must assign delegate before app finishes launching.
+			UNUserNotificationCenter.Current.Delegate = this;
 
 			return true;
 		}
 
-		public override void OnResignActivation (UIApplication application)
+
+		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)
 		{
-			// Invoked when the application is about to move from active to inactive state.
-			// This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) 
-			// or when the user quits the application and it begins the transition to the background state.
-			// Games should use this method to pause the game.
+			Log.Debug ($"RegisteredForRemoteNotifications");
+
+			var push = AzureClient.Shared.MobileServiceClient.GetPush ();
+
+			push.RegisterAsync (deviceToken);
 		}
 
-		public override void DidEnterBackground (UIApplication application)
+
+		public override void FailedToRegisterForRemoteNotifications (UIApplication application, NSError error)
 		{
-			// Use this method to release shared resources, save user data, invalidate timers and store the application state.
-			// If your application supports background exection this method is called instead of WillTerminate when the user quits.
+			Log.Debug ($"FailedToRegisterForRemoteNotifications {error}");
 		}
 
-		public override void WillEnterForeground (UIApplication application)
-		{
-			// Called as part of the transiton from background to active state.
-			// Here you can undo many of the changes made on entering the background.
-		}
 
-		public override void OnActivated (UIApplication application)
+		// For a push notification to trigger a download operation, the notification’s payload must include
+		// the content-available key with its value set to 1. When that key is present, the system wakes
+		// the app in the background (or launches it into the background) and calls the app delegate’s 
+		// application:didReceiveRemoteNotification:fetchCompletionHandler: method. Your implementation 
+		// of that method should download the relevant content and integrate it into your app.
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
-			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
-			// If the application was previously in the background, optionally refresh the user interface.
-		}
+			Log.Debug ($"DidReceiveRemoteNotification:");
 
-		public override void WillTerminate (UIApplication application)
-		{
-			// Called when the application is about to terminate. Save data, if needed. See also DidEnterBackground.
+			for (int i = 0; i < userInfo.Keys.Length; i++)
+			{
+				Log.Debug ($"                             {userInfo.Keys [i]} : {userInfo.Values [i]}");
+			}
+
+
+			if (processingNotification)
+			{
+				Log.Debug ($"DidReceiveRemoteNotification: Already processing notificaiton. Returning");
+				completionHandler (UIBackgroundFetchResult.NewData);
+				return;
+			}
+
+
+			processingNotification = true;
+
+			Log.Debug ($"DidReceiveRemoteNotification: Get All AvContent Async...");
+
+			try
+			{
+				//await ProducerClient.Shared.GetAllAvContentAsync (true, Settings.TestProducer ? UserRoles.Producer : UserRoles.General);
+
+				Log.Debug ($"DidReceiveRemoteNotification: Finished Getting Data.");
+
+				completionHandler (UIBackgroundFetchResult.NewData);
+			}
+			catch (Exception ex)
+			{
+				Log.Debug ($"DidReceiveRemoteNotification: ERROR: FAILED TO GET NEW DATA {ex.Message}");
+
+				completionHandler (UIBackgroundFetchResult.Failed);
+			}
+			finally
+			{
+				processingNotification = false;
+			}
 		}
 	}
 }
-

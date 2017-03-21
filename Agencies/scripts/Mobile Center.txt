@@ -1,0 +1,5 @@
+# iOS Mobile Center Test Run
+
+cd ~/GitHub/Agencies/Agencies/packages
+
+mobile-center test run uitest --app "colbylwilliams/producer" --devices 3e36debc --app-path "../../local/builds/Agencies.ipa"  --test-series "master" --locale "en_US" --build-dir "../UITests/bin/Debug" --uitest-tools-dir "~/GitHub/Agencies/Agencies/packages/Xamarin.UITest.2.0.7/tools" --dsym-dir "../Agencies.iOS/bin/iPhone/Release/Agencies.iOS.app.dSYM"
