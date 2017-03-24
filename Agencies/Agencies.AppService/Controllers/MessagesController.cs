@@ -2,18 +2,41 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+
+using Microsoft.Azure.Mobile.Server.Config;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Agencies.AppService.Controllers
 {
 	[BotAuthentication]
+	[MobileAppController]
 	public class MessagesController : ApiController
 	{
+
+		//public MessagesController ()
+		//{
+		//	Configuration.Formatters.JsonFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+		//	Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+		//	Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
+
+		//	//JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
+		//	//{
+		//	//	ContractResolver = new CamelCasePropertyNamesContractResolver(),
+		//	//	Formatting = Formatting.Indented,
+		//	//	NullValueHandling = NullValueHandling.Ignore,
+		//	//};
+		//}
+
+
 		/// <summary>
 		/// POST: api/Messages
 		/// Receive a message from a user and reply to it
 		/// </summary>
+		[HttpPost]
 		public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
 		{
 			if (activity.Type == ActivityTypes.Message)
@@ -24,7 +47,9 @@ namespace Agencies.AppService.Controllers
 			{
 				HandleSystemMessage(activity);
 			}
+
 			var response = Request.CreateResponse(HttpStatusCode.OK);
+
 			return response;
 		}
 

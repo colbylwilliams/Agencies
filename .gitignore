@@ -294,3 +294,4 @@ project.lock.json
 .vs/
 Producer/Producer.FunctionApp/appsettings.json
 Agencies/Agencies.Shared/Keys/PrivateKeys.cs
+*.pubxml
