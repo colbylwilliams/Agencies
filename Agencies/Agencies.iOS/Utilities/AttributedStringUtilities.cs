@@ -8,17 +8,24 @@ using Foundation;
 
 namespace Agencies.iOS
 {
-	public enum SlackLinkStringType
+	public enum MarkdownFmtStringType
 	{
 		Unknown,
-		User,
-		Channel,
-		Group
+		Link,
+		Bold,
+		Italic,
+		Strikethrough,
+		UnorderedList,
+		OrderedList,
+		Pre,
+		BlockQuote,
+		Image
 	}
 
-	public class SlackLinkString
+
+	public class MarkdownFmtString
 	{
-		public SlackLinkStringType LinkType { get; set; }
+		public MarkdownFmtStringType FmtStringType { get; set; }
 
 		public string Original { get; set; }
 
@@ -28,121 +35,314 @@ namespace Agencies.iOS
 	}
 
 
-	public static class SlackLinkStringExtensions
-	{
-		static char [] TrimWrapper = { '[', ')' };
-
-		static string [] splitStr = { "](" };
-
-		const char pipeChar = '|';
-		const char atChar = '@';
-		const char hashChar = '#';
-
-
-		const string linkFmt = "[{0}]";
-
-		const string userFmt = "@{0}";
-		const string channelFmt = "#{0}";
-
-		const string userPrefix = @"@U";
-		const string channelPrefix = @"#C";
-
-		const string channelCallout = @"!channel";
-
-		const string messageFmt = @"<(.*?)>";
-
-		public static SlackLinkString ToSlackLinkString (this string orig)
-		{
-			var slackString = new SlackLinkString ();
-
-			slackString.Original = orig;
-
-			var strArr = orig.Trim (TrimWrapper).Split (splitStr, StringSplitOptions.RemoveEmptyEntries);
-
-			//if (orig.Contains (userPrefix))
-			//{
-			//	slackString.Display = (strArr.Length > 1) ? string.Format (userFmt, strArr [1]) : strArr [0].Trim (atChar);
-			//}
-			//else if (orig.Contains (channelPrefix))
-			//{
-			//	slackString.Display = (strArr.Length > 1) ? string.Format (channelFmt, strArr [1]) : strArr [0].Trim (hashChar);
-			//}
-			//else
-			//{
-			//}
-			slackString.Display = strArr [0];
-
-			slackString.Link = (strArr.Length > 1) ? NSUrl.FromString (strArr [1]) : null;
-
-			return slackString;
-		}
-
-		public static SlackLinkStringType GetSlackLinkType (this string orig)
-		{
-			return SlackLinkStringType.Unknown;
-		}
-	}
-
-
 	public static class AttributedStringUtilities
 	{
-		const string messageFmt = @"\[(.*?)\)";
+		const string linkFmt = @"(?<!\!)\[(.*?)\)";
+		const string boldFmt = @"\*\*(.*?)\*\*";
+		const string italicFmt = @"(?<!\*)\*{1}([^*].*?)\*{1}(?!\*)";
+		const string imageFmt = @"\!\[(.*?)\)";
+		const string strikeFmt = @"\~\~(.*?)\~\~";
+		const string ulFmt = @"\s+[*•-]\s+(.*)";
+		const string olFmt = @"\s+\d+\.\s+(.*)";
+		const string preFmt = @"\`(.*?)\`";
+		const string quoteFmt = @"\s+\>+\s+(.*)";
 
-		static NSMutableParagraphStyle messageParagraphStyle = new NSMutableParagraphStyle
+		static readonly char [] linkTrim = { '[', ')' };
+		static readonly char [] boldTrim = { '*' };
+		static readonly char [] italicTrim = { '*' };
+		static readonly char [] imageTrim = { '!', '[', ')' };
+		static readonly char [] strikeTrim = { '~' };
+		static readonly char [] preTrim = { '`' };
+
+		static readonly Tuple<char, char> ulReplace = new Tuple<char, char> ('*', '•');
+
+
+		static readonly string [] linkSplit = { "](" };
+
+
+		static nfloat fontSize = 16;
+
+		static readonly UIFont messageFont = UIFont.SystemFontOfSize (fontSize);
+		static UIFont messageFontBold = UIFont.BoldSystemFontOfSize (fontSize);
+		static UIFont messageFontItalic = UIFont.ItalicSystemFontOfSize (fontSize);
+		static UIFont messageFontPre = UIFont.FromName ("Menlo-Regular", 15);
+
+
+		static readonly NSMutableParagraphStyle messageParagraphStyle = new NSMutableParagraphStyle
 		{
 			LineBreakMode = UILineBreakMode.WordWrap,
 			Alignment = UITextAlignment.Left
 		};
 
 
-		public static UIStringAttributes MessageStringAttributes = new UIStringAttributes
-		{
-			Font = UIFont.PreferredBody,
-			ParagraphStyle = messageParagraphStyle,
-			ForegroundColor = Colors.MessageColor
-		};
-
-
-		public static UIStringAttributes LinkStringAttributes = new UIStringAttributes
-		{
-			Font = UIFont.PreferredBody,
-			UnderlineStyle = NSUnderlineStyle.None,
-			ParagraphStyle = messageParagraphStyle,
-			ForegroundColor = Colors.MessageLinkColor
-		};
-
 
 		public static NSMutableAttributedString GetMessageAttributedString (this string message)
 		{
-			var linkStrings = new List<SlackLinkString> ();
+			var markdownFmtStrings = new List<MarkdownFmtString> ();
 
-			message = message.Replace ("\r\n*", "\r\n•");
+			//message = message.Replace ("\r\n*", "\r\n•");
 
 			Log.Debug (message);
 
 			var messageCopy = message;
 
-			for (Match match = Regex.Match (message, messageFmt); match.Success; match = match.NextMatch ())
-				linkStrings.Add (match.Value.ToSlackLinkString ());
+			for (Match match = Regex.Match (message, linkFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Link));
 
-			foreach (var linkString in linkStrings)
-				messageCopy = messageCopy.Replace (linkString.Original, linkString.Display);
+			for (Match match = Regex.Match (message, imageFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Image));
+
+			for (Match match = Regex.Match (message, boldFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Bold));
+
+			for (Match match = Regex.Match (message, italicFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Italic));
+
+			for (Match match = Regex.Match (message, ulFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.UnorderedList));
+
+			for (Match match = Regex.Match (message, olFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.OrderedList));
+
+			for (Match match = Regex.Match (message, strikeFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Strikethrough));
+
+			for (Match match = Regex.Match (message, preFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.Pre));
+
+			for (Match match = Regex.Match (message, quoteFmt); match.Success; match = match.NextMatch ())
+				markdownFmtStrings.Add (match.Value.ToSlackLinkString (MarkdownFmtStringType.BlockQuote));
+
+
+			foreach (var markdownString in markdownFmtStrings)
+				messageCopy = messageCopy.Replace (markdownString.Original, markdownString.Display);
 
 			var attrString = new NSMutableAttributedString (messageCopy);
 
 			attrString.AddAttributes (MessageStringAttributes, new NSRange (0, messageCopy.Length));
 
-			foreach (var linkString in linkStrings)
+			foreach (var markdownString in markdownFmtStrings)
 			{
-				var range = new NSRange (messageCopy.IndexOf (linkString.Display, StringComparison.Ordinal), linkString.Display.Length);
+				var range = new NSRange (messageCopy.IndexOf (markdownString.Display, StringComparison.Ordinal), markdownString.Display.Length);
 
-				if (linkString.Link != null)
-					attrString.AddAttribute (UIStringAttributeKey.Link, linkString.Link, range);
+				switch (markdownString.FmtStringType)
+				{
+					case MarkdownFmtStringType.Unknown:
 
-				attrString.AddAttributes (LinkStringAttributes, range);
+						break;
+					case MarkdownFmtStringType.Link:
+
+						if (markdownString.Link != null)
+							attrString.AddAttribute (UIStringAttributeKey.Link, markdownString.Link, range);
+
+						attrString.AddAttributes (LinkStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.Bold:
+
+						attrString.AddAttributes (BoldStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.Italic:
+
+						attrString.AddAttributes (ItalicStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.Strikethrough:
+
+						attrString.AddAttributes (StrikeStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.UnorderedList:
+
+						//attrString.AddAttributes (LinkStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.OrderedList:
+
+						//attrString.AddAttributes (LinkStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.Pre:
+
+						attrString.AddAttributes (PreStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.BlockQuote:
+
+						//attrString.AddAttributes (MessageStringAttributes, range);
+
+						break;
+					case MarkdownFmtStringType.Image:
+
+						if (markdownString.Link != null)
+							attrString.AddAttribute (UIStringAttributeKey.Link, markdownString.Link, range);
+
+						attrString.AddAttributes (LinkStringAttributes, range);
+
+						break;
+				}
 			}
 
 			return attrString;
 		}
+
+
+		public static MarkdownFmtString ToSlackLinkString (this string orig, MarkdownFmtStringType fmtStringType)
+		{
+			var markdownString = new MarkdownFmtString
+			{
+				Original = orig,
+				FmtStringType = fmtStringType
+			};
+
+			switch (fmtStringType)
+			{
+				case MarkdownFmtStringType.Unknown:
+
+					break;
+				case MarkdownFmtStringType.Link:
+
+					var linkStringArr = orig.Trim (linkTrim).Split (linkSplit, StringSplitOptions.RemoveEmptyEntries);
+
+					markdownString.Display = linkStringArr [0];
+
+					markdownString.Link = (linkStringArr.Length > 1) ? NSUrl.FromString (linkStringArr [1]) : null;
+
+					break;
+				case MarkdownFmtStringType.Bold:
+
+					markdownString.Display = orig.Trim (boldTrim);
+
+					break;
+				case MarkdownFmtStringType.Italic:
+
+					markdownString.Display = orig.Trim (italicTrim);
+
+					break;
+				case MarkdownFmtStringType.Strikethrough:
+
+					markdownString.Display = orig.Trim (strikeTrim);
+
+					break;
+				case MarkdownFmtStringType.UnorderedList:
+
+					markdownString.Display = orig.Replace (ulReplace.Item1, ulReplace.Item2);
+
+					break;
+				case MarkdownFmtStringType.OrderedList:
+
+					markdownString.Display = orig;
+
+					break;
+				case MarkdownFmtStringType.Pre:
+
+					markdownString.Display = orig.Trim (preTrim);
+
+					break;
+				case MarkdownFmtStringType.BlockQuote:
+
+					markdownString.Display = orig;
+
+					break;
+				case MarkdownFmtStringType.Image:
+
+					var imageStringArr = orig.Trim (imageTrim).Split (linkSplit, StringSplitOptions.RemoveEmptyEntries);
+
+					markdownString.Display = imageStringArr [0];
+
+					markdownString.Link = (imageStringArr.Length > 1) ? NSUrl.FromString (imageStringArr [1]) : null;
+
+					break;
+			}
+
+			return markdownString;
+		}
+
+
+		#region UIStringAttributes
+
+		public static UIStringAttributes MessageStringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes LinkStringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			UnderlineStyle = NSUnderlineStyle.None,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageLinkColor
+		};
+
+		public static UIStringAttributes BoldStringAttributes = new UIStringAttributes
+		{
+			Font = messageFontBold,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes ItalicStringAttributes = new UIStringAttributes
+		{
+			Font = messageFontItalic,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes StrikeStringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			StrikethroughStyle = NSUnderlineStyle.Single,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes PreStringAttributes = new UIStringAttributes
+		{
+			Font = messageFontPre,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor,
+			BackgroundColor = UIColor.LightGray
+		};
+
+		public static UIStringAttributes H1StringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes H2StringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes H3StringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes H4StringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		public static UIStringAttributes H5StringAttributes = new UIStringAttributes
+		{
+			Font = messageFont,
+			ParagraphStyle = messageParagraphStyle,
+			ForegroundColor = Colors.MessageColor
+		};
+
+		#endregion
+
 	}
 }
