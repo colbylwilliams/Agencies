@@ -465,6 +465,24 @@ namespace Agencies.iOS
 
 			height += 20.0f;
 
+			var index = message.Activity.Text.IndexOf ("\r\n", StringComparison.Ordinal);
+
+			while (index >= 0)
+			{
+				height += 20.0f;
+
+				Log.Debug ("adding room");
+
+				if (index < message.Activity.Text.Length - 1)
+				{
+					index = message.Activity.Text.IndexOf ("\r\n", index + 1, StringComparison.Ordinal);
+				}
+				else
+				{
+					index = -1;
+				}
+			}
+
 			if (message.Head) height += 24.0f;
 
 			message.CellHeight = height;

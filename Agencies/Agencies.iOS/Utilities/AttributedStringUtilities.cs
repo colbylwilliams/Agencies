@@ -30,13 +30,16 @@ namespace Agencies.iOS
 
 	public static class SlackLinkStringExtensions
 	{
-		static char [] TrimWrapper = { '<', '>' };
+		static char [] TrimWrapper = { '[', ')' };
+
+		static string [] splitStr = { "](" };
 
 		const char pipeChar = '|';
 		const char atChar = '@';
 		const char hashChar = '#';
 
 
+		const string linkFmt = "[{0}]";
 
 		const string userFmt = "@{0}";
 		const string channelFmt = "#{0}";
@@ -54,22 +57,22 @@ namespace Agencies.iOS
 
 			slackString.Original = orig;
 
-			var strArr = orig.Trim (TrimWrapper).Split (pipeChar);
+			var strArr = orig.Trim (TrimWrapper).Split (splitStr, StringSplitOptions.RemoveEmptyEntries);
 
-			if (orig.Contains (userPrefix))
-			{
-				slackString.Display = (strArr.Length > 1) ? string.Format (userFmt, strArr [1]) : strArr [0].Trim (atChar);
-			}
-			else if (orig.Contains (channelPrefix))
-			{
-				slackString.Display = (strArr.Length > 1) ? string.Format (channelFmt, strArr [1]) : strArr [0].Trim (hashChar);
-			}
-			else
-			{
-				slackString.Display = (strArr.Length > 1) ? strArr [1] : strArr [0];
-			}
+			//if (orig.Contains (userPrefix))
+			//{
+			//	slackString.Display = (strArr.Length > 1) ? string.Format (userFmt, strArr [1]) : strArr [0].Trim (atChar);
+			//}
+			//else if (orig.Contains (channelPrefix))
+			//{
+			//	slackString.Display = (strArr.Length > 1) ? string.Format (channelFmt, strArr [1]) : strArr [0].Trim (hashChar);
+			//}
+			//else
+			//{
+			//}
+			slackString.Display = strArr [0];
 
-			slackString.Link = (strArr.Length > 1) ? NSUrl.FromString (strArr [0]) : null;
+			slackString.Link = (strArr.Length > 1) ? NSUrl.FromString (strArr [1]) : null;
 
 			return slackString;
 		}
@@ -83,7 +86,7 @@ namespace Agencies.iOS
 
 	public static class AttributedStringUtilities
 	{
-		const string messageFmt = @"<(.*?)>";
+		const string messageFmt = @"\[(.*?)\)";
 
 		static NSMutableParagraphStyle messageParagraphStyle = new NSMutableParagraphStyle
 		{
@@ -112,6 +115,10 @@ namespace Agencies.iOS
 		public static NSMutableAttributedString GetMessageAttributedString (this string message)
 		{
 			var linkStrings = new List<SlackLinkString> ();
+
+			message = message.Replace ("\r\n*", "\r\n•");
+
+			Log.Debug (message);
 
 			var messageCopy = message;
 
