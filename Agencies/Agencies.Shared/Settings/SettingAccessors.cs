@@ -38,6 +38,11 @@ namespace SettingsStudio
 
 		#region Hidden Settings
 
+		public static string ConversationId {
+			get { return StringForKey (SettingsKeys.ConversationId); }
+			set { SetSetting (SettingsKeys.ConversationId, value); }
+		}
+
 		#endregion
 	}
 }

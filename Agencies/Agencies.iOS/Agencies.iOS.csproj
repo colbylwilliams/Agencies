@@ -130,9 +130,6 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\Xamarin.iOS10\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Mobile">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Client.3.1.0\lib\Xamarin.iOS10\Microsoft.WindowsAzure.Mobile.dll</HintPath>
     </Reference>
@@ -155,6 +152,25 @@
     <Reference Include="Microsoft.WindowsAzure.Mobile.SQLiteStore">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Client.SQLiteStore.3.1.0\lib\portable-win+net45+wp8+wpa81+monotouch10+monoandroid10+xamarinios10\Microsoft.WindowsAzure.Mobile.SQLiteStore.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bot.Connector.DirectLine">
+      <HintPath>..\packages\Microsoft.Bot.Connector.DirectLine.3.0.0\lib\netstandard1.3\Microsoft.Bot.Connector.DirectLine.dll</HintPath>
+    </Reference>
+    <Reference Include="Square.SocketRocket">
+      <HintPath>..\packages\Square.SocketRocket.0.5.0.1\lib\Xamarin.iOS\Square.SocketRocket.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="Microsoft.Rest.ClientRuntime">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.6\lib\netstandard1.5\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="SlackTextViewController">
+      <HintPath>..\packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.TTTAttributedLabel">
+      <HintPath>..\packages\Xamarin.TTTAttributedLabel.2.0.0\lib\Xamarin.iOS\Xamarin.TTTAttributedLabel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -162,6 +178,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="View\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -175,15 +193,30 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="ViewController.cs" />
-    <Compile Include="ViewController.designer.cs">
+    <Compile Include="Settings\SettingUtilities.cs" />
+    <Compile Include="Utilities\AttributedStringUtilities.cs" />
+    <Compile Include="Utilities\UIConstants.cs" />
+    <Compile Include="View\BotNavigationController.cs" />
+    <Compile Include="View\BotNavigationController.designer.cs">
+      <DependentUpon>BotNavigationController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\BotViewController.cs" />
+    <Compile Include="View\BotViewController.designer.cs">
+      <DependentUpon>BotViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\IMessageContentCell.cs" />
+    <Compile Include="View\MessageBodyCell.cs" />
+    <Compile Include="View\MessageDataSource.cs" />
+    <Compile Include="View\MessageHeadCell.cs" />
+    <Compile Include="View\ViewController.cs" />
+    <Compile Include="View\ViewController.designer.cs">
       <DependentUpon>ViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="Settings\SettingUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
   </ItemGroup>
+  <Import Project="..\Agencies.Bot\Agencies.Bot.projitems" Label="Shared" Condition="Exists('..\Agencies.Bot\Agencies.Bot.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
   <Import Project="..\Agencies.Domain\Agencies.Domain.projitems" Label="Shared" Condition="Exists('..\Agencies.Domain\Agencies.Domain.projitems')" />

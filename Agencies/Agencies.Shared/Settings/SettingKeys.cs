@@ -25,6 +25,8 @@ namespace SettingsStudio
 
 		#region Hidden Settings
 
+		public const string ConversationId = "ConversationId";
+
 		#endregion
 	}
 }

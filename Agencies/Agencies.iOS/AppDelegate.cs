@@ -57,9 +57,10 @@ namespace Agencies.iOS
 		// the app in the background (or launches it into the background) and calls the app delegate’s 
 		// application:didReceiveRemoteNotification:fetchCompletionHandler: method. Your implementation 
 		// of that method should download the relevant content and integrate it into your app.
-#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
-		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
-#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+		//#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+		//		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
+		//#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+		public override void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 		{
 			Log.Debug ($"DidReceiveRemoteNotification:");
 

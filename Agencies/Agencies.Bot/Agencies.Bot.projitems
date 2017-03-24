@@ -3,15 +3,15 @@
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>{45BB624E-E0AA-4864-B1D9-D35E4AEAE4BC}</SharedGUID>
+    <SharedGUID>{75111560-5294-49FD-8349-B9F738237344}</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Agencies.Domain</Import_RootNamespace>
+    <Import_RootNamespace>Agencies.Bot</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)MyClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BotClient.cs" />
   </ItemGroup>
 </Project>

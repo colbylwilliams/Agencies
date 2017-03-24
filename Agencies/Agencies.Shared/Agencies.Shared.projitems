@@ -17,5 +17,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Log.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Track.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\Colors.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
   </ItemGroup>
 </Project>
