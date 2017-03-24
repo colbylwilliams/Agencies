@@ -9,6 +9,8 @@ using Microsoft.Bot.Connector;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Agencies.AppService.Dialogs;
+using System.Web.Http.Description;
 
 namespace Agencies.AppService.Controllers
 {
@@ -37,11 +39,13 @@ namespace Agencies.AppService.Controllers
 		/// Receive a message from a user and reply to it
 		/// </summary>
 		[HttpPost]
+		[ResponseType(typeof(void))]
 		public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
 		{
 			if (activity.Type == ActivityTypes.Message)
 			{
-				await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+				await Conversation.SendAsync(activity, () => new FAQDialog());
+				//await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
 			}
 			else
 			{

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if __MOBILE__
+
+using System;
 using Microsoft.Bot.Connector.DirectLine;
 
 #if __IOS__
@@ -90,3 +92,4 @@ namespace Agencies.Domain
 		public void Update (Activity activity) => Activity = activity;
 	}
 }
+#endif
