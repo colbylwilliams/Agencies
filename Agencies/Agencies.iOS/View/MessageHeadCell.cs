@@ -32,8 +32,10 @@ namespace Agencies.iOS
 						UserInteractionEnabled = false,
 						Lines = 0,
 						TextColor = Colors.MessageColor,
-						Font = UIFont.PreferredHeadline// UIFont.BoldSystemFontOfSize (DefaultFontSize)
+						Font = AttributedStringUtilities.HeaderFont,
 					};
+
+					_titleLabel.SetContentCompressionResistancePriority (300, UILayoutConstraintAxis.Vertical);
 				}
 				return _titleLabel;
 			}
@@ -50,7 +52,7 @@ namespace Agencies.iOS
 						UserInteractionEnabled = false,
 						Lines = 0,
 						TextColor = UIColor.LightGray,
-						Font = UIFont.PreferredCaption2// UIFont.SystemFontOfSize (14)
+						Font = AttributedStringUtilities.TimestampFont
 					};
 				}
 				return _timestampLabel;
@@ -67,7 +69,7 @@ namespace Agencies.iOS
 						UserInteractionEnabled = false,
 						BackgroundColor = UIColor.FromWhiteAlpha (0.9f, 1.0f),
 					};
-					_thumbnailView.Layer.CornerRadius = 4;// AvatarHeight / 2;
+					_thumbnailView.Layer.CornerRadius = 4;
 					_thumbnailView.Layer.MasksToBounds = true;
 				}
 				return _thumbnailView;
@@ -83,8 +85,8 @@ namespace Agencies.iOS
 		{
 			base.PrepareForReuse ();
 
-			TitleLabel.Font = UIFont.PreferredHeadline;//UIFont.BoldSystemFontOfSize (DefaultFontSize);
-			TimestampLabel.Font = UIFont.PreferredCaption2;// UIFont.SystemFontOfSize (10);
+			TitleLabel.Font = AttributedStringUtilities.HeaderFont;
+			TimestampLabel.Font = AttributedStringUtilities.TimestampFont;
 
 			TitleLabel.Text = string.Empty;
 			TimestampLabel.Text = string.Empty;
@@ -112,7 +114,7 @@ namespace Agencies.iOS
 
 			var metrics = new NSDictionary (
 				new NSString (@"tumbSize"), NSNumber.FromNFloat (AvatarHeight),
-				new NSString (@"padding"), NSNumber.FromNFloat (15),
+				new NSString (@"padding"), NSNumber.FromNFloat (13),
 				new NSString (@"right"), NSNumber.FromNFloat (10),
 				new NSString (@"left"), NSNumber.FromNFloat (5)
 			);
@@ -123,14 +125,14 @@ namespace Agencies.iOS
 
 			if (ReuseIdentifier.IsEqual (ReuseId))
 			{
-				ContentView.AddConstraints (NSLayoutConstraint.FromVisualFormat (@"V:|-right-[titleLabel(24)]-left-[bodyLabel(>=0@999)]-left-|", 0, metrics, views));
+				ContentView.AddConstraints (NSLayoutConstraint.FromVisualFormat (@"V:|-right-[titleLabel]-(>=0@999)-[bodyLabel]-left-|", 0, metrics, views));
 			}
 			else
 			{
 				ContentView.AddConstraints (NSLayoutConstraint.FromVisualFormat (@"V:|[titleLabel]|", 0, metrics, views));
 			}
 
-			ContentView.AddConstraint (NSLayoutConstraint.Create (TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0));
+			ContentView.AddConstraint (NSLayoutConstraint.Create (TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0.5f));
 		}
 
 
@@ -144,7 +146,7 @@ namespace Agencies.iOS
 		{
 			loadingTicks = DateTime.UtcNow.Ticks;
 
-			TitleLabel.Text = username;
+			TitleLabel.Text = username == "Digital Agencies" ? "Agency Bot" : username;
 			TimestampLabel.Text = timestamp?.ToShortTimeString ();
 
 			SetMessage (attrMessage);

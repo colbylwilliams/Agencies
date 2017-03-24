@@ -30,11 +30,13 @@ namespace Agencies.iOS
 						UserInteractionEnabled = true,
 						Lines = 0,
 						TextColor = Colors.MessageColor,
-						Font = UIFont.PreferredBody,
+						Font = AttributedStringUtilities.MessageFont,
 						LinkAttributes = AttributedStringUtilities.LinkStringAttributes.Dictionary,
 						EnabledTextCheckingTypes = NSTextCheckingType.Link,
 						WeakDelegate = this
 					};
+
+					_bodyLabel.SetContentCompressionResistancePriority (250, UILayoutConstraintAxis.Vertical);
 				}
 				return _bodyLabel;
 			}
@@ -88,28 +90,16 @@ namespace Agencies.iOS
 		}
 
 
-		public virtual void SetMessage (string message)
-		{
-			BodyLabel.Text = message;
-			//BodyLabel.SetText (message);
-		}
+		//public virtual void SetMessage (string message)
+		//{
+		//	BodyLabel.Text = message;
+		//	//BodyLabel.SetText (message);
+		//}
 
 		public virtual void SetMessage (NSAttributedString message)
 		{
 			//BodyLabel.AttributedText = message;
 			BodyLabel.SetText (message);
-		}
-
-		public static nfloat DefaultFontSize {
-			get {
-				nfloat pointSize = 16;
-
-				var contentSizeCategory = UIApplication.SharedApplication.PreferredContentSizeCategory;
-
-				pointSize += UIConstants.PointSizeDifferenceForCategory (contentSizeCategory);
-
-				return pointSize;
-			}
 		}
 
 		[Export ("attributedLabel:didSelectLinkWithURL:")]

@@ -381,13 +381,24 @@ namespace Agencies.iOS
 			{
 				var cell = TableView.DequeueReusableCell (MessageHeadCell.ReuseId, indexPath) as MessageHeadCell;
 
-				cell.SetMessage (message);
+				var key = cell.SetMessage (message);
 
 				cell.IndexPath = indexPath;
+
+				if (message.Activity.From.Id == "DigitalAgencies")
+				{
+					cell.SetAvatar (key, UIImage.FromBundle ("avatar_microsoft"));
+				}
+				else
+				{
+					cell.SetAvatar (key, UIImage.FromBundle ("avatar_colby"));
+				}
 
 				// Cells must inherit the table view's transform
 				// This is very important, since the main table view may be inverted
 				cell.Transform = TableView.Transform;
+
+				Log.Debug ($"{cell.BodyLabel.Bounds.Width}");
 
 				return cell;
 			}
@@ -404,6 +415,8 @@ namespace Agencies.iOS
 				// Cells must inherit the table view's transform
 				// This is very important, since the main table view may be inverted
 				cell.Transform = TableView.Transform;
+
+				Log.Debug ($"{cell.BodyLabel.Bounds.Width}");
 
 				return cell;
 			}
@@ -455,7 +468,7 @@ namespace Agencies.iOS
 
 			message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages [row + 1].Activity.From.Name != message.Activity.From.Name);
 
-			width -= 25;
+			width -= 49;
 
 			if (string.IsNullOrEmpty (message?.Activity.Text)) return 0;
 
@@ -463,27 +476,9 @@ namespace Agencies.iOS
 
 			height = bodyBounds.Height;
 
-			height += 20.0f;
+			Log.Debug ($"{width}");
 
-			var index = message.Activity.Text.IndexOf ("\r\n", StringComparison.Ordinal);
-
-			while (index >= 0)
-			{
-				height += 20.0f;
-
-				Log.Debug ("adding room");
-
-				if (index < message.Activity.Text.Length - 1)
-				{
-					index = message.Activity.Text.IndexOf ("\r\n", index + 1, StringComparison.Ordinal);
-				}
-				else
-				{
-					index = -1;
-				}
-			}
-
-			if (message.Head) height += 24.0f;
+			if (message.Head) height += 40;
 
 			message.CellHeight = height;
 

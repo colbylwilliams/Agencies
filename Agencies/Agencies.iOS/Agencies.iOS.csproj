@@ -175,11 +175,21 @@
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
     <ImageAsset Include="Assets.xcassets\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\avatar_microsoft.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\avatar_microsoft.imageset\avatar_microsoft_24.png" />
+    <ImageAsset Include="Assets.xcassets\avatar_microsoft.imageset\avatar_microsoft_48.png" />
+    <ImageAsset Include="Assets.xcassets\avatar_microsoft.imageset\avatar_microsoft_72.png" />
+    <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_24.png" />
+    <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_48.png" />
+    <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_72.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="View\" />
     <Folder Include="Utilities\" />
+    <Folder Include="Assets.xcassets\avatar_colby.imageset\" />
+    <Folder Include="Assets.xcassets\avatar_microsoft.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />

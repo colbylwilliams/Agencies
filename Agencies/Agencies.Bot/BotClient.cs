@@ -28,7 +28,7 @@ namespace Agencies.Bot
 	public class BotClient
 	{
 #if DEBUG
-		string userName = "User";
+		string userName = "Colby";
 		string userId = "default-user";
 #endif
 		//static string botId = "DigitalAgencies";
@@ -62,7 +62,7 @@ namespace Agencies.Bot
 
 		public async Task<bool> ConnectSocketAsync ()
 		{
-			//Settings.ConversationId = string.Empty;
+			Settings.ConversationId = string.Empty;
 
 			try
 			{
@@ -153,7 +153,7 @@ namespace Agencies.Bot
 		{
 			var message = e.Message.ToString ();
 
-			//Log.Info ($"[Socket Message Received] {message}");
+			Log.Info ($"[Socket Message Received] \n{message}");
 
 			var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
 
@@ -181,7 +181,7 @@ namespace Agencies.Bot
 
 							if (message != null)
 							{
-								//Log.Debug ($"Updating Existing Message: {message.Activity.Id} : {activity.Timestamp?.ToString ("O")} : {activity.LocalTimestamp?.DateTime.ToString ("O")} : {activity.Text}");
+								//Log.Debug ($"Updating Existing Message: {activity.TextFormat} :: {activity.Text}");
 
 								message.Update (activity);
 
@@ -196,7 +196,7 @@ namespace Agencies.Bot
 							}
 							else
 							{
-								//Log.Debug ($"Adding New Message: {activity.Id} : {activity.Timestamp?.ToString ("O")} : {activity.LocalTimestamp?.DateTime.ToString ("O")} : {activity.Text}");
+								//Log.Debug ($"Adding New Message: {activity.TextFormat} :: {activity.Text}");
 
 								Messages.Insert (0, newMessage);
 
