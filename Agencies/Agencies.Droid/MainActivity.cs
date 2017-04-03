@@ -15,7 +15,7 @@ namespace Agencies.Droid
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
 
-			FaceServiceRestClient client = new FaceServiceRestClient (Keys.CognitiveServices.FaceApi.SubscriptionKey);
+			IFaceServiceClient client = new FaceServiceRestClient (Keys.CognitiveServices.FaceApi.SubscriptionKey);
 		}
 	}
 }
