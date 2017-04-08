@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Agencies.Domain
+namespace NomadCode.BotFramework.Droid
 {
 	public class MyClass
 	{

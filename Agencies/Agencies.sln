@@ -13,6 +13,12 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.Azure", "..\Nomad
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Bot", "Agencies.Bot\Agencies.Bot.shproj", "{75111560-5294-49FD-8349-B9F738237344}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework", "NomadCode.BotFramework\NomadCode.BotFramework.shproj", "{9BB6E7A1-9998-41B9-A508-8C06FF1D6E6F}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework.iOS", "NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.shproj", "{F2D08DC5-20D9-4A13-8859-D9F7F5215630}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework.Droid", "NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.shproj", "{7DC34EB0-DB39-464E-8754-39658CC51E9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
@@ -42,8 +48,6 @@ Global
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.scope = text/plain
-		$1.FileWidth = 120
-		$1.TabsToSpaces = False
 		$1.inheritsSet = VisualStudio
 		$1.inheritsScope = text/plain
 	EndGlobalSection

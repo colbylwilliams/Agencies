@@ -3,10 +3,7 @@ using Foundation;
 
 using UIKit;
 
-using Agencies.Domain;
-
-
-namespace Agencies.iOS
+namespace NomadCode.BotFramework.iOS
 {
 	public class MessageHeadCell : MessageBodyCell//, IMessageHeadCell
 	{
@@ -21,8 +18,10 @@ namespace Agencies.iOS
 
 		UILabel _titleLabel, _timestampLabel;
 
-		public UILabel TitleLabel {
-			get {
+		public UILabel TitleLabel
+		{
+			get
+			{
 				if (_titleLabel == null)
 				{
 					_titleLabel = new UILabel
@@ -41,8 +40,10 @@ namespace Agencies.iOS
 			}
 		}
 
-		public UILabel TimestampLabel {
-			get {
+		public UILabel TimestampLabel
+		{
+			get
+			{
 				if (_timestampLabel == null)
 				{
 					_timestampLabel = new UILabel
@@ -59,8 +60,10 @@ namespace Agencies.iOS
 			}
 		}
 
-		public UIImageView ThumbnailView {
-			get {
+		public UIImageView ThumbnailView
+		{
+			get
+			{
 				if (_thumbnailView == null)
 				{
 					_thumbnailView = new UIImageView
@@ -137,9 +140,6 @@ namespace Agencies.iOS
 
 
 		long loadingTicks;
-
-
-		public long SetMessage (Message message) => SetMessage (message.LocalTimeStamp, message.Activity.From.Name, message.AttributedText);
 
 
 		public long SetMessage (DateTime? timestamp, string username, NSAttributedString attrMessage)

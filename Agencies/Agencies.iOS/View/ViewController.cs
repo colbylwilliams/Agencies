@@ -1,9 +1,11 @@
 ﻿using System;
 
 using UIKit;
-using Agencies.Bot;
+
 using System.Threading.Tasks;
 using Square.SocketRocket;
+
+using NomadCode.BotFramework;
 
 namespace Agencies.iOS
 {

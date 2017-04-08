@@ -209,20 +209,11 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Settings\SettingUtilities.cs" />
-    <Compile Include="Utilities\AttributedStringUtilities.cs" />
-    <Compile Include="Utilities\UIConstants.cs" />
     <Compile Include="View\BotNavigationController.cs" />
     <Compile Include="View\BotNavigationController.designer.cs">
       <DependentUpon>BotNavigationController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\BotViewController.cs" />
-    <Compile Include="View\BotViewController.designer.cs">
-      <DependentUpon>BotViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\IMessageContentCell.cs" />
-    <Compile Include="View\MessageBodyCell.cs" />
     <Compile Include="View\MessageDataSource.cs" />
-    <Compile Include="View\MessageHeadCell.cs" />
     <Compile Include="View\ViewController.cs" />
     <Compile Include="View\ViewController.designer.cs">
       <DependentUpon>ViewController.cs</DependentUpon>
@@ -231,6 +222,8 @@
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
   </ItemGroup>
+  <Import Project="..\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems" Label="Shared" Condition="Exists('..\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems')" />
+  <Import Project="..\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\Agencies.Bot\Agencies.Bot.projitems" Label="Shared" Condition="Exists('..\Agencies.Bot\Agencies.Bot.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />

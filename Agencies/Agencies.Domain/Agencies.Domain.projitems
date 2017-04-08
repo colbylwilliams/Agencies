@@ -9,9 +9,6 @@
     <Import_RootNamespace>Agencies.Domain</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)MyClass.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
   </ItemGroup>
 </Project>

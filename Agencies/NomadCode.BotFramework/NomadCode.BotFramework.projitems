@@ -3,13 +3,15 @@
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>{75111560-5294-49FD-8349-B9F738237344}</SharedGUID>
+    <SharedGUID>{9BB6E7A1-9998-41B9-A508-8C06FF1D6E6F}</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Agencies.Bot</Import_RootNamespace>
+    <Import_RootNamespace>NomadCode.BotFramework</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BotClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keychain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
   </ItemGroup>
 </Project>

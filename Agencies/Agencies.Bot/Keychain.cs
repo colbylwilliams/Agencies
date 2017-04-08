@@ -1,227 +1,227 @@
-﻿#if __MOBILE__
+﻿//#if __MOBILE__
 
-using System;
+//using System;
 
-#if __IOS__
+//#if __IOS__
 
-using Foundation;
-using Security;
+//using Foundation;
+//using Security;
 
-#elif __ANDROID__
+//#elif __ANDROID__
 
-using System.Collections.Generic;
+//using System.Collections.Generic;
 
-using Java.IO;
-using Java.Security;
-using Javax.Crypto;
+//using Java.IO;
+//using Java.Security;
+//using Javax.Crypto;
 
-using Android.Content;
+//using Android.Content;
 
-#endif
+//#endif
 
-namespace Agencies.Bot
-{
-	public class Keychain
-	{
+//namespace Agencies.Bot
+//{
+//	public class Keychain
+//	{
 
-#if __IOS__
+//#if __IOS__
 
-		SecRecord genericRecord(string service) => new SecRecord(SecKind.GenericPassword)
-		{
-			Service = $"{NSBundle.MainBundle.BundleIdentifier}-{service}",
-			ApplicationLabel = NSBundle.MainBundle.BundleIdentifier
-		};
+//		SecRecord genericRecord(string service) => new SecRecord(SecKind.GenericPassword)
+//		{
+//			Service = $"{NSBundle.MainBundle.BundleIdentifier}-{service}",
+//			ApplicationLabel = NSBundle.MainBundle.BundleIdentifier
+//		};
 
 
-		Tuple<string, string> getItemFromKeychain(string service)
-		{
-			SecStatusCode status;
+//		Tuple<string, string> getItemFromKeychain(string service)
+//		{
+//			SecStatusCode status;
 
-			var record = SecKeyChain.QueryAsRecord(genericRecord(service), out status);
+//			var record = SecKeyChain.QueryAsRecord(genericRecord(service), out status);
 
-			if (status == SecStatusCode.Success && record != null)
-			{
-				var account = record.Account;
+//			if (status == SecStatusCode.Success && record != null)
+//			{
+//				var account = record.Account;
 
-				var privateKey = NSString.FromData(record.ValueData, NSStringEncoding.UTF8).ToString();
+//				var privateKey = NSString.FromData(record.ValueData, NSStringEncoding.UTF8).ToString();
 
-				return new Tuple<string, string>(account, privateKey);
-			}
+//				return new Tuple<string, string>(account, privateKey);
+//			}
 
-			return null;
-		}
+//			return null;
+//		}
 
 
-		bool saveItemToKeychain(string service, string account, string privateKey)
-		{
-			var record = genericRecord(service);
+//		bool saveItemToKeychain(string service, string account, string privateKey)
+//		{
+//			var record = genericRecord(service);
 
-			record.Account = account;
+//			record.Account = account;
 
-			record.ValueData = NSData.FromString(privateKey, NSStringEncoding.UTF8);
+//			record.ValueData = NSData.FromString(privateKey, NSStringEncoding.UTF8);
 
-			// Delete any existing items
-			SecKeyChain.Remove(record);
+//			// Delete any existing items
+//			SecKeyChain.Remove(record);
 
-			// Add the new keychain item
-			var status = SecKeyChain.Add(record);
+//			// Add the new keychain item
+//			var status = SecKeyChain.Add(record);
 
-			var success = status == SecStatusCode.Success;
+//			var success = status == SecStatusCode.Success;
 
-			if (!success)
-			{
-				System.Diagnostics.Debug.WriteLine($"Error in Keychain: {status}");
-				System.Diagnostics.Debug.WriteLine($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
-			}
+//			if (!success)
+//			{
+//				System.Diagnostics.Debug.WriteLine($"Error in Keychain: {status}");
+//				System.Diagnostics.Debug.WriteLine($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
+//			}
 
-			return success;
-		}
+//			return success;
+//		}
 
 
-		bool removeItemFromKeychain(string service)
-		{
-			var record = genericRecord(service);
+//		bool removeItemFromKeychain(string service)
+//		{
+//			var record = genericRecord(service);
 
-			var status = SecKeyChain.Remove(record);
+//			var status = SecKeyChain.Remove(record);
 
-			var success = status == SecStatusCode.Success;
+//			var success = status == SecStatusCode.Success;
 
-			if (!success)
-			{
-				System.Diagnostics.Debug.WriteLine($"Error in Keychain: {status}");
-				System.Diagnostics.Debug.WriteLine($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
-			}
+//			if (!success)
+//			{
+//				System.Diagnostics.Debug.WriteLine($"Error in Keychain: {status}");
+//				System.Diagnostics.Debug.WriteLine($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
+//			}
 
-			return success;
-		}
+//			return success;
+//		}
 
-#else
+//#else
 
-		static Dictionary<string, KeyStore> keyStoresCache = new Dictionary<string, KeyStore> ();
+//		static Dictionary<string, KeyStore> keyStoresCache = new Dictionary<string, KeyStore> ();
 
 
-		KeyStore getKeystore (string service)
-		{
-			var context = Android.App.Application.Context;
+//		KeyStore getKeystore (string service)
+//		{
+//			var context = Android.App.Application.Context;
 
-			KeyStore keystore;
+//			KeyStore keystore;
 
-			var serviceId = $"{context.PackageName}-{service}";
+//			var serviceId = $"{context.PackageName}-{service}";
 
-			if (keyStoresCache.TryGetValue (serviceId, out keystore))
-			{
-				return keystore;
-			}
+//			if (keyStoresCache.TryGetValue (serviceId, out keystore))
+//			{
+//				return keystore;
+//			}
 
-			var password = service.ToCharArray ();
+//			var password = service.ToCharArray ();
 
-			keystore = KeyStore.GetInstance (KeyStore.DefaultType);
+//			keystore = KeyStore.GetInstance (KeyStore.DefaultType);
 
-			// var protection = new KeyStore.PasswordProtection (password);
+//			// var protection = new KeyStore.PasswordProtection (password);
 
-			try
-			{
-				// TODO: this isn't right, fix it
-				using (var stream = context.OpenFileInput (serviceId))
-				{
-					keystore.Load (stream, password);
-				}
-			}
-			catch (FileNotFoundException)
-			{
-				keystore.Load (null, password);
-			}
+//			try
+//			{
+//				// TODO: this isn't right, fix it
+//				using (var stream = context.OpenFileInput (serviceId))
+//				{
+//					keystore.Load (stream, password);
+//				}
+//			}
+//			catch (FileNotFoundException)
+//			{
+//				keystore.Load (null, password);
+//			}
 
-			keyStoresCache [serviceId] = keystore;
+//			keyStoresCache [serviceId] = keystore;
 
-			return keystore;
-		}
+//			return keystore;
+//		}
 
 
-		Tuple<string, string> getItemFromKeychain (string service)
-		{
-			var context = Android.App.Application.Context;
+//		Tuple<string, string> getItemFromKeychain (string service)
+//		{
+//			var context = Android.App.Application.Context;
 
-			var password = service.ToCharArray ();
+//			var password = service.ToCharArray ();
 
-			var protection = new KeyStore.PasswordProtection (password);
+//			var protection = new KeyStore.PasswordProtection (password);
 
-			var keystore = getKeystore (service);
+//			var keystore = getKeystore (service);
 
-			var aliases = keystore.Aliases ();
+//			var aliases = keystore.Aliases ();
 
-			while (aliases.HasMoreElements)
-			{
-				var alias = aliases.NextElement ().ToString ();
+//			while (aliases.HasMoreElements)
+//			{
+//				var alias = aliases.NextElement ().ToString ();
 
-				var item = keystore.GetEntry (alias, protection) as KeyStore.SecretKeyEntry;
+//				var item = keystore.GetEntry (alias, protection) as KeyStore.SecretKeyEntry;
 
-				if (item != null)
-				{
-					var bytes = item.SecretKey.GetEncoded ();
+//				if (item != null)
+//				{
+//					var bytes = item.SecretKey.GetEncoded ();
 
-					var serialized = System.Text.Encoding.UTF8.GetString (bytes);
+//					var serialized = System.Text.Encoding.UTF8.GetString (bytes);
 
-					return new Tuple<string, string> (alias, serialized);
-				}
-			}
+//					return new Tuple<string, string> (alias, serialized);
+//				}
+//			}
 
-			return null;
-		}
+//			return null;
+//		}
 
 
-		bool saveItemToKeychain (string service, string account, string privateKey)
-		{
-			var context = Android.App.Application.Context;
+//		bool saveItemToKeychain (string service, string account, string privateKey)
+//		{
+//			var context = Android.App.Application.Context;
 
-			var password = service.ToCharArray ();
+//			var password = service.ToCharArray ();
 
-			var serviceId = $"{context.PackageName}-{service}";
+//			var serviceId = $"{context.PackageName}-{service}";
 
-			var keystore = getKeystore (service);
+//			var keystore = getKeystore (service);
 
-			var item = new KeychainItem (privateKey);
+//			var item = new KeychainItem (privateKey);
 
-			var secretEntry = new KeyStore.SecretKeyEntry (item);
+//			var secretEntry = new KeyStore.SecretKeyEntry (item);
 
-			keystore.SetEntry (account, secretEntry, new KeyStore.PasswordProtection (password));
+//			keystore.SetEntry (account, secretEntry, new KeyStore.PasswordProtection (password));
 
-			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
-			{
-				keystore.Store (stream, password);
-			}
+//			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
+//			{
+//				keystore.Store (stream, password);
+//			}
 
-			return true;
-		}
+//			return true;
+//		}
 
 
-		bool removeItemFromKeychain (string service)
-		{
-			throw new NotImplementedException ();
-		}
+//		bool removeItemFromKeychain (string service)
+//		{
+//			throw new NotImplementedException ();
+//		}
 
 
-		class KeychainItem : Java.Lang.Object, ISecretKey
-		{
-			const string raw = "RAW";
+//		class KeychainItem : Java.Lang.Object, ISecretKey
+//		{
+//			const string raw = "RAW";
 
-			byte [] bytes;
+//			byte [] bytes;
 
-			public KeychainItem (string data)
-			{
-				if (data == null) throw new ArgumentNullException ();
+//			public KeychainItem (string data)
+//			{
+//				if (data == null) throw new ArgumentNullException ();
 
-				bytes = System.Text.Encoding.UTF8.GetBytes (data);
-			}
+//				bytes = System.Text.Encoding.UTF8.GetBytes (data);
+//			}
 
-			public byte [] GetEncoded () => bytes;
+//			public byte [] GetEncoded () => bytes;
 
-			public string Algorithm => raw;
+//			public string Algorithm => raw;
 
-			public string Format => raw;
-		}
+//			public string Format => raw;
+//		}
 
-#endif
-	}
-}
-#endif
+//#endif
+//	}
+//}
+//#endif

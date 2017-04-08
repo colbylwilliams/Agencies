@@ -7,7 +7,7 @@ using Foundation;
 
 using Xamarin.TTTAttributedLabel;
 
-namespace Agencies.iOS
+namespace NomadCode.BotFramework.iOS
 {
 	public class MessageBodyCell : UITableViewCell, ITTTAttributedLabelDelegate
 	{
@@ -19,8 +19,10 @@ namespace Agencies.iOS
 
 		TTTAttributedLabel _bodyLabel;
 
-		public TTTAttributedLabel BodyLabel {
-			get {
+		public TTTAttributedLabel BodyLabel
+		{
+			get
+			{
 				if (_bodyLabel == null)
 				{
 					_bodyLabel = new TTTAttributedLabel

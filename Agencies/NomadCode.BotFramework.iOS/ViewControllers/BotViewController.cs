@@ -13,12 +13,11 @@ using SlackHQ;
 
 using Square.SocketRocket;
 
-using Agencies.Bot;
-using Agencies.Domain;
 using Microsoft.Bot.Connector.DirectLine;
 
+using NomadCode.BotFramework;
 
-namespace Agencies.iOS
+namespace NomadCode.BotFramework.iOS
 {
 	public interface IAutoCompleteResult
 	{
@@ -27,7 +26,8 @@ namespace Agencies.iOS
 	}
 
 
-	public partial class BotViewController : SlackTextViewController
+	[Register ("BotViewController")]
+	public class BotViewController : SlackTextViewController
 	{
 		UIWindow pipWindow;
 
@@ -384,7 +384,7 @@ namespace Agencies.iOS
 
 			if (cell is MessageHeadCell headCell)
 			{
-				var key = headCell.SetMessage (message);
+				var key = headCell.SetMessage (message.LocalTimeStamp, message.Activity.From.Name, message.AttributedText);
 
 				headCell.IndexPath = indexPath;
 
@@ -413,51 +413,6 @@ namespace Agencies.iOS
 			//Log.Debug($"{cell.BodyLabel.Bounds.Width}");
 
 			return cell;
-
-
-			//if (message.Head)
-			//{
-			//	var cell = TableView.DequeueReusableCell(MessageHeadCell.ReuseId, indexPath) as MessageHeadCell;
-
-			//	var key = cell.SetMessage(message);
-
-			//	cell.IndexPath = indexPath;
-
-			//	if (message.Activity.From.Id == "DigitalAgencies")
-			//	{
-			//		cell.SetAvatar(key, UIImage.FromBundle("avatar_microsoft"));
-			//	}
-			//	else
-			//	{
-			//		cell.SetAvatar(key, UIImage.FromBundle("avatar_colby"));
-			//	}
-
-			//	// Cells must inherit the table view's transform
-			//	// This is very important, since the main table view may be inverted
-			//	cell.Transform = TableView.Transform;
-
-			//	Log.Debug($"{cell.BodyLabel.Bounds.Width}");
-
-			//	return cell;
-			//}
-			//else
-			//{
-			//	var cell = TableView.DequeueReusableCell(MessageBodyCell.ReuseId, indexPath) as MessageBodyCell;
-
-			//	cell.SetMessage(message.AttributedText);
-
-			//	cell.IndexPath = indexPath;
-
-			//	cell.UsedForMessage = true;
-
-			//	// Cells must inherit the table view's transform
-			//	// This is very important, since the main table view may be inverted
-			//	cell.Transform = TableView.Transform;
-
-			//	Log.Debug($"{cell.BodyLabel.Bounds.Width}");
-
-			//	return cell;
-			//}
 		}
 
 

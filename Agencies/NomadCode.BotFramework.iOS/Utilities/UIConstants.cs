@@ -3,7 +3,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 
-namespace Agencies.iOS
+namespace NomadCode.BotFramework.iOS
 {
 	public static class UIConstants
 	{
