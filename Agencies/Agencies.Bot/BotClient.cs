@@ -7,8 +7,8 @@ using System.Collections.Specialized;
 using SettingsStudio;
 
 #if __IOS__
-using Square.SocketRocket;
 using System.Collections.Generic;
+using Square.SocketRocket;
 using Foundation;
 using Agencies.Domain;
 #endif
@@ -19,10 +19,7 @@ namespace Agencies.Bot
 	{
 		public ReadyState ReadyState { get; set; }
 
-		public ReadyStateChangedEventArgs (ReadyState readyState)
-		{
-			ReadyState = readyState;
-		}
+		public ReadyStateChangedEventArgs (ReadyState readyState) => ReadyState = readyState;
 	}
 
 	public class BotClient
@@ -48,27 +45,26 @@ namespace Agencies.Bot
 		public List<Message> Messages { get; set; } = new List<Message> ();
 
 
-		BotClient ()
-		{
-		}
+		BotClient () { }
 
-		public void Start ()
-		{
-		}
 
+		public void Start () { }
+
+
+		public event EventHandler<Activity> UserTypingMessageReceived;
 		public event EventHandler<ReadyStateChangedEventArgs> ReadyStateChanged;
 		public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
 		public async Task<bool> ConnectSocketAsync ()
 		{
-			Settings.ConversationId = string.Empty;
+			//Settings.ConversationId = string.Empty;
 
 			try
 			{
 				if (webSocket == null || webSocket.ReadyState == ReadyState.Closed)
 				{
-					if (string.IsNullOrEmpty (Settings.ConversationId))
+					if (Settings.ResetConversation || string.IsNullOrEmpty (Settings.ConversationId))
 					{
 						conversation = await directLineClient.Conversations.StartConversationAsync ();
 
@@ -100,28 +96,13 @@ namespace Agencies.Bot
 
 					webSocket.ReceivedMessage += handleWebSocketReceivedMessage;
 
-					webSocket.ReceivedPong += (_, e) =>
-					{
-						Log.Info ($"[Socket Received Pong] {Environment.NewLine}");
-					};
+					webSocket.WebSocketClosed += handleWebSocketClosed;
 
-					webSocket.WebSocketClosed += (_, e) =>
-					{
-						Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
-						ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-					};
+					webSocket.WebSocketFailed += handleWebSocketFailed;
 
-					webSocket.WebSocketFailed += (_, e) =>
-					{
-						Log.Info ($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
-						ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-					};
+					webSocket.WebSocketOpened += handleWebSocketOpened;
 
-					webSocket.WebSocketOpened += (_, e) =>
-					{
-						Log.Info ($"[Socket Connected] {url}");
-						ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-					};
+					webSocket.ReceivedPong += handleWebSocketReceivedPong;
 
 					Log.Info ($"[Socket Connecting...] {url}");
 
@@ -145,19 +126,6 @@ namespace Agencies.Bot
 				Log.Error (ex.Message);
 				return false;
 			}
-		}
-
-
-
-		void handleWebSocketReceivedMessage (object sender, WebSocketReceivedMessageEventArgs e)
-		{
-			var message = e.Message.ToString ();
-
-			Log.Info ($"[Socket Message Received] \n{message}");
-
-			var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
-
-			handleNewActvitySet (activitySet);
 		}
 
 
@@ -214,6 +182,12 @@ namespace Agencies.Bot
 						case ActivityTypes.ConversationUpdate:
 							break;
 						case ActivityTypes.Typing:
+
+							if (activity?.From.Id != userId)
+							{
+								UserTypingMessageReceived?.Invoke (this, activity);
+							}
+
 							break;
 						case ActivityTypes.Ping:
 							break;
@@ -227,56 +201,59 @@ namespace Agencies.Bot
 		}
 
 
-		public async Task<bool> SendUserTyping ()
+		#region WebSocket Event Handlers
+
+		void handleWebSocketReceivedMessage (object sender, WebSocketReceivedMessageEventArgs e)
 		{
-			if (conversation == null)
+			var message = e.Message.ToString ();
+
+			// Ignore empty messages 
+			if (string.IsNullOrEmpty (message))
 			{
-				throw new ArgumentNullException (nameof (conversation), "cannot be null to send message");
+				Log.Info ($"[Socket Message Received] Empty message, ignoring");
+
+				return;
 			}
 
-			if (!Initialized) return false;
+			Log.Info ($"[Socket Message Received] \n{message}");
 
+			var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
 
-			Log.Debug ("Sending User Typing");
-
-			var message = new Activity
-			{
-				From = new ChannelAccount (userId, userName),
-				Type = ActivityTypes.Typing
-			};
-
-
-			/*var response = */
-			await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, message);
-
-			//Log.Debug ($"Message Sent - Response ID: {response?.Id}");
-
-			return true;
+			handleNewActvitySet (activitySet);
 		}
 
 
-		public bool SendPing ()
+		void handleWebSocketReceivedPong (object sender, WebSocketReceivedPongEventArgs e)
 		{
-			if (!Initialized) return false;
-
-			webSocket.SendPing ();
-
-			return true;
+			Log.Info ($"[Socket Received Pong] {Environment.NewLine}");
 		}
 
+
+		void handleWebSocketClosed (object sender, WebSocketClosedEventArgs e)
+		{
+			Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
+			ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
+		}
+
+
+		void handleWebSocketFailed (object sender, WebSocketFailedEventArgs e)
+		{
+			Log.Info ($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
+			ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
+
+		}
+
+
+		void handleWebSocketOpened (object sender, EventArgs e)
+		{
+			Log.Info ($"[Socket Connected] {conversation?.StreamUrl}");
+			ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
+		}
+
+		#endregion
 
 		public bool SendMessage (string text)
 		{
-			if (conversation == null)
-			{
-				throw new ArgumentNullException (nameof (conversation), "cannot be null to send message");
-			}
-
-			if (!Initialized) return false;
-
-
-			Log.Debug ($"Sending Message: {text}");
-
 			var activity = new Activity
 			{
 				From = new ChannelAccount (userId, userName),
@@ -290,17 +267,66 @@ namespace Agencies.Bot
 
 			//Log.Debug ($"Adding New Message: {activity.Timestamp?.ToString ("O")} : {activity.LocalTimestamp?.DateTime.ToString ("O")} : {activity.Text}");
 
-			Messages.Insert (0, message);
+			var posted = postActivityAsync (activity);
 
-			//Messages.Sort ((x, y) => y.CompareTo (x));
+			if (posted)
+			{
+				Messages.Insert (0, message);
+			}
+
+			return posted;
+		}
+
+
+		public bool SendUserTyping ()
+		{
+			Log.Debug ("Sending User Typing");
+
+			var activity = new Activity
+			{
+				From = new ChannelAccount (userId, userName),
+				Type = ActivityTypes.Typing
+			};
+
+			return postActivityAsync (activity, true);
+		}
+
+
+		bool postActivityAsync (Activity activity, bool ignoreFailure = false)
+		{
+			if (conversation == null)
+			{
+				if (ignoreFailure) return false;
+
+				throw new ArgumentNullException (nameof (conversation), "cannot be null to send message");
+			}
+
+			if (!Initialized) return false;
 
 			Task.Run (async () =>
 			{
-				/*var response = */
-				await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, activity);
+				try
+				{
+					await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, activity).ConfigureAwait (false);
+				}
+				catch (Exception ex)
+				{
+					Log.Error (ex.Message);
 
-				//Log.Debug ($"Message Sent - Response ID: {response?.Id}");
+					if (!ignoreFailure)
+						throw;
+				}
 			});
+
+			return true;
+		}
+
+
+		public bool SendPing ()
+		{
+			if (!Initialized) return false;
+
+			webSocket.SendPing ();
 
 			return true;
 		}

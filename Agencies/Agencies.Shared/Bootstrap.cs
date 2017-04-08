@@ -1,4 +1,4 @@
-﻿//#if __MOBILE__
+//#if __MOBILE__
 //using Microsoft.Azure.Mobile;
 //using Microsoft.Azure.Mobile.Crashes;
 //using Microsoft.Azure.Mobile.Analytics;
@@ -50,7 +50,7 @@ namespace Agencies
 		{
 			//AzureClient.Shared.RegisterTable<AvContent> ();
 
-			await AzureClient.Shared.InitializeAzync (Keys.Azure.ServiceUrl);
+			await AzureClient.Shared.InitializeAzync (Keys.Azure.PublicServiceUrl);
 		}
 	}
 }

@@ -11,7 +11,6 @@ namespace SettingsStudio
 
 		#region Visible Settings
 
-
 		public const string VersionNumber = "VersionNumber";
 
 		public const string BuildNumber = "BuildNumber";
@@ -27,6 +26,17 @@ namespace SettingsStudio
 
 		public const string ConversationId = "ConversationId";
 
+		#endregion
+
+
+		#region Debug
+#if DEBUG
+
+		public const string UseLocalServer = "UseLocalServer";
+
+		public const string ResetConversation = "ResetConversation";
+
+#endif
 		#endregion
 	}
 }

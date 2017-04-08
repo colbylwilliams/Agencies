@@ -38,4 +38,13 @@ Global
 		{BEE3F51C-329D-4119-921E-BA9B35E85750}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{BEE3F51C-329D-4119-921E-BA9B35E85750}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.scope = text/plain
+		$1.FileWidth = 120
+		$1.TabsToSpaces = False
+		$1.inheritsSet = VisualStudio
+		$1.inheritsScope = text/plain
+	EndGlobalSection
 EndGlobal

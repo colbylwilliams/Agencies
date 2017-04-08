@@ -35,7 +35,8 @@ namespace SettingsStudio
 			using (NSString keyString = new NSString (_key), defaultString = new NSString (_defaultValue), preferenceSpecifiers = new NSString (_preferenceSpecifiers))
 			using (var settings = NSDictionary.FromFile (path))
 			using (var preferences = (NSArray)settings.ValueForKey (preferenceSpecifiers))
-			using (var registrationDictionary = new NSMutableDictionary ()) {
+			using (var registrationDictionary = new NSMutableDictionary ())
+			{
 				for (nuint i = 0; i < preferences.Count; i++)
 					using (var prefSpecification = preferences.GetItem<NSDictionary> (i))
 					using (var key = (NSString)prefSpecification.ValueForKey (keyString))
@@ -67,13 +68,7 @@ namespace SettingsStudio
 
 		public static string StringForKey (string key) => StandardUserDefaults.StringForKey (key);
 
-		public static DateTime DateTimeForKey (string key)
-		{
-			DateTime outDateTime;
-
-			return DateTime.TryParse (StandardUserDefaults.StringForKey (key), out outDateTime) ? outDateTime : DateTime.MinValue;
-		}
-
+		public static DateTime DateTimeForKey (string key) => DateTime.TryParse (StandardUserDefaults.StringForKey (key), out DateTime outDateTime) ? outDateTime : DateTime.MinValue;
 
 		#endregion
 	}

@@ -332,6 +332,9 @@ if [ "$projType" = "$projTypeiOS" ]; then
 	echo Root.plist Path: "$rootPlist"
 	echo Copyright Text: "$copyright"
 	#source "${BASH_SOURCE%/*}/root_plist.sh"
-	source "$projectDir/root_plist.sh"
-
+	if [ "$release" = true ]; then
+		source "$projectDir/root_plist.sh"
+	else
+		source "$projectDir/root_plist_debug.sh"
+	fi
 fi

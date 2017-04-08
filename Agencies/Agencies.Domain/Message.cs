@@ -33,10 +33,7 @@ namespace Agencies.Domain
 		public DateTime? LocalTimeStamp => Activity.Timestamp?.ToLocalTime () ?? Activity.LocalTimestamp?.LocalDateTime;
 
 
-		public Message (Activity activity)
-		{
-			Activity = activity;
-		}
+		public Message (Activity activity) => Activity = activity;
 
 
 		public int CompareTo (Message other)
@@ -47,22 +44,6 @@ namespace Agencies.Domain
 			}
 
 			return string.IsNullOrEmpty (Activity?.Id) ? 1 : -1;
-
-			//var hasTimestamp = Activity?.Timestamp.HasValue ?? false;
-
-			//var otherHasTimestamp = other?.Activity?.Timestamp.HasValue ?? false;
-
-			//if (hasTimestamp && otherHasTimestamp)
-			//{
-			//	return Activity.Timestamp.Value.CompareTo (other.Activity.Timestamp.Value);
-			//}
-
-			//if (!hasTimestamp && !hasTimestamp)
-			//{
-			//	return 0;
-			//}
-
-			//return hasTimestamp ? 1 : -1;
 		}
 
 

@@ -10,26 +10,31 @@ namespace SettingsStudio
 		#region Visible Settings
 
 
-		public static string VersionNumber {
-			get { return StringForKey (SettingsKeys.VersionNumber); }
+		public static string VersionNumber
+		{
+			get => StringForKey(SettingsKeys.VersionNumber);
 #if __ANDROID__
-			set { SetSetting (SettingsKeys.VersionNumber, value); }
+			set => SetSetting (SettingsKeys.VersionNumber, value);
 #endif
 		}
 
-		public static string BuildNumber {
-			get { return StringForKey (SettingsKeys.BuildNumber); }
+
+		public static string BuildNumber
+		{
+			get => StringForKey(SettingsKeys.BuildNumber);
 #if __ANDROID__
-			set { SetSetting (SettingsKeys.BuildNumber, value); }
+			set => SetSetting (SettingsKeys.BuildNumber, value);
 #endif
 		}
 
-		public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
+
+		public static string GitHash => StringForKey(SettingsKeys.GitCommitHash);
 
 
-		public static string UserReferenceKey {
-			get { return StringForKey (SettingsKeys.UserReferenceKey); }
-			set { SetSetting (SettingsKeys.UserReferenceKey, value); }
+		public static string UserReferenceKey
+		{
+			get => StringForKey(SettingsKeys.UserReferenceKey);
+			set => SetSetting(SettingsKeys.UserReferenceKey, value);
 		}
 
 
@@ -38,11 +43,42 @@ namespace SettingsStudio
 
 		#region Hidden Settings
 
-		public static string ConversationId {
-			get { return StringForKey (SettingsKeys.ConversationId); }
-			set { SetSetting (SettingsKeys.ConversationId, value); }
+		public static string ConversationId
+		{
+			get => StringForKey(SettingsKeys.ConversationId);
+			set => SetSetting(SettingsKeys.ConversationId, value);
 		}
 
 		#endregion
+
+
+		#region Debug
+#if DEBUG
+
+		public static bool UseLocalServer
+		{
+			get => BoolForKey(SettingsKeys.UseLocalServer);
+			set => SetSetting(SettingsKeys.UseLocalServer, value);
+		}
+
+
+		public static bool ResetConversation
+		{
+			get
+			{
+				var reset = BoolForKey(SettingsKeys.ResetConversation);
+
+				if (reset)
+				{
+					SetSetting(SettingsKeys.ResetConversation, false);
+				}
+
+				return reset;
+			}
+		}
+
+#endif
+		#endregion
+
 	}
 }

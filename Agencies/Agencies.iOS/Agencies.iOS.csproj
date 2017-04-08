@@ -22,7 +22,7 @@
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <MtouchNoSymbolStrip>true</MtouchNoSymbolStrip>
-    <MtouchFastDev>true</MtouchFastDev>
+    <MtouchFastDev>false</MtouchFastDev>
     <MtouchProfiling>true</MtouchProfiling>
     <IOSDebuggerPort>62940</IOSDebuggerPort>
     <MtouchLink>None</MtouchLink>
@@ -37,6 +37,8 @@
         </Command>
       </CustomCommands>
     </CustomCommands>
+    <CodesignEntitlements>EntitlementsDev.plist</CodesignEntitlements>
+    <XamarinInspectorDisabled>True</XamarinInspectorDisabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType></DebugType>
@@ -60,6 +62,7 @@
         </Command>
       </CustomCommands>
     </CustomCommands>
+    <MtouchUseLlvm>true</MtouchUseLlvm>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType></DebugType>
@@ -83,6 +86,7 @@
         </Command>
       </CustomCommands>
     </CustomCommands>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -96,10 +100,10 @@
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <MtouchNoSymbolStrip>true</MtouchNoSymbolStrip>
-    <MtouchFastDev>true</MtouchFastDev>
+    <MtouchFastDev>false</MtouchFastDev>
     <MtouchProfiling>true</MtouchProfiling>
     <MtouchFloat32>true</MtouchFloat32>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <CodesignEntitlements>EntitlementsDev.plist</CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
@@ -169,7 +173,7 @@
       <HintPath>..\packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.TTTAttributedLabel">
-      <HintPath>..\packages\Xamarin.TTTAttributedLabel.2.0.0\lib\Xamarin.iOS\Xamarin.TTTAttributedLabel.dll</HintPath>
+      <HintPath>..\packages\Xamarin.TTTAttributedLabel.2.0.0.2\lib\Xamarin.iOS\Xamarin.TTTAttributedLabel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +203,7 @@
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
+    <None Include="EntitlementsDev.plist" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

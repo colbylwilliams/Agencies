@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -15,6 +15,7 @@ using Square.SocketRocket;
 
 using Agencies.Bot;
 using Agencies.Domain;
+using Microsoft.Bot.Connector.DirectLine;
 
 
 namespace Agencies.iOS
@@ -29,22 +30,17 @@ namespace Agencies.iOS
 	public partial class BotViewController : SlackTextViewController
 	{
 		UIWindow pipWindow;
+
 		List<IAutoCompleteResult> searchResult = new List<IAutoCompleteResult> ();
 
 		List<Message> Messages => BotClient.Shared.Messages;
 
 
 		[Export ("initWithCoder:")]
-		public BotViewController (NSCoder coder) : base (coder)
-		{
-			commonInit ();
-		}
+		public BotViewController (NSCoder coder) : base (coder) => commonInit ();
 
 
-		public BotViewController (IntPtr handle) : base (handle)
-		{
-			commonInit ();
-		}
+		public BotViewController (IntPtr handle) : base (handle) => commonInit ();
 
 
 		void commonInit ()
@@ -122,12 +118,14 @@ namespace Agencies.iOS
 		{
 			BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
 			BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesCollectionChanged;
+			BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
 		}
 
 		void disconnectAllTheseEvents ()
 		{
 			BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
 			BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesCollectionChanged;
+			BotClient.Shared.UserTypingMessageReceived -= handleBotClientUserTypingMessageReceived;
 		}
 
 
@@ -230,7 +228,8 @@ namespace Agencies.iOS
 			{
 				timeStampCache = utcNowTicks;
 
-				Task.Run (async () => await BotClient.Shared.SendUserTyping ());
+				BotClient.Shared.SendUserTyping ();
+				//Task.Run(async () => await BotClient.Shared.SendUserTyping());
 			}
 
 			base.TextDidUpdate (animated);
@@ -273,7 +272,7 @@ namespace Agencies.iOS
 
 			if ((send && BotClient.Shared.SendMessage (TextView.Text)) || !send)
 			{
-				TableView.InsertRows (new [] { NSIndexPath.FromRowSection (0, 0) }, rowAnimation);
+				TableView.InsertRows (new[] { NSIndexPath.FromRowSection (0, 0) }, rowAnimation);
 			}
 
 			TableView.EndUpdates ();
@@ -347,8 +346,10 @@ namespace Agencies.iOS
 		//}
 
 
-		public override nfloat HeightForAutoCompletionView {
-			get {
+		public override nfloat HeightForAutoCompletionView
+		{
+			get
+			{
 				var cellHeight = AutoCompletionView.Delegate.GetHeightForRow (AutoCompletionView, NSIndexPath.FromRowSection (0, 0));
 
 				return cellHeight * searchResult?.Count ?? 0;//  base.HeightForAutoCompletionView;
@@ -373,53 +374,90 @@ namespace Agencies.iOS
 			 => tableView.Equals (TableView) ? GetMessageCell (indexPath) : GetAutoCompleteCell (indexPath);
 
 
-		MessageBodyCell GetMessageCell (NSIndexPath indexPath)
+		UITableViewCell GetMessageCell (NSIndexPath indexPath)
 		{
-			var message = Messages [indexPath.Row];
+			var message = Messages[indexPath.Row];
 
-			if (message.Head)
+			var reuseId = message.Head ? MessageHeadCell.ReuseId : MessageBodyCell.ReuseId;
+
+			var cell = TableView.DequeueReusableCell (MessageHeadCell.ReuseId, indexPath);
+
+			if (cell is MessageHeadCell headCell)
 			{
-				var cell = TableView.DequeueReusableCell (MessageHeadCell.ReuseId, indexPath) as MessageHeadCell;
+				var key = headCell.SetMessage (message);
 
-				var key = cell.SetMessage (message);
-
-				cell.IndexPath = indexPath;
+				headCell.IndexPath = indexPath;
 
 				if (message.Activity.From.Id == "DigitalAgencies")
 				{
-					cell.SetAvatar (key, UIImage.FromBundle ("avatar_microsoft"));
+					headCell.SetAvatar (key, UIImage.FromBundle ("avatar_microsoft"));
 				}
 				else
 				{
-					cell.SetAvatar (key, UIImage.FromBundle ("avatar_colby"));
+					headCell.SetAvatar (key, UIImage.FromBundle ("avatar_colby"));
 				}
-
-				// Cells must inherit the table view's transform
-				// This is very important, since the main table view may be inverted
-				cell.Transform = TableView.Transform;
-
-				Log.Debug ($"{cell.BodyLabel.Bounds.Width}");
-
-				return cell;
 			}
-			else
+			else if (cell is MessageBodyCell bodyCell)
 			{
-				var cell = TableView.DequeueReusableCell (MessageBodyCell.ReuseId, indexPath) as MessageBodyCell;
+				bodyCell.IndexPath = indexPath;
 
-				cell.SetMessage (message.AttributedText);
+				bodyCell.SetMessage (message.AttributedText);
 
-				cell.IndexPath = indexPath;
-
-				cell.UsedForMessage = true;
-
-				// Cells must inherit the table view's transform
-				// This is very important, since the main table view may be inverted
-				cell.Transform = TableView.Transform;
-
-				Log.Debug ($"{cell.BodyLabel.Bounds.Width}");
-
-				return cell;
+				bodyCell.UsedForMessage = true;
 			}
+
+			// Cells must inherit the table view's transform
+			// This is very important, since the main table view may be inverted
+			cell.Transform = TableView.Transform;
+
+			//Log.Debug($"{cell.BodyLabel.Bounds.Width}");
+
+			return cell;
+
+
+			//if (message.Head)
+			//{
+			//	var cell = TableView.DequeueReusableCell(MessageHeadCell.ReuseId, indexPath) as MessageHeadCell;
+
+			//	var key = cell.SetMessage(message);
+
+			//	cell.IndexPath = indexPath;
+
+			//	if (message.Activity.From.Id == "DigitalAgencies")
+			//	{
+			//		cell.SetAvatar(key, UIImage.FromBundle("avatar_microsoft"));
+			//	}
+			//	else
+			//	{
+			//		cell.SetAvatar(key, UIImage.FromBundle("avatar_colby"));
+			//	}
+
+			//	// Cells must inherit the table view's transform
+			//	// This is very important, since the main table view may be inverted
+			//	cell.Transform = TableView.Transform;
+
+			//	Log.Debug($"{cell.BodyLabel.Bounds.Width}");
+
+			//	return cell;
+			//}
+			//else
+			//{
+			//	var cell = TableView.DequeueReusableCell(MessageBodyCell.ReuseId, indexPath) as MessageBodyCell;
+
+			//	cell.SetMessage(message.AttributedText);
+
+			//	cell.IndexPath = indexPath;
+
+			//	cell.UsedForMessage = true;
+
+			//	// Cells must inherit the table view's transform
+			//	// This is very important, since the main table view may be inverted
+			//	cell.Transform = TableView.Transform;
+
+			//	Log.Debug($"{cell.BodyLabel.Bounds.Width}");
+
+			//	return cell;
+			//}
 		}
 
 
@@ -430,7 +468,7 @@ namespace Agencies.iOS
 			var cell = AutoCompletionView.DequeueReusableCell (MessageHeadCell.AutoCompleteReuseId, indexPath) as MessageHeadCell;
 			cell.IndexPath = indexPath;
 
-			var text = searchResult [indexPath.Row].name;
+			var text = searchResult[indexPath.Row].name;
 
 			//if (FoundPrefix.Equals (hashStr))
 			//{
@@ -457,7 +495,7 @@ namespace Agencies.iOS
 		{
 			var row = indexPath.Row;
 
-			var message = Messages [row];
+			var message = Messages[row];
 
 			nfloat height = message.CellHeight;
 
@@ -466,7 +504,7 @@ namespace Agencies.iOS
 				return height;
 			}
 
-			message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages [row + 1].Activity.From.Name != message.Activity.From.Name);
+			message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages[row + 1].Activity.From.Name != message.Activity.From.Name);
 
 			width -= 49;
 
@@ -565,7 +603,7 @@ namespace Agencies.iOS
 						addNewMessage (false);
 						break;
 					case NotifyCollectionChangedAction.Remove:
-						TableView.DeleteRows (new [] { NSIndexPath.FromIndex ((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
+						TableView.DeleteRows (new[] { NSIndexPath.FromIndex ((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
 						break;
 					case NotifyCollectionChangedAction.Replace:
 						TableView.ReloadData ();
@@ -588,6 +626,22 @@ namespace Agencies.iOS
 				case ReadyState.Open:
 					//BotClient.Shared.SendMessage ("Hello World");
 					break;
+			}
+		}
+
+
+		void handleBotClientUserTypingMessageReceived (object sender, Activity e)
+		{
+			if (!string.IsNullOrEmpty (e?.From?.Name))
+			{
+				TypingIndicatorView.InsertUsername (e.From.Name);
+
+				Task.Run (async () =>
+				{
+					await Task.Delay (3000);
+
+					BeginInvokeOnMainThread (() => TypingIndicatorView.RemoveUsername (e.From.Name));
+				});
 			}
 		}
 	}
