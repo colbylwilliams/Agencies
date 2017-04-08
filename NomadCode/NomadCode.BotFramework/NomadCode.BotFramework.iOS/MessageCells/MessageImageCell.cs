@@ -3,16 +3,12 @@
 
 //using UIKit;
 
+
 //namespace NomadCode.BotFramework.iOS
 //{
-//    public class MessageHeadCell : MessageBodyCell
+//    public class MessageImageCell : MessageBodyCell
 //    {
-//        //public static readonly new nfloat MinimumHeight = 40;
-//        public static readonly nfloat AutoCompleteHeight = 50;
-
-//        public static readonly new NSString ReuseId = new NSString("MessageHeadCell");
-
-//        public static readonly NSString AutoCompleteReuseId = new NSString("AutoCompletionCell");
+//        public static readonly new NSString ReuseId = new NSString("MessageImageCell");
 
 //        long loadingTicks;
 
@@ -85,7 +81,7 @@
 
 
 //        [Export("initWithStyle:reuseIdentifier:")]
-//        public MessageHeadCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { Log.Debug(reuseIdentifier.ToString()); }
+//        public MessageImageCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { }
 
 
 //        public override void PrepareForReuse()
