@@ -61,9 +61,9 @@ namespace NomadCode.BotFramework.iOS
             TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
             //TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.ReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.MessageCellReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.MessageHeaderCellReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.AutoCompleteReuseId);
+            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.MessageCellReuseId);
+            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.MessageHeaderCellReuseId);
+            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
 
             //AutoCompletionView.RegisterClassForCellReuse(typeof(MessageHeadCell), MessageHeadCell.AutoCompleteReuseId);
 
@@ -380,7 +380,7 @@ namespace NomadCode.BotFramework.iOS
         {
             var message = Messages[indexPath.Row];
 
-            var reuseId = message.Head ? MessageBodyCell.MessageHeaderCellReuseId : MessageBodyCell.MessageCellReuseId;
+            var reuseId = message.Head ? MessageCellReuseIds.MessageHeaderCellReuseId : MessageCellReuseIds.MessageCellReuseId;
 
             var cell = TableView.DequeueReusableCell(reuseId, indexPath) as MessageBodyCell;
 
@@ -388,9 +388,9 @@ namespace NomadCode.BotFramework.iOS
             {
                 var username = message.Activity.From.Name == "Digital Agencies" ? "Agency Bot" : message.Activity.From.Name;
 
-                var key = cell.SetMessage(message.LocalTimeStamp, username, message.AttributedText);
-
                 cell.IndexPath = indexPath;
+
+                var key = cell.SetMessage(message.LocalTimeStamp, username, message.AttributedText);
 
                 if (message.Activity.From.Id == "DigitalAgencies")
                 {
@@ -424,7 +424,7 @@ namespace NomadCode.BotFramework.iOS
         {
             //Log.Debug ($"GetAutoCompleteCell = [{indexPath}]");
 
-            var cell = AutoCompletionView.DequeueReusableCell(MessageBodyCell.AutoCompleteReuseId, indexPath) as MessageBodyCell;
+            var cell = AutoCompletionView.DequeueReusableCell(MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageBodyCell;
             cell.IndexPath = indexPath;
 
             var text = searchResult[indexPath.Row].name;
@@ -471,11 +471,21 @@ namespace NomadCode.BotFramework.iOS
 
             var bodyBounds = message.AttributedText.GetBoundingRect(new CGSize(width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, null);
 
-            height = bodyBounds.Height;
+            height = bodyBounds.Height + 5;// + 8.5f; // empty stackView = 3.5f + bottom padding = 5
 
-            Log.Debug($"{width}");
+            //Log.Debug($"{width}");
 
-            if (message.Head) height += 40;
+            if (message.Head) height += 36.5f; // pading(10) + title(21.5) + padding(5) + content(height)
+
+
+            if (row % 3 == 0)
+            {
+                int btnCount = 2;
+                //if message has buttons
+                height += (32 * btnCount);
+                height += 4 * (btnCount - 1);
+                height += 5;
+            }
 
             message.CellHeight = height;
 
@@ -493,9 +503,7 @@ namespace NomadCode.BotFramework.iOS
         {
             footerView.Transform = TableView.Transform;
 
-            var footer = footerView as UITableViewHeaderFooterView;
-
-            if (footer != null)
+            if (footerView is UITableViewHeaderFooterView footer)
             {
                 footer.ContentView.BackgroundColor = UIColor.White;
                 footer.TextLabel.TextColor = UIColor.Gray;

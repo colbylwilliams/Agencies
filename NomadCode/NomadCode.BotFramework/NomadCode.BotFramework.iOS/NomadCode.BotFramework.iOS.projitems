@@ -17,6 +17,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UIConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageImageCell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageImageHeadCell.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellSubviews.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ViewControllers\" />

@@ -4,6 +4,8 @@ using UIKit;
 using Foundation;
 
 using Xamarin.TTTAttributedLabel;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NomadCode.BotFramework.iOS
 {
@@ -13,167 +15,53 @@ namespace NomadCode.BotFramework.iOS
         public static readonly nfloat AutoCompleteHeight = 50;
         //public static readonly nfloat MinimumHeight = 22;
 
-        public static readonly NSString MessageCellReuseId = new NSString("MessageCellReuseId");
-        public static readonly NSString MessageHeaderCellReuseId = new NSString("MessageHeaderCellReuseId");
-
-        public static readonly NSString HeroCellReuseId = new NSString("HeroCellReuseId");
-        public static readonly NSString HeroHeaderCellReuseId = new NSString("HeroHeaderCellReuseId");
-        //Receipt
-        public static readonly NSString ThumbnailCellReuseId = new NSString("ThumbnailCellReuseId");
-        public static readonly NSString ThumbnailHeaderCellReuseId = new NSString("ThumbnailHeaderCellReuseId");
-
-        public static readonly NSString ReceiptCellReuseId = new NSString("ReceiptCellReuseId");
-        public static readonly NSString ReceiptHeaderCellReuseId = new NSString("ReceiptHeaderCellReuseId");
-
-        public static readonly NSString SigninCellReuseId = new NSString("SigninCellReuseId");
-        public static readonly NSString SigninHeaderCellReuseId = new NSString("SigninHeaderCellReuseId");
-
-        public static readonly NSString AutoCompleteReuseId = new NSString("AutoCompletionCell");
-
         long loadingTicks;
 
 
         #region Views
 
-        UIImageView _avatarView, _heroImageView, _thumbnailImageView;
+        UIStackView _buttonStackView;
 
         TTTAttributedLabel _bodyLabel;
 
         UILabel _titleLabel, _timestampLabel;
 
-        public TTTAttributedLabel BodyLabel
-        {
-            get
-            {
-                if (_bodyLabel == null)
-                {
-                    _bodyLabel = new TTTAttributedLabel
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        BackgroundColor = UIColor.White,
-                        UserInteractionEnabled = true,
-                        Lines = 0,
-                        TextColor = Colors.MessageColor,
-                        Font = AttributedStringUtilities.MessageFont,
-                        LinkAttributes = AttributedStringUtilities.LinkStringAttributes.Dictionary,
-                        EnabledTextCheckingTypes = NSTextCheckingType.Link,
-                        WeakDelegate = this
-                    };
+        UIImageView _avatarView, _heroImageView, _thumbnailImageView;
 
-                    _bodyLabel.SetContentCompressionResistancePriority(250, UILayoutConstraintAxis.Vertical);
-                }
-                return _bodyLabel;
-            }
-        }
+        NSMutableDictionary constraintViews = new NSMutableDictionary();
 
-        public UILabel TitleLabel
-        {
-            get
-            {
-                if (_titleLabel == null)
-                {
-                    _titleLabel = new UILabel
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        BackgroundColor = UIColor.White,
-                        UserInteractionEnabled = false,
-                        Lines = 0,
-                        TextColor = Colors.MessageColor,
-                        Font = AttributedStringUtilities.HeaderFont,
-                    };
+        NSMutableDictionary constraintMetrics = NSMutableDictionary.FromObjectsAndKeys(
+            new NSNumber[] { NSNumber.FromNFloat(AvatarHeight), NSNumber.FromNFloat(13), NSNumber.FromNFloat(10), NSNumber.FromNFloat(5), NSNumber.FromNFloat(AvatarHeight + 15) },
+            new NSString[] { new NSString(@"avatarSize"), new NSString(@"padding"), new NSString(@"right"), new NSString(@"left"), new NSString(@"leftInset") }
+        );
 
-                    _titleLabel.SetContentCompressionResistancePriority(300, UILayoutConstraintAxis.Vertical);
-                }
-                return _titleLabel;
-            }
-        }
 
-        public UILabel TimestampLabel
-        {
-            get
-            {
-                if (_timestampLabel == null)
-                {
-                    _timestampLabel = new UILabel
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        BackgroundColor = UIColor.White,
-                        UserInteractionEnabled = false,
-                        Lines = 0,
-                        TextColor = UIColor.LightGray,
-                        Font = AttributedStringUtilities.TimestampFont
-                    };
-                }
-                return _timestampLabel;
-            }
-        }
+        public UIStackView ButtonStackView => _buttonStackView ?? (_buttonStackView = MessageCellSubviews.GetButtonStackView());
 
-        public UIImageView AvatarView
-        {
-            get
-            {
-                if (_avatarView == null)
-                {
-                    _avatarView = new UIImageView
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        UserInteractionEnabled = false,
-                        BackgroundColor = UIColor.FromWhiteAlpha(0.9f, 1.0f),
-                    };
-                    _avatarView.Layer.CornerRadius = 4;
-                    _avatarView.Layer.MasksToBounds = true;
-                }
-                return _avatarView;
-            }
-        }
+        public TTTAttributedLabel BodyLabel => _bodyLabel ?? (_bodyLabel = MessageCellSubviews.GetBodyLabel(this));
 
-        public UIImageView HeroImageView
-        {
-            get
-            {
-                if (_heroImageView == null)
-                {
-                    _heroImageView = new UIImageView
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        UserInteractionEnabled = false,
-                        BackgroundColor = UIColor.FromWhiteAlpha(0.9f, 1.0f),
-                    };
-                    _heroImageView.Layer.CornerRadius = 4;
-                    _heroImageView.Layer.MasksToBounds = true;
-                }
-                return _heroImageView;
-            }
-        }
+        public UILabel TitleLabel => _titleLabel ?? (_titleLabel = MessageCellSubviews.GetTitleLabel());
 
-        public UIImageView ThumbnailImageView
-        {
-            get
-            {
-                if (_thumbnailImageView == null)
-                {
-                    _thumbnailImageView = new UIImageView
-                    {
-                        TranslatesAutoresizingMaskIntoConstraints = false,
-                        UserInteractionEnabled = false,
-                        BackgroundColor = UIColor.FromWhiteAlpha(0.9f, 1.0f),
-                    };
-                    _thumbnailImageView.Layer.CornerRadius = 4;
-                    _thumbnailImageView.Layer.MasksToBounds = true;
-                }
-                return _thumbnailImageView;
-            }
-        }
+        public UILabel TimestampLabel => _timestampLabel ?? (_timestampLabel = MessageCellSubviews.GetTimestampLabel());
+
+        public UIImageView AvatarView => _avatarView ?? (_avatarView = MessageCellSubviews.GetAvatarView());
+
+        public UIImageView HeroImageView => _heroImageView ?? (_heroImageView = MessageCellSubviews.GetHeroImageView());
+
+        public UIImageView ThumbnailImageView => _thumbnailImageView ?? (_thumbnailImageView = MessageCellSubviews.GetThumbnailImageView());
 
         #endregion
 
-        bool headerCell;
-
         public NSIndexPath IndexPath { get; set; }
 
-        //public bool UsedForMessage { get; set; }
 
-        //public decimal TimeStamp { get; set; }
+        bool? _isHeaderCell;
+
+        public bool IsHeaderCell => _isHeaderCell ?? (_isHeaderCell = ReuseIdentifier.IsHeaderCell()).Value;
+
+        MessageCellTypes _messageCellType;
+
+        public MessageCellTypes MessageCellType => _messageCellType == MessageCellTypes.Unknown ? (_messageCellType = ReuseIdentifier.MessageCellType()) : _messageCellType;
 
 
         [Export("initWithStyle:reuseIdentifier:")]
@@ -184,31 +72,7 @@ namespace NomadCode.BotFramework.iOS
             SelectionStyle = UITableViewCellSelectionStyle.None;
             BackgroundColor = UIColor.White;
 
-            headerCell = reuseIdentifier == MessageHeaderCellReuseId
-                      || reuseIdentifier == HeroHeaderCellReuseId
-                      || reuseIdentifier == ThumbnailHeaderCellReuseId
-                      || reuseIdentifier == ReceiptHeaderCellReuseId
-                      || reuseIdentifier == SigninHeaderCellReuseId;
-
-            if (headerCell)
-            {
-                ContentView.AddSubview(AvatarView);
-                ContentView.AddSubview(TitleLabel);
-                ContentView.AddSubview(TimestampLabel);
-            }
-
-            if (reuseIdentifier == MessageCellReuseId)
-            {
-                ContentView.AddSubview(BodyLabel);
-
-                configureConstraintsForMessageCell();
-            }
-            else if (reuseIdentifier == MessageHeaderCellReuseId)
-            {
-                ContentView.AddSubview(BodyLabel);
-
-                configureConstraintsForMessageHeaderCell();
-            }
+            configureViewsForCellType();
         }
 
 
@@ -216,7 +80,7 @@ namespace NomadCode.BotFramework.iOS
         {
             base.PrepareForReuse();
 
-            if (headerCell)
+            if (IsHeaderCell)
             {
                 TitleLabel.Font = AttributedStringUtilities.HeaderFont;
                 TimestampLabel.Font = AttributedStringUtilities.TimestampFont;
@@ -225,126 +89,29 @@ namespace NomadCode.BotFramework.iOS
                 TimestampLabel.Text = string.Empty;
             }
 
+            var views = ButtonStackView.ArrangedSubviews;
+
+            foreach (var view in views)
+            {
+                ButtonStackView.RemoveArrangedSubview(view);
+                view.RemoveFromSuperview();
+                //TODO: Cleanup actions and view
+            }
+
             SelectionStyle = UITableViewCellSelectionStyle.None;
         }
 
 
-        void configureConstraintsForMessageCell()
+        public void SetMessage(NSAttributedString message) //=> BodyLabel.SetText(message);
         {
-            var views = new NSDictionary(
-                new NSString(@"bodyLabel"), BodyLabel
-            );
+            if (IndexPath.Row % 3 == 0)
+            {
+                ButtonStackView.AddArrangedSubview(MessageCellSubviews.GetButton("button one"));
+                ButtonStackView.AddArrangedSubview(MessageCellSubviews.GetButton("button two"));
+            }
 
-            var metrics = new NSDictionary(
-                new NSString(@"avatarSize"), NSNumber.FromNFloat(AvatarHeight + 15),
-                new NSString(@"right"), NSNumber.FromNFloat(10)
-            );
-
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-avatarSize-[bodyLabel(>=0)]-right-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|[bodyLabel]|", 0, metrics, views));
+            BodyLabel.SetText(message);
         }
-
-
-        void configureConstraintsForMessageHeaderCell()
-        {
-            var views = new NSDictionary(
-                new NSString(@"avatarView"), AvatarView,
-                new NSString(@"titleLabel"), TitleLabel,
-                new NSString(@"timestampLabel"), TimestampLabel,
-                new NSString(@"bodyLabel"), BodyLabel
-            );
-
-            var metrics = new NSDictionary(
-                new NSString(@"avatarSize"), NSNumber.FromNFloat(AvatarHeight),
-                new NSString(@"padding"), NSNumber.FromNFloat(13),
-                new NSString(@"right"), NSNumber.FromNFloat(10),
-                new NSString(@"left"), NSNumber.FromNFloat(5)
-            );
-
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[titleLabel(>=0)]-left-[timestampLabel]-(>=right)-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[bodyLabel(>=0)]-right-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-padding-[avatarView(avatarSize)]-(>=0)-|", 0, metrics, views));
-
-            if (ReuseIdentifier.IsEqual(MessageHeaderCellReuseId))
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-right-[titleLabel]-(>=0@999)-[bodyLabel]-left-|", 0, metrics, views));
-            }
-            else
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|[titleLabel]|", 0, metrics, views));
-            }
-
-            ContentView.AddConstraint(NSLayoutConstraint.Create(TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0.5f));
-        }
-
-
-        void configureConstraintsForHeroCell()
-        {
-            var views = new NSDictionary(
-                new NSString(@"avatarView"), AvatarView,
-                new NSString(@"titleLabel"), TitleLabel,
-                new NSString(@"timestampLabel"), TimestampLabel,
-                new NSString(@"bodyLabel"), BodyLabel
-            );
-
-            var metrics = new NSDictionary(
-                new NSString(@"avatarSize"), NSNumber.FromNFloat(AvatarHeight),
-                new NSString(@"padding"), NSNumber.FromNFloat(13),
-                new NSString(@"right"), NSNumber.FromNFloat(10),
-                new NSString(@"left"), NSNumber.FromNFloat(5)
-            );
-
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[titleLabel(>=0)]-left-[timestampLabel]-(>=right)-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[bodyLabel(>=0)]-right-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-padding-[avatarView(avatarSize)]-(>=0)-|", 0, metrics, views));
-
-            if (ReuseIdentifier.IsEqual(MessageHeaderCellReuseId))
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-right-[titleLabel]-(>=0@999)-[bodyLabel]-left-|", 0, metrics, views));
-            }
-            else
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|[titleLabel]|", 0, metrics, views));
-            }
-
-            ContentView.AddConstraint(NSLayoutConstraint.Create(TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0.5f));
-        }
-
-
-        void configureConstraintsForHeroHeaderCell()
-        {
-            var views = new NSDictionary(
-                new NSString(@"avatarView"), AvatarView,
-                new NSString(@"titleLabel"), TitleLabel,
-                new NSString(@"timestampLabel"), TimestampLabel,
-                new NSString(@"bodyLabel"), BodyLabel
-            );
-
-            var metrics = new NSDictionary(
-                new NSString(@"avatarSize"), NSNumber.FromNFloat(AvatarHeight),
-                new NSString(@"padding"), NSNumber.FromNFloat(13),
-                new NSString(@"right"), NSNumber.FromNFloat(10),
-                new NSString(@"left"), NSNumber.FromNFloat(5)
-            );
-
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[titleLabel(>=0)]-left-[timestampLabel]-(>=right)-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"H:|-left-[avatarView(avatarSize)]-right-[bodyLabel(>=0)]-right-|", 0, metrics, views));
-            ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-padding-[avatarView(avatarSize)]-(>=0)-|", 0, metrics, views));
-
-            if (ReuseIdentifier.IsEqual(MessageHeaderCellReuseId))
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|-right-[titleLabel]-(>=0@999)-[bodyLabel]-left-|", 0, metrics, views));
-            }
-            else
-            {
-                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(@"V:|[titleLabel]|", 0, metrics, views));
-            }
-
-            ContentView.AddConstraint(NSLayoutConstraint.Create(TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0.5f));
-        }
-
-
-        public void SetMessage(NSAttributedString message) => BodyLabel.SetText(message);
 
 
         public long SetMessage(DateTime? timestamp, string username, NSAttributedString attrMessage)
@@ -374,6 +141,89 @@ namespace NomadCode.BotFramework.iOS
         public void DidSelectLinkWithURL(TTTAttributedLabel label, NSUrl url)
         {
             Console.WriteLine($"DidSelectLinkWithURL Label = {label}, Url = {url})");
+        }
+
+
+        void configureViewsForCellType()
+        {
+            if (IsHeaderCell)
+            {
+                configureViewsForHeaderCell();
+            }
+
+
+            switch (MessageCellType)
+            {
+                case MessageCellTypes.Message:
+
+                    ContentView.AddSubview(BodyLabel);
+
+                    constraintViews.Add(new NSString(@"contentView"), BodyLabel);
+
+                    break;
+                case MessageCellTypes.Hero:
+
+                    break;
+                case MessageCellTypes.Thumbnail:
+
+                    break;
+                case MessageCellTypes.Receipt:
+
+                    break;
+                case MessageCellTypes.Signin:
+
+                    break;
+            }
+
+
+            ContentView.AddSubview(ButtonStackView);
+
+            constraintViews.Add(new NSString(@"stackView"), ButtonStackView);
+
+
+            configureConstraintsForCellContent();
+
+
+            void configureViewsForHeaderCell()
+            {
+                ContentView.AddSubview(AvatarView);
+                ContentView.AddSubview(TitleLabel);
+                ContentView.AddSubview(TimestampLabel);
+
+                constraintViews.Add(new NSString(@"avatarView"), AvatarView);
+                constraintViews.Add(new NSString(@"titleLabel"), TitleLabel);
+                constraintViews.Add(new NSString(@"timestampLabel"), TimestampLabel);
+
+                configureConstraintsForHeaderCell();
+
+                void configureConstraintsForHeaderCell()
+                {
+                    var hConstraints = @"H:|-left-[avatarView(avatarSize)]-right-[titleLabel(>=0)]-left-[timestampLabel]-(>=right)-|";
+
+                    var vConstraints = @"V:|-padding-[avatarView(avatarSize)]-(>=0)-|";
+
+                    ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(hConstraints, 0, constraintMetrics, constraintViews));
+
+                    ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(vConstraints, 0, constraintMetrics, constraintViews));
+
+                    ContentView.AddConstraint(NSLayoutConstraint.Create(TitleLabel, NSLayoutAttribute.Baseline, NSLayoutRelation.Equal, TimestampLabel, NSLayoutAttribute.Baseline, 1, 0.5f));
+                }
+            }
+
+            void configureConstraintsForCellContent()
+            {
+                var sConstraints = @"H:|-leftInset-[stackView(>=0)]-right-|";
+
+                var hConstraints = @"H:|-leftInset-[contentView(>=0)]-right-|";
+
+                var vConstraints = IsHeaderCell ? @"V:|-right-[titleLabel]-left-[contentView]-left-[stackView]-(>=0@999)-|" : @"V:|[contentView]-left-[stackView]-(>=0@999)-|";
+
+                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(hConstraints, 0, constraintMetrics, constraintViews));
+
+                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(vConstraints, 0, constraintMetrics, constraintViews));
+
+                ContentView.AddConstraints(NSLayoutConstraint.FromVisualFormat(sConstraints, 0, constraintMetrics, constraintViews));
+            }
         }
     }
 }
