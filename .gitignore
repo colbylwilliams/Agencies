@@ -295,3 +295,7 @@ project.lock.json
 Producer/Producer.FunctionApp/appsettings.json
 Agencies/Agencies.Shared/Keys/PrivateKeys.cs
 *.pubxml
+
+Agencies/Agencies.iOS/GoogleService-Info.plist
+
+Agencies/Agencies.iOS/GoogleService-Info.plist

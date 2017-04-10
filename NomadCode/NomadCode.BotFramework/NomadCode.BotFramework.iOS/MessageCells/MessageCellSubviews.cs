@@ -1,6 +1,8 @@
 ﻿using System;
+
 using Foundation;
 using UIKit;
+
 using Xamarin.TTTAttributedLabel;
 
 namespace NomadCode.BotFramework.iOS
@@ -27,6 +29,7 @@ namespace NomadCode.BotFramework.iOS
             return bodyLabel;
         }
 
+
         public static UILabel GetTitleLabel()
         {
             var titleLabel = new UILabel
@@ -44,6 +47,7 @@ namespace NomadCode.BotFramework.iOS
             return titleLabel;
         }
 
+
         public static UILabel GetTimestampLabel()
         {
             var timestampLabel = new UILabel
@@ -58,6 +62,7 @@ namespace NomadCode.BotFramework.iOS
 
             return timestampLabel;
         }
+
 
         public static UIImageView GetAvatarView()
         {
@@ -74,6 +79,7 @@ namespace NomadCode.BotFramework.iOS
             return avatarView;
         }
 
+
         public static UIImageView GetHeroImageView()
         {
             var heroImageView = new UIImageView
@@ -89,6 +95,7 @@ namespace NomadCode.BotFramework.iOS
             return heroImageView;
         }
 
+
         public static UIImageView GetThumbnailImageView()
         {
             var thumbnailImageView = new UIImageView
@@ -103,6 +110,7 @@ namespace NomadCode.BotFramework.iOS
 
             return thumbnailImageView;
         }
+
 
         public static UIButton GetButton(string title)
         {
@@ -122,6 +130,7 @@ namespace NomadCode.BotFramework.iOS
 
             return button;
         }
+
 
         public static UIStackView GetButtonStackView()
         {

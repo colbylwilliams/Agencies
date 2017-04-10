@@ -5,80 +5,98 @@
 
 namespace SettingsStudio
 {
-	public static partial class Settings
-	{
-		#region Visible Settings
+    public static partial class Settings
+    {
+        #region Visible Settings
 
 
-		public static string VersionNumber
-		{
-			get => StringForKey(SettingsKeys.VersionNumber);
+        public static string VersionNumber
+        {
+            get => StringForKey (SettingsKeys.VersionNumber);
 #if __ANDROID__
 			set => SetSetting (SettingsKeys.VersionNumber, value);
 #endif
-		}
+        }
 
 
-		public static string BuildNumber
-		{
-			get => StringForKey(SettingsKeys.BuildNumber);
+        public static string BuildNumber
+        {
+            get => StringForKey (SettingsKeys.BuildNumber);
 #if __ANDROID__
 			set => SetSetting (SettingsKeys.BuildNumber, value);
 #endif
-		}
+        }
 
 
-		public static string GitHash => StringForKey(SettingsKeys.GitCommitHash);
+        public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
 
 
-		public static string UserReferenceKey
-		{
-			get => StringForKey(SettingsKeys.UserReferenceKey);
-			set => SetSetting(SettingsKeys.UserReferenceKey, value);
-		}
+        public static string UserReferenceKey
+        {
+            get => StringForKey (SettingsKeys.UserReferenceKey);
+            set => SetSetting (SettingsKeys.UserReferenceKey, value);
+        }
 
 
-		#endregion
+        #endregion
 
 
-		#region Hidden Settings
+        #region Hidden Settings
 
-		public static string ConversationId
-		{
-			get => StringForKey(SettingsKeys.ConversationId);
-			set => SetSetting(SettingsKeys.ConversationId, value);
-		}
+        public static string ConversationId
+        {
+            get => StringForKey (SettingsKeys.ConversationId);
+            set => SetSetting (SettingsKeys.ConversationId, value);
+        }
 
-		#endregion
+        public static string CurrentUserName
+        {
+            get => StringForKey (SettingsKeys.CurrentUserName);
+            set => SetSetting (SettingsKeys.CurrentUserName, value);
+        }
+
+        public static string CurrentUserId
+        {
+            get => StringForKey (SettingsKeys.CurrentUserId);
+            set => SetSetting (SettingsKeys.CurrentUserId, value);
+        }
+
+        public static string CurrentUserEmail
+        {
+            get => StringForKey (SettingsKeys.CurrentUserEmail);
+            set => SetSetting (SettingsKeys.CurrentUserEmail, value);
+        }
+
+        #endregion
 
 
-		#region Debug
+        #region Debug
 #if DEBUG
 
-		public static bool UseLocalServer
-		{
-			get => BoolForKey(SettingsKeys.UseLocalServer);
-			set => SetSetting(SettingsKeys.UseLocalServer, value);
-		}
+        public static bool UseLocalServer
+        {
+            get => BoolForKey (SettingsKeys.UseLocalServer);
+            set => SetSetting (SettingsKeys.UseLocalServer, value);
+        }
 
 
-		public static bool ResetConversation
-		{
-			get
-			{
-				var reset = BoolForKey(SettingsKeys.ResetConversation);
+        public static bool ResetConversation
+        {
+            get
+            {
+                var reset = BoolForKey (SettingsKeys.ResetConversation);
 
-				if (reset)
-				{
-					SetSetting(SettingsKeys.ResetConversation, false);
-				}
+                if (reset)
+                {
+                    SetSetting (SettingsKeys.ResetConversation, false);
+                }
 
-				return reset;
-			}
-		}
+                return reset;
+            }
+        }
 
 #endif
-		#endregion
+        #endregion
 
-	}
+    }
 }

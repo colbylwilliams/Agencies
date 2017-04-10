@@ -102,26 +102,25 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        public void SetMessage(NSAttributedString message) //=> BodyLabel.SetText(message);
+        public void SetMessage(NSAttributedString message, params string[] buttonTitles)
         {
-            if (IndexPath.Row % 3 == 0)
+            foreach (var title in buttonTitles)
             {
-                ButtonStackView.AddArrangedSubview(MessageCellSubviews.GetButton("button one"));
-                ButtonStackView.AddArrangedSubview(MessageCellSubviews.GetButton("button two"));
+                ButtonStackView.AddArrangedSubview(MessageCellSubviews.GetButton(title));
             }
 
             BodyLabel.SetText(message);
         }
 
 
-        public long SetMessage(DateTime? timestamp, string username, NSAttributedString attrMessage)
+        public long SetMessage(DateTime? timestamp, string username, NSAttributedString attrMessage, params string[] buttonTitles)
         {
             loadingTicks = DateTime.UtcNow.Ticks;
 
             TitleLabel.Text = username;
             TimestampLabel.Text = timestamp?.ToShortTimeString();
 
-            SetMessage(attrMessage);
+            SetMessage(attrMessage, buttonTitles);
 
             return loadingTicks;
         }

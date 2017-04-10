@@ -21,6 +21,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework.Droi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NomadCode", "NomadCode", "{704ED759-2625-4F2E-8E83-05A118EA802A}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.UIExtensions", "..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.shproj", "{07555EA6-44F7-4889-974F-8191391705EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
@@ -54,11 +56,19 @@ Global
 		$1.inheritsScope = text/plain
 		$1.FileWidth = 80
 		$1.TabsToSpaces = True
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $3
+		$3.SpacingAfterMethodDeclarationName = True
+		$3.SpaceAfterMethodCallName = True
+		$3.scope = text/x-csharp
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{049FF267-02CB-4168-9EC5-0768D053EF77} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 		{9BB6E7A1-9998-41B9-A508-8C06FF1D6E6F} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 		{7DC34EB0-DB39-464E-8754-39658CC51E9C} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 		{F2D08DC5-20D9-4A13-8859-D9F7F5215630} = {704ED759-2625-4F2E-8E83-05A118EA802A}
+		{07555EA6-44F7-4889-974F-8191391705EB} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,4 @@
-//#if __MOBILE__
+﻿//#if __MOBILE__
 //using Microsoft.Azure.Mobile;
 //using Microsoft.Azure.Mobile.Crashes;
 //using Microsoft.Azure.Mobile.Analytics;
@@ -17,23 +17,23 @@ using NomadCode.Azure;
 
 namespace Agencies
 {
-	public static class Bootstrap
-	{
-		public static void Run ()
-		{
-			CrossVersionTracking.Current.Track ();
+    public static class Bootstrap
+    {
+        public static void Run()
+        {
+            CrossVersionTracking.Current.Track();
 
-			Settings.RegisterDefaultSettings ();
+            Settings.RegisterDefaultSettings();
 
-			//#if __MOBILE__
-			// Crashes.GetErrorAttachment = (report) => ErrorAttachment.AttachmentWithText (CrossVersionTracking.Current.ToString ());
+            //#if __MOBILE__
+            // Crashes.GetErrorAttachment = (report) => ErrorAttachment.AttachmentWithText (CrossVersionTracking.Current.ToString ());
 
-			//if (!string.IsNullOrEmpty (Keys.MobileCenter.AppSecret))
-			//{
-			//	MobileCenter.Start (Keys.MobileCenter.AppSecret, typeof (Analytics), typeof (Crashes));
+            //if (!string.IsNullOrEmpty (Keys.MobileCenter.AppSecret))
+            //{
+            //	MobileCenter.Start (Keys.MobileCenter.AppSecret, typeof (Analytics), typeof (Crashes));
 
-			//	Settings.UserReferenceKey = MobileCenter.InstallId?.ToString ("N") ?? "anonymous";
-			//}
+            //	Settings.UserReferenceKey = MobileCenter.InstallId?.ToString ("N") ?? "anonymous";
+            //}
 
 #if __ANDROID__
 
@@ -42,15 +42,25 @@ namespace Agencies
 			Settings.BuildNumber = CrossVersionTracking.Current.CurrentBuild;
 
 #endif
-			//InitializeDataStore ();
-			//#endif
-		}
+            //InitializeDataStore ();
+            //#endif
+        }
 
-		public static async Task InitializeDataStoreAsync ()
-		{
-			//AzureClient.Shared.RegisterTable<AvContent> ();
+        public static async Task InitializeDataStoreAsync()
+        {
+            //AzureClient.Shared.RegisterTable<AvContent> ();
 
-			await AzureClient.Shared.InitializeAzync (Keys.Azure.PublicServiceUrl);
-		}
-	}
+            try
+            {
+                AzureClient.Shared.AuthProvider = Microsoft.WindowsAzure.MobileServices.MobileServiceAuthenticationProvider.Google;
+
+                await AzureClient.Shared.InitializeAzync(Keys.Azure.ServiceUrl);
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
+        }
+    }
 }

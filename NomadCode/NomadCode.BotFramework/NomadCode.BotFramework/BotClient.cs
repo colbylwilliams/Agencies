@@ -21,36 +21,77 @@ namespace NomadCode.BotFramework
     {
         public ReadyState ReadyState { get; set; }
 
-        public ReadyStateChangedEventArgs(ReadyState readyState) => ReadyState = readyState;
+        public ReadyStateChangedEventArgs (ReadyState readyState) => ReadyState = readyState;
     }
 
-    public class BotClient
-    {
-#if DEBUG
-        string userName = "Colby";
-        string userId = "default-user";
-#endif
-        //static string botId = "DigitalAgencies";
 
+    public partial class BotClient
+    {
         static BotClient _shared;
-        public static BotClient Shared => _shared ?? (_shared = new BotClient());
+        public static BotClient Shared => _shared ?? (_shared = new BotClient ());
 
         static DirectLineClient _directLineClient;
-        static DirectLineClient directLineClient => _directLineClient ?? (_directLineClient = new DirectLineClient(Agencies.Keys.Bot.DirectLineSecret));
+        DirectLineClient directLineClient => _directLineClient ?? (!string.IsNullOrEmpty (ConversationCredentials.Token) ? _directLineClient = new DirectLineClient (ConversationCredentials.Token) : throw new Exception ("must set initial client token"));
 
-        public WebSocket webSocket { get; set; }
 
         Conversation conversation;
 
-        public bool Initialized => webSocket != null && webSocket.ReadyState == ReadyState.Open && conversation != null;
+        #region Current User
 
-        public List<Message> Messages { get; set; } = new List<Message>();
+        public static void ResetCurrentUser ()
+        {
+            CurrentUserId = string.Empty;
+            CurrentUserName = string.Empty;
+            CurrentUserEmail = string.Empty;
+        }
+
+        public static string CurrentUserId
+        {
+            get => Settings.CurrentUserId;
+            set => Settings.CurrentUserId = value ?? string.Empty;
+        }
+
+        public static string CurrentUserName
+        {
+            get => Settings.CurrentUserName;
+            set => Settings.CurrentUserName = value ?? string.Empty;
+        }
+
+        public static string CurrentUserEmail
+        {
+            get => Settings.CurrentUserEmail;
+            set => Settings.CurrentUserEmail = value ?? string.Empty;
+        }
+
+        ChannelAccount currentUser => new ChannelAccount (CurrentUserId, CurrentUserName);
+
+        public bool HasValidCurrentUser => !(string.IsNullOrWhiteSpace (CurrentUserId) || string.IsNullOrWhiteSpace (CurrentUserName));
+
+        #endregion
 
 
-        BotClient() { }
+        public WebSocket webSocket { get; set; }
+
+        public bool Initialized => webSocket?.ReadyState == ReadyState.Open && HasValidCurrentUser && conversation != null;
 
 
-        public void Start() { }
+        public List<Message> Messages { get; set; } = new List<Message> ();
+
+
+        BotClient () { }
+
+
+        public void Start () { }
+
+        public void Reset ()
+        {
+            ResetCurrentUser ();
+            webSocket = null;
+            _directLineClient = null;
+            conversation = null;
+            removeItemFromKeychain ("bot");
+            _conversationCredentials = (null, null);
+        }
 
 
         public event EventHandler<Activity> UserTypingMessageReceived;
@@ -58,43 +99,92 @@ namespace NomadCode.BotFramework
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
-        public async Task<bool> ConnectSocketAsync()
+        public void SaveConversationToken (string token, string conversationId = null)
         {
-            //Settings.ConversationId = string.Empty;
+            if (!string.IsNullOrEmpty (token))
+            {
+                // todo: support more than one conversation
+                removeItemFromKeychain ("bot");
 
+                if (saveItemToKeychain ("bot", conversationId ?? "initialToken", token))
+                {
+                    _conversationCredentials = (null, null);
+                }
+            }
+        }
+
+
+        (string ConversationId, string Token) _conversationCredentials;
+
+        (string ConversationId, string Token) ConversationCredentials
+        {
+            get
+            {
+                if (string.IsNullOrEmpty (_conversationCredentials.ConversationId) || string.IsNullOrEmpty (_conversationCredentials.Token))
+                {
+                    var token = getItemFromKeychain ("bot");
+
+                    if (string.IsNullOrEmpty (token.Account) || string.IsNullOrEmpty (token.PrivateKey))
+                    {
+                        return (null, null);
+                    }
+
+                    _conversationCredentials = token;
+                }
+
+                return _conversationCredentials;
+            }
+        }
+
+
+        public bool HasToken => !(string.IsNullOrEmpty (ConversationCredentials.ConversationId) || string.IsNullOrEmpty (ConversationCredentials.Token));
+
+
+        public async Task<bool> ConnectSocketAsync ()
+        {
             try
             {
                 if (webSocket == null || webSocket.ReadyState == ReadyState.Closed)
                 {
-                    if (Settings.ResetConversation || string.IsNullOrEmpty(Settings.ConversationId))
+                    if (string.IsNullOrEmpty (ConversationCredentials.ConversationId))
                     {
-                        conversation = await directLineClient.Conversations.StartConversationAsync();
+                        throw new Exception ("must set initial client token");
+                    }
 
-                        if (!string.IsNullOrEmpty(conversation?.ConversationId))
+                    if (Settings.ResetConversation || (HasToken && ConversationCredentials.ConversationId == "initialToken"))
+                    {
+                        Log.Debug ($"Starting new conversation...");
+
+                        conversation = await directLineClient.Conversations.StartConversationAsync ();
+
+                        if (!string.IsNullOrEmpty (conversation?.ConversationId))
                         {
-                            Settings.ConversationId = conversation.ConversationId;
+                            //SaveConversationToken (conversation.Token, conversation.ConversationId);
+                            SaveConversationToken (ConversationCredentials.Token, conversation.ConversationId);
                         }
                     }
                     else
                     {
-                        conversation = await directLineClient.Conversations.ReconnectToConversationAsync(Settings.ConversationId);
+                        Log.Debug ($"Reconnect to conversation {ConversationCredentials.ConversationId}...");
 
-                        var activitySet = await directLineClient.Conversations.GetActivitiesAsync(conversation.ConversationId);
+                        conversation = await directLineClient.Conversations.ReconnectToConversationAsync (ConversationCredentials.ConversationId);
 
-                        handleNewActvitySet(activitySet, false);
+                        var activitySet = await directLineClient.Conversations.GetActivitiesAsync (conversation.ConversationId);
 
-                        Messages.Sort((x, y) => y.CompareTo(x));
+                        handleNewActvitySet (activitySet, false);
+
+                        Messages.Sort ((x, y) => y.CompareTo (x));
 
                         //foreach (var message in Messages)
                         //	Log.Debug ($"Adding New Message: {message.Activity?.Id} : {message.Activity.Timestamp?.ToString ("O")} : {message.Activity.LocalTimestamp?.DateTime.ToString ("O")} : {message.Activity.Text}");
 
-                        MessagesCollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                        MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
                     }
 
 
                     var url = conversation.StreamUrl;
 
-                    webSocket = new WebSocket(new NSUrl(url));
+                    webSocket = new WebSocket (new NSUrl (url));
 
                     webSocket.ReceivedMessage += handleWebSocketReceivedMessage;
 
@@ -106,32 +196,32 @@ namespace NomadCode.BotFramework
 
                     webSocket.ReceivedPong += handleWebSocketReceivedPong;
 
-                    Log.Info($"[Socket Connecting...] {url}");
+                    Log.Info ($"[Socket Connecting...] {url}");
 
-                    webSocket.Open();
+                    webSocket.Open ();
                 }
                 else if (webSocket.ReadyState == ReadyState.Open)
                 {
-                    Log.Info($"[Socket Connecting...]");
+                    Log.Info ($"[Socket Connecting...]");
 
                     conversation = null;
 
-                    webSocket.Close();
+                    webSocket.Close ();
                 }
 
-                ReadyStateChanged?.Invoke(this, new ReadyStateChangedEventArgs(webSocket.ReadyState));
+                ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
 
                 return conversation != null;
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                Log.Error (ex.Message);
                 return false;
             }
         }
 
 
-        void handleNewActvitySet(ActivitySet activitySet, bool changedEvents = true)
+        void handleNewActvitySet (ActivitySet activitySet, bool changedEvents = true)
         {
             var watermark = activitySet?.Watermark;
 
@@ -145,36 +235,36 @@ namespace NomadCode.BotFramework
                     {
                         case ActivityTypes.Message:
 
-                            var newMessage = new Message(activity);
+                            var newMessage = new Message (activity);
 
-                            var message = Messages.FirstOrDefault(m => m.Equals(newMessage));
+                            var message = Messages.FirstOrDefault (m => m.Equals (newMessage));
 
                             if (message != null)
                             {
                                 //Log.Debug ($"Updating Existing Message: {activity.TextFormat} :: {activity.Text}");
 
-                                message.Update(activity);
+                                message.Update (activity);
 
                                 if (changedEvents)
                                 {
-                                    Messages.Sort((x, y) => y.CompareTo(x));
+                                    Messages.Sort ((x, y) => y.CompareTo (x));
 
-                                    var index = Messages.IndexOf(message);
+                                    var index = Messages.IndexOf (message);
 
-                                    MessagesCollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, message, message, index));
+                                    MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Replace, message, message, index));
                                 }
                             }
                             else
                             {
                                 //Log.Debug ($"Adding New Message: {activity.TextFormat} :: {activity.Text}");
 
-                                Messages.Insert(0, newMessage);
+                                Messages.Insert (0, newMessage);
 
                                 if (changedEvents)
                                 {
                                     //Messages.Sort ((x, y) => y.CompareTo (x));
 
-                                    MessagesCollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, message));
+                                    MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, message));
                                 }
                             }
 
@@ -185,9 +275,9 @@ namespace NomadCode.BotFramework
                             break;
                         case ActivityTypes.Typing:
 
-                            if (activity?.From.Id != userId)
+                            if (activity?.From.Id != CurrentUserId)
                             {
-                                UserTypingMessageReceived?.Invoke(this, activity);
+                                UserTypingMessageReceived?.Invoke (this, activity);
                             }
 
                             break;
@@ -205,130 +295,135 @@ namespace NomadCode.BotFramework
 
         #region WebSocket Event Handlers
 
-        void handleWebSocketReceivedMessage(object sender, WebSocketReceivedMessageEventArgs e)
+        void handleWebSocketReceivedMessage (object sender, WebSocketReceivedMessageEventArgs e)
         {
-            var message = e.Message.ToString();
+            var message = e.Message.ToString ();
 
             // Ignore empty messages 
-            if (string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty (message))
             {
-                Log.Info($"[Socket Message Received] Empty message, ignoring");
+                Log.Info ($"[Socket Message Received] Empty message, ignoring");
 
                 return;
             }
 
-            Log.Info($"[Socket Message Received] \n{message}");
+            Log.Info ($"[Socket Message Received] \n{message}");
 
-            var activitySet = JsonConvert.DeserializeObject<ActivitySet>(message);
+            var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
 
-            handleNewActvitySet(activitySet);
+            handleNewActvitySet (activitySet);
         }
 
 
-        void handleWebSocketReceivedPong(object sender, WebSocketReceivedPongEventArgs e)
+        void handleWebSocketReceivedPong (object sender, WebSocketReceivedPongEventArgs e)
         {
-            Log.Info($"[Socket Received Pong] {Environment.NewLine}");
+            Log.Info ($"[Socket Received Pong] {Environment.NewLine}");
         }
 
 
-        void handleWebSocketClosed(object sender, WebSocketClosedEventArgs e)
+        void handleWebSocketClosed (object sender, WebSocketClosedEventArgs e)
         {
-            Log.Info($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
-            ReadyStateChanged?.Invoke(this, new ReadyStateChangedEventArgs(webSocket.ReadyState));
+            Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
+            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
         }
 
 
-        void handleWebSocketFailed(object sender, WebSocketFailedEventArgs e)
+        void handleWebSocketFailed (object sender, WebSocketFailedEventArgs e)
         {
-            Log.Info($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
-            ReadyStateChanged?.Invoke(this, new ReadyStateChangedEventArgs(webSocket.ReadyState));
+            Log.Info ($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
+            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
 
         }
 
 
-        void handleWebSocketOpened(object sender, EventArgs e)
+        void handleWebSocketOpened (object sender, EventArgs e)
         {
-            Log.Info($"[Socket Connected] {conversation?.StreamUrl}");
-            ReadyStateChanged?.Invoke(this, new ReadyStateChangedEventArgs(webSocket.ReadyState));
+            Log.Info ($"[Socket Connected] {conversation?.StreamUrl}");
+            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
         }
 
         #endregion
 
-        public bool SendMessage(string text)
+        public bool SendMessage (string text)
         {
             var activity = new Activity
             {
-                From = new ChannelAccount(userId, userName),
+                From = currentUser,
                 Text = text,
                 Type = ActivityTypes.Message,
                 LocalTimestamp = DateTimeOffset.Now,
                 Timestamp = DateTime.UtcNow
             };
 
-            var message = new Message(activity);
+            var message = new Message (activity);
 
             //Log.Debug ($"Adding New Message: {activity.Timestamp?.ToString ("O")} : {activity.LocalTimestamp?.DateTime.ToString ("O")} : {activity.Text}");
 
-            var posted = postActivityAsync(activity);
+            var posted = postActivityAsync (activity);
 
             if (posted)
             {
-                Messages.Insert(0, message);
+                Messages.Insert (0, message);
             }
 
             return posted;
         }
 
 
-        public bool SendUserTyping()
+        public bool SendUserTyping ()
         {
-            Log.Debug("Sending User Typing");
+            Log.Debug ("Sending User Typing");
 
             var activity = new Activity
             {
-                From = new ChannelAccount(userId, userName),
+                From = currentUser,
                 Type = ActivityTypes.Typing
             };
 
-            return postActivityAsync(activity, true);
+            return postActivityAsync (activity, true);
         }
 
 
-        bool postActivityAsync(Activity activity, bool ignoreFailure = false)
+        bool postActivityAsync (Activity activity, bool ignoreFailure = false)
         {
             if (conversation == null)
             {
                 if (ignoreFailure) return false;
 
-                throw new ArgumentNullException(nameof(conversation), "cannot be null to send message");
+                throw new ArgumentNullException (nameof (conversation), "cannot be null to send message");
             }
 
-            if (!Initialized) return false;
+            if (!Initialized)
+            {
+                if (ignoreFailure) return false;
 
-            Task.Run(async () =>
-           {
-               try
-               {
-                   await directLineClient.Conversations.PostActivityAsync(conversation.ConversationId, activity).ConfigureAwait(false);
-               }
-               catch (Exception ex)
-               {
-                   Log.Error(ex.Message);
+                throw new Exception ("client is not properly initialized");
+            }
 
-                   if (!ignoreFailure)
-                       throw;
-               }
-           });
+            Task.Run (async () =>
+            {
+                try
+                {
+                    await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, activity).ConfigureAwait (false);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error (ex.Message);
+
+                    if (!ignoreFailure)
+                        throw;
+                }
+            });
 
             return true;
         }
 
 
-        public bool SendPing()
+        public bool SendPing ()
         {
             if (!Initialized) return false;
 
-            webSocket.SendPing();
+            webSocket.SendPing ();
 
             return true;
         }

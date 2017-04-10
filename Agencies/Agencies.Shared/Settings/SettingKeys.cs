@@ -6,37 +6,43 @@
 namespace SettingsStudio
 {
 
-	public static class SettingsKeys
-	{
+    public static class SettingsKeys
+    {
 
-		#region Visible Settings
+        #region Visible Settings
 
-		public const string VersionNumber = "VersionNumber";
+        public const string VersionNumber = "VersionNumber";
 
-		public const string BuildNumber = "BuildNumber";
+        public const string BuildNumber = "BuildNumber";
 
-		public const string GitCommitHash = "GitCommitHash";
+        public const string GitCommitHash = "GitCommitHash";
 
-		public const string UserReferenceKey = "UserReferenceKey";
+        public const string UserReferenceKey = "UserReferenceKey";
 
-		#endregion
-
-
-		#region Hidden Settings
-
-		public const string ConversationId = "ConversationId";
-
-		#endregion
+        #endregion
 
 
-		#region Debug
+        #region Hidden Settings
+
+        public const string ConversationId = "ConversationId";
+
+        public const string CurrentUserName = "CurrentUserName";
+
+        public const string CurrentUserId = "CurrentUserId";
+
+        public const string CurrentUserEmail = "CurrentUserEmail";
+
+        #endregion
+
+
+        #region Debug
 #if DEBUG
 
-		public const string UseLocalServer = "UseLocalServer";
+        public const string UseLocalServer = "UseLocalServer";
 
-		public const string ResetConversation = "ResetConversation";
+        public const string ResetConversation = "ResetConversation";
 
 #endif
-		#endregion
-	}
+        #endregion
+    }
 }

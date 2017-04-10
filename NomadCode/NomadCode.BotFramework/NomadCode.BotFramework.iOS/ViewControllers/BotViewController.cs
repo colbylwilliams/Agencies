@@ -16,6 +16,13 @@ using Square.SocketRocket;
 using Microsoft.Bot.Connector.DirectLine;
 
 using NomadCode.BotFramework;
+using Agencies;
+using Agencies.Shared;
+using SettingsStudio;
+using NomadCode.Azure;
+using NomadCode.UIExtensions;
+using Agencies.iOS;
+using Google.SignIn;
 
 namespace NomadCode.BotFramework.iOS
 {
@@ -26,44 +33,57 @@ namespace NomadCode.BotFramework.iOS
     }
 
 
-    [Register("BotViewController")]
+    [Register ("BotViewController")]
     public class BotViewController : SlackTextViewController
     {
         UIWindow pipWindow;
 
-        List<IAutoCompleteResult> searchResult = new List<IAutoCompleteResult>();
+        List<IAutoCompleteResult> searchResult = new List<IAutoCompleteResult> ();
 
         List<Message> Messages => BotClient.Shared.Messages;
 
 
-        [Export("initWithCoder:")]
-        public BotViewController(NSCoder coder) : base(coder) => commonInit();
+        [Export ("initWithCoder:")]
+        public BotViewController (NSCoder coder) : base (coder) => commonInit ();
 
 
-        public BotViewController(IntPtr handle) : base(handle) => commonInit();
+        public BotViewController (IntPtr handle) : base (handle) => commonInit ();
 
 
-        void commonInit()
+        void commonInit ()
         {
-            NSNotificationCenter.DefaultCenter.AddObserver(TableView, new Selector("reloadData"), UIApplication.ContentSizeCategoryChangedNotification, null);
-            NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector("textInputbarDidMove:"), SlackTextInputbar.DidMoveNotification, null);
+            NSNotificationCenter.DefaultCenter.AddObserver (TableView, new Selector ("reloadData"), UIApplication.ContentSizeCategoryChangedNotification, null);
+            NSNotificationCenter.DefaultCenter.AddObserver (this, new Selector ("textInputbarDidMove:"), SlackTextInputbar.DidMoveNotification, null);
         }
 
 
-        [Export("tableViewStyleForCoder:")]
-        static UITableViewStyle GetTableViewStyleForCoder(NSCoder decoder) => UITableViewStyle.Plain;
+        [Export ("tableViewStyleForCoder:")]
+        static UITableViewStyle GetTableViewStyleForCoder (NSCoder decoder) => UITableViewStyle.Plain;
 
 
-        public override void ViewDidLoad()
+        public override void ViewDidLoad ()
         {
-            base.ViewDidLoad();
+            base.ViewDidLoad ();
 
             TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
             //TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.ReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.MessageCellReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.MessageHeaderCellReuseId);
-            TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.MessageCellReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.MessageHeaderCellReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
+
+
+            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, (sender, e) =>
+            {
+                SignIn.SharedInstance.SignOutUser ();
+
+                AzureClient.Shared.LogoutAsync ();
+
+                BotClient.Shared.Reset ();
+
+                authenticate ();
+
+            }), false);
 
             //AutoCompletionView.RegisterClassForCellReuse(typeof(MessageHeadCell), MessageHeadCell.AutoCompleteReuseId);
 
@@ -78,52 +98,108 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        public override void ViewWillAppear(bool animated)
+        public override void ViewWillAppear (bool animated)
         {
-            base.ViewWillAppear(animated);
+            base.ViewWillAppear (animated);
 
-            connectAllTheseEvents();
+            connectAllTheseEvents ();
         }
 
 
-        public override void ViewDidAppear(bool animated)
+        public override void ViewDidAppear (bool animated)
         {
-            base.ViewDidAppear(animated);
+            base.ViewDidAppear (animated);
 
-            if (!BotClient.Shared.Initialized)
+            authenticate ();
+        }
+
+
+        public override void ViewWillDisappear (bool animated)
+        {
+            disconnectAllTheseEvents ();
+
+            base.ViewWillDisappear (animated);
+        }
+
+
+        public override void ViewWillLayoutSubviews ()
+        {
+            base.ViewWillLayoutSubviews ();
+
+            TableView.ContentInset = new UIEdgeInsets (0, 0, 0, 0);
+        }
+
+
+        void authenticate ()
+        {
+            Task.Run (async () =>
             {
-                Task.Run(async () => await BotClient.Shared.ConnectSocketAsync());
-            }
-        }
+                try
+                {
+                    if (!AzureClient.Shared.Initialized)
+                    {
+                        await Bootstrap.InitializeDataStoreAsync ();
+                    }
 
+                    if (!AzureClient.Shared.Authenticated)
+                    {
+                        // try authenticating with an existing token
+                        await AzureClient.Shared.AuthenticateAsync ();
+                    }
 
-        public override void ViewWillDisappear(bool animated)
-        {
-            disconnectAllTheseEvents();
+                    // if that worked, initialize the bot
+                    if (AzureClient.Shared.Authenticated)
+                    {
+                        if (!BotClient.Shared.Initialized)
+                        {
+                            if (!BotClient.Shared.HasToken)
+                            {
+                                var token = await AgenciesClient.Shared.GetInitialConversationToken ();
 
-            base.ViewWillDisappear(animated);
-        }
+                                BotClient.Shared.SaveConversationToken (token);
+                            }
 
+                            if (BotClient.Shared.HasToken)
+                            {
+                                await BotClient.Shared.ConnectSocketAsync ();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // otherwise prompt the user to login
+                        BeginInvokeOnMainThread (() =>
+                        {
+                            var loginNavController = Storyboard.Instantiate<LoginNavigationController> ();
 
-        public override void ViewWillLayoutSubviews()
-        {
-            base.ViewWillLayoutSubviews();
+                            if (loginNavController != null)
+                            {
+                                PresentViewController (loginNavController, true, null);
+                            }
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error (ex.Message);
+                    throw;
+                }
+            });
 
-            TableView.ContentInset = new UIEdgeInsets(0, 0, 0, 0);
         }
 
 
         #region Connect & Disonnect Events
 
 
-        void connectAllTheseEvents()
+        void connectAllTheseEvents ()
         {
             BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
             BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesCollectionChanged;
             BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
         }
 
-        void disconnectAllTheseEvents()
+        void disconnectAllTheseEvents ()
         {
             BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
             BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesCollectionChanged;
@@ -137,33 +213,33 @@ namespace NomadCode.BotFramework.iOS
         #region Action Methods
 
 
-        void hideOrShowTextInputBar(object s, EventArgs e)
+        void hideOrShowTextInputBar (object s, EventArgs e)
         {
             //var hide = TextInputbarHidden;
 
-            SetTextInputbarHidden(!TextInputbarHidden, true);
+            SetTextInputbarHidden (!TextInputbarHidden, true);
         }
 
 
-        void togglePIPWindow(object s, EventArgs e)
+        void togglePIPWindow (object s, EventArgs e)
         {
             if (pipWindow == null)
             {
-                showPIPWindow();
+                showPIPWindow ();
             }
             else
             {
-                hidePIPWindow();
+                hidePIPWindow ();
             }
         }
 
 
-        void showPIPWindow()
+        void showPIPWindow ()
         {
-            var frame = new CGRect(View.Frame.Width - 60, 0, 50, 50);
-            frame.Y = TextInputbar.Frame.GetMinY() - 60;
+            var frame = new CGRect (View.Frame.Width - 60, 0, 50, 50);
+            frame.Y = TextInputbar.Frame.GetMinY () - 60;
 
-            pipWindow = new UIWindow(frame)
+            pipWindow = new UIWindow (frame)
             {
                 BackgroundColor = UIColor.Black,
                 Hidden = false,
@@ -173,30 +249,30 @@ namespace NomadCode.BotFramework.iOS
             pipWindow.Layer.CornerRadius = 10;
             pipWindow.Layer.MasksToBounds = true;
 
-            UIApplication.SharedApplication.KeyWindow.AddSubview(pipWindow);
+            UIApplication.SharedApplication.KeyWindow.AddSubview (pipWindow);
 
-            UIView.Animate(0.25, () => pipWindow.Alpha = 1.0f);
+            UIView.Animate (0.25, () => pipWindow.Alpha = 1.0f);
         }
 
 
-        void hidePIPWindow()
+        void hidePIPWindow ()
         {
-            UIView.AnimateNotify(0.3f, () => pipWindow.Alpha = 0, delegate (bool _)
-           {
-               pipWindow.Hidden = true;
-               pipWindow = null;
-           });
+            UIView.AnimateNotify (0.3f, () => pipWindow.Alpha = 0, delegate (bool _)
+            {
+                pipWindow.Hidden = true;
+                pipWindow = null;
+            });
         }
 
 
-        [Export("textInputbarDidMove:")]
-        void textInputbarDidMove(NSNotification note)
+        [Export ("textInputbarDidMove:")]
+        void textInputbarDidMove (NSNotification note)
         {
             if (pipWindow == null) return;
 
             CGRect frame = pipWindow.Frame;
 
-            var origin = note.UserInfo.ObjectForKey(new NSString(@"origin")) as NSValue;
+            var origin = note.UserInfo.ObjectForKey (new NSString (@"origin")) as NSValue;
 
             frame.Y = origin.CGPointValue.Y - 60;
 
@@ -211,18 +287,18 @@ namespace NomadCode.BotFramework.iOS
 
         public override bool IgnoreTextInputbarAdjustment => base.IgnoreTextInputbarAdjustment;
 
-        public override bool ForceTextInputbarAdjustmentForResponder(UIResponder responder) => base.ForceTextInputbarAdjustmentForResponder(responder);
+        public override bool ForceTextInputbarAdjustmentForResponder (UIResponder responder) => base.ForceTextInputbarAdjustmentForResponder (responder);
 
-        public override void DidChangeKeyboardStatus(KeyboardStatus status) => base.DidChangeKeyboardStatus(status);
+        public override void DidChangeKeyboardStatus (KeyboardStatus status) => base.DidChangeKeyboardStatus (status);
 
-        public override void TextWillUpdate() => base.TextWillUpdate();
+        public override void TextWillUpdate () => base.TextWillUpdate ();
 
 
         long timeStampCache;
 
         const long delayTicks = TimeSpan.TicksPerSecond * 3;
 
-        public override void TextDidUpdate(bool animated)
+        public override void TextDidUpdate (bool animated)
         {
             var utcNowTicks = DateTime.UtcNow.Ticks;
 
@@ -230,62 +306,62 @@ namespace NomadCode.BotFramework.iOS
             {
                 timeStampCache = utcNowTicks;
 
-                BotClient.Shared.SendUserTyping();
+                BotClient.Shared.SendUserTyping ();
                 //Task.Run(async () => await BotClient.Shared.SendUserTyping());
             }
 
-            base.TextDidUpdate(animated);
+            base.TextDidUpdate (animated);
         }
 
 
-        public override void DidPressLeftButton(NSObject sender)
+        public override void DidPressLeftButton (NSObject sender)
         {
-            Log.Debug($"DidPressLeftButton");
-            base.DidPressLeftButton(sender);
+            Log.Debug ($"DidPressLeftButton");
+            base.DidPressLeftButton (sender);
         }
 
 
-        public override void DidPressRightButton(NSObject sender)
+        public override void DidPressRightButton (NSObject sender)
         {
-            Log.Debug($"DidPressRightButton : TextView.Text = {TextView.Text}");
+            Log.Debug ($"DidPressRightButton : TextView.Text = {TextView.Text}");
 
             // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
 
-            addNewMessage();
+            addNewMessage ();
 
-            base.DidPressRightButton(sender);
+            base.DidPressRightButton (sender);
         }
 
 
-        void addNewMessage(bool send = true)
+        void addNewMessage (bool send = true)
         {
-            Log.Debug($"addNewMessage {send}");
+            Log.Debug ($"addNewMessage {send}");
 
             // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
-            TextView.RefreshFirstResponder();
+            TextView.RefreshFirstResponder ();
 
-            var indexPath = NSIndexPath.FromRowSection(0, 0); //NSIndexPath.FromRowSection (row, section);
+            var indexPath = NSIndexPath.FromRowSection (0, 0); //NSIndexPath.FromRowSection (row, section);
             var rowAnimation = Inverted ? UITableViewRowAnimation.Bottom : UITableViewRowAnimation.Top;
             var scrollPosition = Inverted ? UITableViewScrollPosition.Bottom : UITableViewScrollPosition.Top;
 
             //var sections = TableView.NumberOfSections ();
 
-            TableView.BeginUpdates();
+            TableView.BeginUpdates ();
 
-            if ((send && BotClient.Shared.SendMessage(TextView.Text)) || !send)
+            if ((send && BotClient.Shared.SendMessage (TextView.Text)) || !send)
             {
-                TableView.InsertRows(new[] { NSIndexPath.FromRowSection(0, 0) }, rowAnimation);
+                TableView.InsertRows (new[] { NSIndexPath.FromRowSection (0, 0) }, rowAnimation);
             }
 
-            TableView.EndUpdates();
+            TableView.EndUpdates ();
 
-            var message = Messages.FirstOrDefault();
+            var message = Messages.FirstOrDefault ();
 
             if (message != null)
             {
-                TypingIndicatorView.RemoveUsername(message.Activity.From.Name);
+                TypingIndicatorView.RemoveUsername (message.Activity.From.Name);
 
-                TableView.ScrollToRow(indexPath, scrollPosition, true);
+                TableView.ScrollToRow (indexPath, scrollPosition, true);
             }
 
             // Fixes the cell from blinking (because of the transform, when using translucent cells)
@@ -295,21 +371,21 @@ namespace NomadCode.BotFramework.iOS
 
 
 
-        public override void DidPressArrowKey(UIKeyCommand sender) => base.DidPressArrowKey(sender);
+        public override void DidPressArrowKey (UIKeyCommand sender) => base.DidPressArrowKey (sender);
 
         public override string KeyForTextCaching => NSBundle.MainBundle.BundleIdentifier;
 
-        public override void DidPasteMediaContent(NSDictionary userInfo) => base.DidPasteMediaContent(userInfo);
+        public override void DidPasteMediaContent (NSDictionary userInfo) => base.DidPasteMediaContent (userInfo);
 
-        public override void WillRequestUndo() => base.WillRequestUndo();
+        public override void WillRequestUndo () => base.WillRequestUndo ();
 
-        public override void DidCommitTextEditing(NSObject sender) => base.DidCommitTextEditing(sender);
+        public override void DidCommitTextEditing (NSObject sender) => base.DidCommitTextEditing (sender);
 
-        public override void DidCancelTextEditing(NSObject sender) => base.DidCancelTextEditing(sender);
+        public override void DidCancelTextEditing (NSObject sender) => base.DidCancelTextEditing (sender);
 
         public override bool CanPressRightButton => base.CanPressRightButton;
 
-        public override void ShowAutoCompletionView(bool show) => base.ShowAutoCompletionView(show);
+        public override void ShowAutoCompletionView (bool show) => base.ShowAutoCompletionView (show);
 
         public override bool AutoCompleting => base.AutoCompleting;
 
@@ -352,7 +428,7 @@ namespace NomadCode.BotFramework.iOS
         {
             get
             {
-                var cellHeight = AutoCompletionView.Delegate.GetHeightForRow(AutoCompletionView, NSIndexPath.FromRowSection(0, 0));
+                var cellHeight = AutoCompletionView.Delegate.GetHeightForRow (AutoCompletionView, NSIndexPath.FromRowSection (0, 0));
 
                 return cellHeight * searchResult?.Count ?? 0;//  base.HeightForAutoCompletionView;
             }
@@ -363,26 +439,26 @@ namespace NomadCode.BotFramework.iOS
 
         #region UITableViewSource Methods
 
-        [Export("numberOfSectionsInTableView:")]
-        public nint NumberOfSections(UITableView tableView) => 1;
+        [Export ("numberOfSectionsInTableView:")]
+        public nint NumberOfSections (UITableView tableView) => 1;
         //=> tableView.Equals (TableView) ? MessageDataSource.SectionCount () : 1;
 
 
-        public override nint RowsInSection(UITableView tableView, nint section)
-            => tableView.Equals(TableView) ? BotClient.Shared.Messages?.Count ?? 0 : (searchResult?.Count ?? 0);
+        public override nint RowsInSection (UITableView tableView, nint section)
+            => tableView.Equals (TableView) ? BotClient.Shared.Messages?.Count ?? 0 : (searchResult?.Count ?? 0);
 
 
-        public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
-             => tableView.Equals(TableView) ? GetMessageCell(indexPath) : GetAutoCompleteCell(indexPath);
+        public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
+             => tableView.Equals (TableView) ? GetMessageCell (indexPath) : GetAutoCompleteCell (indexPath);
 
 
-        UITableViewCell GetMessageCell(NSIndexPath indexPath)
+        UITableViewCell GetMessageCell (NSIndexPath indexPath)
         {
             var message = Messages[indexPath.Row];
 
             var reuseId = message.Head ? MessageCellReuseIds.MessageHeaderCellReuseId : MessageCellReuseIds.MessageCellReuseId;
 
-            var cell = TableView.DequeueReusableCell(reuseId, indexPath) as MessageBodyCell;
+            var cell = TableView.DequeueReusableCell (reuseId, indexPath) as MessageBodyCell;
 
             if (message.Head)
             {
@@ -390,22 +466,22 @@ namespace NomadCode.BotFramework.iOS
 
                 cell.IndexPath = indexPath;
 
-                var key = cell.SetMessage(message.LocalTimeStamp, username, message.AttributedText);
+                var key = cell.SetMessage (message.LocalTimeStamp, username, message.AttributedText);
 
                 if (message.Activity.From.Id == "DigitalAgencies")
                 {
-                    cell.SetAvatar(key, UIImage.FromBundle("avatar_microsoft"));
+                    cell.SetAvatar (key, UIImage.FromBundle ("avatar_microsoft"));
                 }
                 else
                 {
-                    cell.SetAvatar(key, UIImage.FromBundle("avatar_colby"));
+                    cell.SetAvatar (key, UIImage.FromBundle ("avatar_colby"));
                 }
             }
             else
             {
                 cell.IndexPath = indexPath;
 
-                cell.SetMessage(message.AttributedText);
+                cell.SetMessage (message.AttributedText);
 
                 //bodyCell.UsedForMessage = true;
             }
@@ -420,11 +496,11 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        MessageBodyCell GetAutoCompleteCell(NSIndexPath indexPath)
+        MessageBodyCell GetAutoCompleteCell (NSIndexPath indexPath)
         {
             //Log.Debug ($"GetAutoCompleteCell = [{indexPath}]");
 
-            var cell = AutoCompletionView.DequeueReusableCell(MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageBodyCell;
+            var cell = AutoCompletionView.DequeueReusableCell (MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageBodyCell;
             cell.IndexPath = indexPath;
 
             var text = searchResult[indexPath.Row].name;
@@ -445,12 +521,12 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        [Export("tableView:heightForRowAtIndexPath:")]
-        public nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-            => tableView.Equals(AutoCompletionView) ? MessageBodyCell.AutoCompleteHeight : getMessageHeight(indexPath, tableView.Frame.Width);
+        [Export ("tableView:heightForRowAtIndexPath:")]
+        public nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
+            => tableView.Equals (AutoCompletionView) ? MessageBodyCell.AutoCompleteHeight : getMessageHeight (indexPath, tableView.Frame.Width);
 
 
-        nfloat getMessageHeight(NSIndexPath indexPath, nfloat width)
+        nfloat getMessageHeight (NSIndexPath indexPath, nfloat width)
         {
             var row = indexPath.Row;
 
@@ -467,9 +543,9 @@ namespace NomadCode.BotFramework.iOS
 
             width -= 49;
 
-            if (string.IsNullOrEmpty(message?.Activity.Text)) return 0;
+            if (string.IsNullOrEmpty (message?.Activity.Text)) return 0;
 
-            var bodyBounds = message.AttributedText.GetBoundingRect(new CGSize(width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, null);
+            var bodyBounds = message.AttributedText.GetBoundingRect (new CGSize (width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, null);
 
             height = bodyBounds.Height + 5;// + 8.5f; // empty stackView = 3.5f + bottom padding = 5
 
@@ -477,13 +553,11 @@ namespace NomadCode.BotFramework.iOS
 
             if (message.Head) height += 36.5f; // pading(10) + title(21.5) + padding(5) + content(height)
 
-
-            if (row % 3 == 0)
+            //if message has buttons
+            if (message.ButtonCount > 0)
             {
-                int btnCount = 2;
-                //if message has buttons
-                height += (32 * btnCount);
-                height += 4 * (btnCount - 1);
+                height += (32 * message.ButtonCount);
+                height += 4 * (message.ButtonCount - 1);
                 height += 5;
             }
 
@@ -494,12 +568,12 @@ namespace NomadCode.BotFramework.iOS
 
 
 
-        [Export("tableView:heightForFooterInSection:")]
-        public nfloat GetHeightForFooter(UITableView tableView, nint section) => tableView.Equals(TableView) ? 60.0f : 0.0f;
+        [Export ("tableView:heightForFooterInSection:")]
+        public nfloat GetHeightForFooter (UITableView tableView, nint section) => tableView.Equals (TableView) ? 60.0f : 0.0f;
 
 
-        [Export("tableView:willDisplayFooterView:forSection:")]
-        public void WillDisplayFooterView(UITableView tableView, UIView footerView, nint section)
+        [Export ("tableView:willDisplayFooterView:forSection:")]
+        public void WillDisplayFooterView (UITableView tableView, UIView footerView, nint section)
         {
             footerView.Transform = TableView.Transform;
 
@@ -540,53 +614,53 @@ namespace NomadCode.BotFramework.iOS
 
         #region UITextViewDelegate Methods
 
-        [Export("textViewShouldBeginEditing:")]
-        public bool ShouldBeginEditing(UITextView textView) => true;
+        [Export ("textViewShouldBeginEditing:")]
+        public bool ShouldBeginEditing (UITextView textView) => true;
 
 
-        [Export("textViewShouldEndEditing:")]
-        public bool ShouldEndEditing(UITextView textView) => true;
+        [Export ("textViewShouldEndEditing:")]
+        public bool ShouldEndEditing (UITextView textView) => true;
 
 
-        public override bool ShouldChangeText(UITextView textView, NSRange range, string text) => base.ShouldChangeText(textView, range, text);
+        public override bool ShouldChangeText (UITextView textView, NSRange range, string text) => base.ShouldChangeText (textView, range, text);
 
-        public override bool ShouldOfferFormattingForSymbol(SlackTextView textView, string symbol) => base.ShouldOfferFormattingForSymbol(textView, symbol);
+        public override bool ShouldOfferFormattingForSymbol (SlackTextView textView, string symbol) => base.ShouldOfferFormattingForSymbol (textView, symbol);
 
-        public override bool ShouldInsertSuffixForFormattingWithSymbol(SlackTextView textView, string symbol, NSRange prefixRange) => base.ShouldInsertSuffixForFormattingWithSymbol(textView, symbol, prefixRange);
+        public override bool ShouldInsertSuffixForFormattingWithSymbol (SlackTextView textView, string symbol, NSRange prefixRange) => base.ShouldInsertSuffixForFormattingWithSymbol (textView, symbol, prefixRange);
 
 
         #endregion
 
 
-        void handleBotClientMessagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void handleBotClientMessagesCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
         {
-            Log.Debug($"{e.Action}");
+            Log.Debug ($"{e.Action}");
 
-            BeginInvokeOnMainThread(() =>
-           {
-               switch (e.Action)
-               {
-                   case NotifyCollectionChangedAction.Add:
-                       addNewMessage(false);
-                       break;
-                   case NotifyCollectionChangedAction.Remove:
-                       TableView.DeleteRows(new[] { NSIndexPath.FromIndex((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
-                       break;
-                   case NotifyCollectionChangedAction.Replace:
-                       TableView.ReloadData();
-                       break;
-                   case NotifyCollectionChangedAction.Reset:
-                       TableView.ReloadData();
-                       TableView.SlackScrollToTop(false);
-                       break;
-               }
-           });
+            BeginInvokeOnMainThread (() =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        addNewMessage (false);
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        TableView.DeleteRows (new[] { NSIndexPath.FromIndex ((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
+                        break;
+                    case NotifyCollectionChangedAction.Replace:
+                        TableView.ReloadData ();
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        TableView.ReloadData ();
+                        TableView.SlackScrollToTop (false);
+                        break;
+                }
+            });
         }
 
 
-        void handleBotClientReadyStateChanged(object sender, ReadyStateChangedEventArgs e)
+        void handleBotClientReadyStateChanged (object sender, ReadyStateChangedEventArgs e)
         {
-            Log.Debug($"{e.ReadyState}");
+            Log.Debug ($"{e.ReadyState}");
 
             switch (e.ReadyState)
             {
@@ -597,18 +671,18 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        void handleBotClientUserTypingMessageReceived(object sender, Activity e)
+        void handleBotClientUserTypingMessageReceived (object sender, Activity e)
         {
-            if (!string.IsNullOrEmpty(e?.From?.Name))
+            if (!string.IsNullOrEmpty (e?.From?.Name))
             {
-                TypingIndicatorView.InsertUsername(e.From.Name);
+                TypingIndicatorView.InsertUsername (e.From.Name);
 
-                Task.Run(async () =>
-               {
-                   await Task.Delay(3000);
+                Task.Run (async () =>
+                {
+                    await Task.Delay (3000);
 
-                   BeginInvokeOnMainThread(() => TypingIndicatorView.RemoveUsername(e.From.Name));
-               });
+                    BeginInvokeOnMainThread (() => TypingIndicatorView.RemoveUsername (e.From.Name));
+                });
             }
         }
     }

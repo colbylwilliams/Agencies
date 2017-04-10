@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ZZZ-1Z-2Mk">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ZZZ-1Z-2Mk">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -25,6 +25,54 @@
             </objects>
             <point key="canvasLocation" x="137" y="-647"/>
         </scene>
+        <!--Login Navigation Controller-->
+        <scene sceneID="WRt-KD-Va6">
+            <objects>
+                <navigationController storyboardIdentifier="LoginNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="o3A-78-TOA" customClass="LoginNavigationController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="PY4-RX-eyq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="QIH-ON-w2h" kind="relationship" relationship="rootViewController" id="Uc2-Re-Zx6"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="m3n-m2-tmz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="137" y="-1337"/>
+        </scene>
+        <!--Login View Controller-->
+        <scene sceneID="Y1J-De-biY">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QIH-ON-w2h" customClass="LoginViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="MEA-Q4-h7d"/>
+                        <viewControllerLayoutGuide type="bottom" id="cXK-5a-qeD"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="VLV-c8-yBI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3lI-LM-YzI" customClass="GIDSignInButton">
+                                <rect key="frame" x="164.5" y="318.5" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="3lI-LM-YzI" firstAttribute="centerY" secondItem="VLV-c8-yBI" secondAttribute="centerY" id="WsM-tk-tQ3"/>
+                            <constraint firstItem="3lI-LM-YzI" firstAttribute="centerX" secondItem="VLV-c8-yBI" secondAttribute="centerX" id="erV-vQ-Mqq"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="szr-eN-62H"/>
+                    <connections>
+                        <outlet property="googleSignInButton" destination="3lI-LM-YzI" id="ND2-Xj-ecj"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9n9-lC-nHk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1089" y="-1337"/>
+        </scene>
         <!--Bot View Controller-->
         <scene sceneID="aCJ-wN-Flu">
             <objects>
@@ -42,7 +90,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rEh-Zd-pkh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="974" y="-647"/>
+            <point key="canvasLocation" x="1089" y="-647"/>
         </scene>
     </scenes>
 </document>
