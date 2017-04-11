@@ -73,11 +73,11 @@ namespace NomadCode.BotFramework.iOS
             TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
 
 
-            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, (sender, e) =>
+            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
             {
                 SignIn.SharedInstance.SignOutUser ();
 
-                AzureClient.Shared.LogoutAsync ();
+                await AzureClient.Shared.LogoutAsync ();
 
                 BotClient.Shared.Reset ();
 
@@ -152,17 +152,17 @@ namespace NomadCode.BotFramework.iOS
                     {
                         if (!BotClient.Shared.Initialized)
                         {
-                            if (!BotClient.Shared.HasToken)
-                            {
-                                var token = await AgenciesClient.Shared.GetInitialConversationToken ();
+                            //if (!BotClient.Shared.HasToken)
+                            //{
+                            //    var channel = await AgenciesClient.Shared.GetConversation ();
 
-                                BotClient.Shared.SaveConversationToken (token);
-                            }
+                            //    BotClient.Shared.SaveConversationToken (channel);
+                            //}
 
-                            if (BotClient.Shared.HasToken)
-                            {
-                                await BotClient.Shared.ConnectSocketAsync ();
-                            }
+                            //if (BotClient.Shared.HasToken)
+                            //{
+                            await BotClient.Shared.ConnectSocketAsync ();
+                            //}
                         }
                     }
                     else

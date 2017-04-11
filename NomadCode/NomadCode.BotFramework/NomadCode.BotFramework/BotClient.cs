@@ -9,6 +9,7 @@ using Microsoft.Bot.Connector.DirectLine;
 using Newtonsoft.Json;
 
 using SettingsStudio;
+using Agencies.Shared;
 
 #if __IOS__
 using Foundation;
@@ -31,7 +32,7 @@ namespace NomadCode.BotFramework
         public static BotClient Shared => _shared ?? (_shared = new BotClient ());
 
         static DirectLineClient _directLineClient;
-        DirectLineClient directLineClient => _directLineClient ?? (!string.IsNullOrEmpty (ConversationCredentials.Token) ? _directLineClient = new DirectLineClient (ConversationCredentials.Token) : throw new Exception ("must set initial client token"));
+        DirectLineClient directLineClient => _directLineClient ?? (!string.IsNullOrEmpty (conversation?.Token) ? _directLineClient = new DirectLineClient (conversation.Token) : throw new Exception ("must set initial client token"));
 
 
         Conversation conversation;
@@ -78,96 +79,70 @@ namespace NomadCode.BotFramework
         public List<Message> Messages { get; set; } = new List<Message> ();
 
 
-        BotClient () { }
-
-
-        public void Start () { }
-
-        public void Reset ()
-        {
-            ResetCurrentUser ();
-            webSocket = null;
-            _directLineClient = null;
-            conversation = null;
-            removeItemFromKeychain ("bot");
-            _conversationCredentials = (null, null);
-        }
-
-
         public event EventHandler<Activity> UserTypingMessageReceived;
         public event EventHandler<ReadyStateChangedEventArgs> ReadyStateChanged;
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
-        public void SaveConversationToken (string token, string conversationId = null)
-        {
-            if (!string.IsNullOrEmpty (token))
-            {
-                // todo: support more than one conversation
-                removeItemFromKeychain ("bot");
+        bool attemptedReconnect;
 
-                if (saveItemToKeychain ("bot", conversationId ?? "initialToken", token))
-                {
-                    _conversationCredentials = (null, null);
-                }
-            }
+
+        BotClient () { }
+
+
+        public void Reset ()
+        {
+            ResetCurrentUser ();
+            webSocket = null;
+            conversation = null;
+            _directLineClient = null;
+            Messages = new List<Message> ();
+            MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
         }
 
 
-        (string ConversationId, string Token) _conversationCredentials;
-
-        (string ConversationId, string Token) ConversationCredentials
-        {
-            get
-            {
-                if (string.IsNullOrEmpty (_conversationCredentials.ConversationId) || string.IsNullOrEmpty (_conversationCredentials.Token))
-                {
-                    var token = getItemFromKeychain ("bot");
-
-                    if (string.IsNullOrEmpty (token.Account) || string.IsNullOrEmpty (token.PrivateKey))
-                    {
-                        return (null, null);
-                    }
-
-                    _conversationCredentials = token;
-                }
-
-                return _conversationCredentials;
-            }
-        }
-
-
-        public bool HasToken => !(string.IsNullOrEmpty (ConversationCredentials.ConversationId) || string.IsNullOrEmpty (ConversationCredentials.Token));
-
-
-        public async Task<bool> ConnectSocketAsync ()
+        public async Task ConnectSocketAsync ()
         {
             try
             {
                 if (webSocket == null || webSocket.ReadyState == ReadyState.Closed)
                 {
-                    if (string.IsNullOrEmpty (ConversationCredentials.ConversationId))
+                    if (Settings.ResetConversation)
                     {
-                        throw new Exception ("must set initial client token");
+                        Log.Info ("Resetting conversation...");
+
+                        Settings.ConversationId = string.Empty;
                     }
 
-                    if (Settings.ResetConversation || (HasToken && ConversationCredentials.ConversationId == "initialToken"))
+                    if (!HasValidCurrentUser)
                     {
-                        Log.Debug ($"Starting new conversation...");
+                        throw new InvalidOperationException ("BotClient.CurrentUserId and BotClient.CurrentUserName must have values before connecting");
+                    }
+
+                    Log.Info ("Getting conversation from server...");
+
+                    conversation = await AgenciesClient.Shared.GetConversation (Settings.ConversationId);
+
+                    // reset client so it'll pull new token
+                    _directLineClient = null;
+
+
+                    if (string.IsNullOrEmpty (conversation?.StreamUrl))
+                    {
+                        Log.Info ($"Starting new conversation...");
 
                         conversation = await directLineClient.Conversations.StartConversationAsync ();
 
                         if (!string.IsNullOrEmpty (conversation?.ConversationId))
                         {
-                            //SaveConversationToken (conversation.Token, conversation.ConversationId);
-                            SaveConversationToken (ConversationCredentials.Token, conversation.ConversationId);
+                            Settings.ConversationId = conversation.ConversationId;
                         }
                     }
                     else
                     {
-                        Log.Debug ($"Reconnect to conversation {ConversationCredentials.ConversationId}...");
+                        Log.Info ($"Reconnect to conversation {Settings.ConversationId}...");
 
-                        conversation = await directLineClient.Conversations.ReconnectToConversationAsync (ConversationCredentials.ConversationId);
+                        conversation = await directLineClient.Conversations.ReconnectToConversationAsync (conversation.ConversationId);
 
                         var activitySet = await directLineClient.Conversations.GetActivitiesAsync (conversation.ConversationId);
 
@@ -175,12 +150,11 @@ namespace NomadCode.BotFramework
 
                         Messages.Sort ((x, y) => y.CompareTo (x));
 
-                        //foreach (var message in Messages)
-                        //	Log.Debug ($"Adding New Message: {message.Activity?.Id} : {message.Activity.Timestamp?.ToString ("O")} : {message.Activity.LocalTimestamp?.DateTime.ToString ("O")} : {message.Activity.Text}");
-
                         MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
                     }
 
+
+                    attemptedReconnect = false;
 
                     var url = conversation.StreamUrl;
 
@@ -210,20 +184,32 @@ namespace NomadCode.BotFramework
                 }
 
                 ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
+            }
+            catch (Microsoft.Rest.HttpOperationException httpEx)
+            {
+                Log.Error (httpEx.Message);
 
-                return conversation != null;
+                if (httpEx.Response.StatusCode == System.Net.HttpStatusCode.Forbidden && !attemptedReconnect)
+                {
+                    Log.Info ("Attempting token refresh...");
+
+                    conversation = await AgenciesClient.Shared.GetConversation (conversation.ConversationId);
+
+                    attemptedReconnect = true;
+
+                    await ConnectSocketAsync ();
+                }
             }
             catch (Exception ex)
             {
                 Log.Error (ex.Message);
-                return false;
             }
         }
 
 
         void handleNewActvitySet (ActivitySet activitySet, bool changedEvents = true)
         {
-            var watermark = activitySet?.Watermark;
+            //var watermark = activitySet?.Watermark;
 
             var activities = activitySet?.Activities;
 
@@ -307,7 +293,7 @@ namespace NomadCode.BotFramework
                 return;
             }
 
-            Log.Info ($"[Socket Message Received] \n{message}");
+            //Log.Info ($"[Socket Message Received] \n{message}");
 
             var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
 
@@ -356,8 +342,6 @@ namespace NomadCode.BotFramework
             };
 
             var message = new Message (activity);
-
-            //Log.Debug ($"Adding New Message: {activity.Timestamp?.ToString ("O")} : {activity.LocalTimestamp?.DateTime.ToString ("O")} : {activity.Text}");
 
             var posted = postActivityAsync (activity);
 

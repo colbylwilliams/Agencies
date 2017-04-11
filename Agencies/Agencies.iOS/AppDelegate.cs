@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.MobileServices;
 using NomadCode.Azure;
 
 using Google.SignIn;
-using Google.Core;
+
 
 namespace Agencies.iOS
 {
