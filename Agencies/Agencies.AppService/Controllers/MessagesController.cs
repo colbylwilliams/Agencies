@@ -42,6 +42,8 @@ namespace Agencies.AppService.Controllers
 		[ResponseType(typeof(void))]
 		public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
 		{
+
+
 			if (activity.Type == ActivityTypes.Message)
 			{
 				await Conversation.SendAsync(activity, () => new FAQDialog());
