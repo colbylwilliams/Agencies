@@ -9,7 +9,10 @@ using Microsoft.Bot.Connector.DirectLine;
 using Newtonsoft.Json;
 
 using SettingsStudio;
+
 using Agencies.Shared;
+using System.Net;
+using Microsoft.Rest;
 
 #if __IOS__
 using Foundation;
@@ -64,6 +67,12 @@ namespace NomadCode.BotFramework
             set => Settings.CurrentUserEmail = value ?? string.Empty;
         }
 
+        public static string ConversationId
+        {
+            get => Settings.ConversationId;
+            set => Settings.ConversationId = value ?? string.Empty;
+        }
+
         ChannelAccount currentUser => new ChannelAccount (CurrentUserId, CurrentUserName);
 
         public bool HasValidCurrentUser => !(string.IsNullOrWhiteSpace (CurrentUserId) || string.IsNullOrWhiteSpace (CurrentUserName));
@@ -84,7 +93,7 @@ namespace NomadCode.BotFramework
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
-        bool attemptedReconnect;
+        bool attemptingReconnect;
 
 
         BotClient () { }
@@ -93,6 +102,7 @@ namespace NomadCode.BotFramework
         public void Reset ()
         {
             ResetCurrentUser ();
+            webSocket.Close ();
             webSocket = null;
             conversation = null;
             _directLineClient = null;
@@ -111,7 +121,7 @@ namespace NomadCode.BotFramework
                     {
                         Log.Info ("Resetting conversation...");
 
-                        Settings.ConversationId = string.Empty;
+                        ConversationId = string.Empty;
                     }
 
                     if (!HasValidCurrentUser)
@@ -121,11 +131,10 @@ namespace NomadCode.BotFramework
 
                     Log.Info ("Getting conversation from server...");
 
-                    conversation = await AgenciesClient.Shared.GetConversation (Settings.ConversationId);
+                    conversation = await AgenciesClient.Shared.GetConversation (ConversationId);
 
                     // reset client so it'll pull new token
                     _directLineClient = null;
-
 
                     if (string.IsNullOrEmpty (conversation?.StreamUrl))
                     {
@@ -135,12 +144,12 @@ namespace NomadCode.BotFramework
 
                         if (!string.IsNullOrEmpty (conversation?.ConversationId))
                         {
-                            Settings.ConversationId = conversation.ConversationId;
+                            ConversationId = conversation.ConversationId;
                         }
                     }
                     else
                     {
-                        Log.Info ($"Reconnect to conversation {Settings.ConversationId}...");
+                        Log.Info ($"Reconnect to conversation {ConversationId}...");
 
                         conversation = await directLineClient.Conversations.ReconnectToConversationAsync (conversation.ConversationId);
 
@@ -153,56 +162,108 @@ namespace NomadCode.BotFramework
                         MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
                     }
 
+                    if (!string.IsNullOrEmpty (conversation?.StreamUrl))
+                    {
+                        webSocket = new WebSocket (new NSUrl (conversation.StreamUrl));
 
-                    attemptedReconnect = false;
+                        webSocket.ReceivedMessage += handleWebSocketReceivedMessage;
 
-                    var url = conversation.StreamUrl;
+                        webSocket.WebSocketClosed += handleWebSocketClosed;
 
-                    webSocket = new WebSocket (new NSUrl (url));
+                        webSocket.WebSocketFailed += handleWebSocketFailed;
 
-                    webSocket.ReceivedMessage += handleWebSocketReceivedMessage;
+                        webSocket.WebSocketOpened += handleWebSocketOpened;
 
-                    webSocket.WebSocketClosed += handleWebSocketClosed;
+                        webSocket.ReceivedPong += handleWebSocketReceivedPong;
 
-                    webSocket.WebSocketFailed += handleWebSocketFailed;
+                        Log.Info ($"[Socket Connecting...] {conversation.StreamUrl}");
 
-                    webSocket.WebSocketOpened += handleWebSocketOpened;
-
-                    webSocket.ReceivedPong += handleWebSocketReceivedPong;
-
-                    Log.Info ($"[Socket Connecting...] {url}");
-
-                    webSocket.Open ();
+                        webSocket.Open ();
+                    }
                 }
                 else if (webSocket.ReadyState == ReadyState.Open)
                 {
-                    Log.Info ($"[Socket Connecting...]");
+                    Log.Info ($"[Socket already open, refreshing token and reconnecting...]");
 
-                    conversation = null;
+                    //attemptReconnect = true;
 
-                    webSocket.Close ();
+                    //webSocket.Close ();
+
+                    //await ConnectSocketAsync ();
                 }
 
-                ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
+                //ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
             }
-            catch (Microsoft.Rest.HttpOperationException httpEx)
-            {
-                Log.Error (httpEx.Message);
+            //catch (HttpOperationException httpEx)
+            //{
+            //    Log.Error (httpEx.Message);
 
-                if (httpEx.Response.StatusCode == System.Net.HttpStatusCode.Forbidden && !attemptedReconnect)
-                {
-                    Log.Info ("Attempting token refresh...");
+            //    if (httpEx.Response.StatusCode == HttpStatusCode.Forbidden && !attemptedReconnect)
+            //    {
+            //        Log.Info ("Attempting token refresh...");
 
-                    conversation = await AgenciesClient.Shared.GetConversation (conversation.ConversationId);
+            //        conversation = await AgenciesClient.Shared.GetConversation (conversation.ConversationId);
 
-                    attemptedReconnect = true;
+            //        attemptedReconnect = true;
 
-                    await ConnectSocketAsync ();
-                }
-            }
+            //        await ConnectSocketAsync ();
+            //    }
+            //}
             catch (Exception ex)
             {
                 Log.Error (ex.Message);
+            }
+        }
+
+
+        TaskCompletionSource<bool> closeSocketTcs;
+
+        public async Task ResetWebsocketAsync ()
+        {
+            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (ReadyState.Closing));
+
+            var closed = await closeWebsocketAsync ();
+
+            Log.Debug ($"closed == {closed}");
+
+            if (closed)
+            {
+                Log.Debug ("Reopening socket...\n");
+                await ConnectSocketAsync ();
+            }
+
+            Task<bool> closeWebsocketAsync ()
+            {
+                if (!closeSocketTcs.IsNullFinishCanceledOrFaulted ())
+                {
+                    return closeSocketTcs.Task;
+                }
+
+                closeSocketTcs = new TaskCompletionSource<bool> ();
+
+
+                webSocket.WebSocketClosed += handleWebSocketClosedAsync;
+
+
+                webSocket.Close ();
+
+
+                return closeSocketTcs.Task;
+            }
+
+
+            void handleWebSocketClosedAsync (object sender, WebSocketClosedEventArgs e)
+            {
+                webSocket.WebSocketClosed -= handleWebSocketClosedAsync;
+
+                Log.Debug ($"e.Code: {e.Code}");
+                Log.Debug ($"e.Reason: {e.Reason}");
+                Log.Debug ($"e.WasClean: {e.WasClean}");
+
+                if (!closeSocketTcs.TrySetResult (true))
+                {
+                    Log.Error ("Failed to set closeSocketTcs result");
+                }
             }
         }
 
@@ -310,6 +371,20 @@ namespace NomadCode.BotFramework
         void handleWebSocketClosed (object sender, WebSocketClosedEventArgs e)
         {
             Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
+
+            //webSocket.ReceivedMessage -= handleWebSocketReceivedMessage;
+            //webSocket.WebSocketClosed -= handleWebSocketClosed;
+            //webSocket.WebSocketFailed -= handleWebSocketFailed;
+            //webSocket.WebSocketOpened -= handleWebSocketOpened;
+            //webSocket.ReceivedPong -= handleWebSocketReceivedPong;
+            //if (attemptReconnect)
+            //{
+            //    attemptReconnect = false;
+
+            //    Task.Run
+
+            //}
+
             ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
         }
 
@@ -356,6 +431,8 @@ namespace NomadCode.BotFramework
 
         public bool SendUserTyping ()
         {
+            if (attemptingReconnect) return false;
+
             Log.Debug ("Sending User Typing");
 
             var activity = new Activity
@@ -365,6 +442,16 @@ namespace NomadCode.BotFramework
             };
 
             return postActivityAsync (activity, true);
+        }
+
+
+        public void FuckupToken ()
+        {
+            var foo = @"uBCTlFDNvhY.dAA.MQBtAHIAOQB5AGsAVgBhAHEAawB2AEkANwBBAFQAQwB1ADMARQB5AE8AZQA.KJPywXKy0gE.YAWOEArEsMQ.U4jTITs6Y2z5at-5XnItwhqJP4mHUMIjiQ2m_2M0dGE";
+
+            conversation.Token = foo;
+
+            _directLineClient = null;
         }
 
 
@@ -381,14 +468,48 @@ namespace NomadCode.BotFramework
             {
                 if (ignoreFailure) return false;
 
-                throw new Exception ("client is not properly initialized");
+                Log.Error ("client is not properly initialized");
+                return false;
+                //throw new Exception ("client is not properly initialized");
             }
 
             Task.Run (async () =>
             {
                 try
                 {
+                    if (attemptingReconnect)
+                    {
+                        Log.Debug ($"attemptingReconnect == {attemptingReconnect} - returning");
+                        return;
+                    }
+
                     await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, activity).ConfigureAwait (false);
+
+                    attemptingReconnect = false;
+                }
+                catch (HttpOperationException httpEx)
+                {
+                    Log.Error (httpEx.Message);
+
+                    if (httpEx.Response.StatusCode == HttpStatusCode.Forbidden && !attemptingReconnect)
+                    {
+                        Log.Debug ($"attemptingReconnect == {attemptingReconnect}");
+
+                        attemptingReconnect = true;
+
+                        await ResetWebsocketAsync ();
+
+                        await directLineClient.Conversations.PostActivityAsync (conversation.ConversationId, activity).ConfigureAwait (false);
+
+                        attemptingReconnect = false;
+                    }
+
+                    else throw;
+
+                    //directLineClient
+                    //attemptedReconnect = true;
+
+                    //await ConnectSocketAsync ();
                 }
                 catch (Exception ex)
                 {

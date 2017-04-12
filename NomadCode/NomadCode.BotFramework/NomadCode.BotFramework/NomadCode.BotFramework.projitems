@@ -13,5 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)BotClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keychain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TaskExtensions.cs" />
   </ItemGroup>
 </Project>

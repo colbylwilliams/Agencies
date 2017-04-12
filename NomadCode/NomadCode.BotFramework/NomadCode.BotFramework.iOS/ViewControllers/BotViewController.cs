@@ -72,18 +72,22 @@ namespace NomadCode.BotFramework.iOS
             TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.MessageHeaderCellReuseId);
             TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
 
-
-            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
+            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Break", UIBarButtonItemStyle.Plain, (sender, e) =>
             {
-                SignIn.SharedInstance.SignOutUser ();
-
-                await AzureClient.Shared.LogoutAsync ();
-
-                BotClient.Shared.Reset ();
-
-                authenticate ();
-
+                BotClient.Shared.FuckupToken ();
             }), false);
+
+            //NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
+            //{
+            //    SignIn.SharedInstance.SignOutUser ();
+
+            //    await AzureClient.Shared.LogoutAsync ();
+
+            //    BotClient.Shared.Reset ();
+
+            //    authenticate ();
+
+            //}), false);
 
             //AutoCompletionView.RegisterClassForCellReuse(typeof(MessageHeadCell), MessageHeadCell.AutoCompleteReuseId);
 
@@ -194,6 +198,7 @@ namespace NomadCode.BotFramework.iOS
 
         void connectAllTheseEvents ()
         {
+            AzureClient.Shared.AthorizationChanged += handleAzureClientAthorizationChanged;
             BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
             BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesCollectionChanged;
             BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
@@ -201,6 +206,7 @@ namespace NomadCode.BotFramework.iOS
 
         void disconnectAllTheseEvents ()
         {
+            AzureClient.Shared.AthorizationChanged -= handleAzureClientAthorizationChanged;
             BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
             BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesCollectionChanged;
             BotClient.Shared.UserTypingMessageReceived -= handleBotClientUserTypingMessageReceived;
@@ -209,6 +215,11 @@ namespace NomadCode.BotFramework.iOS
 
         #endregion
 
+
+        void handleAzureClientAthorizationChanged (object sender, bool e)
+        {
+            Log.Debug (e.ToString ());
+        }
 
         #region Action Methods
 
@@ -662,12 +673,19 @@ namespace NomadCode.BotFramework.iOS
         {
             Log.Debug ($"{e.ReadyState}");
 
-            switch (e.ReadyState)
+            BeginInvokeOnMainThread (() =>
             {
-                case ReadyState.Open:
-                    //BotClient.Shared.SendMessage ("Hello World");
-                    break;
-            }
+                switch (e.ReadyState)
+                {
+                    case ReadyState.Open:
+                        //BotClient.Shared.SendMessage ("Hello World");
+                        RightButton.Enabled = true;
+                        break;
+                    case ReadyState.Closing:
+                        RightButton.Enabled = false;
+                        break;
+                }
+            });
         }
 
 

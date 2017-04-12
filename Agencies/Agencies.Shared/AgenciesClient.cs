@@ -31,7 +31,7 @@ namespace Agencies.Shared
                     paramDictionary.Add (conversationIdKey, conversationId);
                 }
 
-                var channel = await azureClient.MobileServiceClient.InvokeApiAsync<Conversation> ("getBotToken", HttpMethod.Get, paramDictionary);
+                var channel = await azureClient.InvokeApiAsync<Conversation> ("getBotToken", HttpMethod.Get, paramDictionary);
 
                 return channel;
             }
