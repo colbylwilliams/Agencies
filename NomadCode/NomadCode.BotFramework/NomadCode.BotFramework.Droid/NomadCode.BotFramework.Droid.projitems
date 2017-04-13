@@ -11,4 +11,10 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)MyClass.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Utilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SocketExtensions.cs" />
+  </ItemGroup>
 </Project>

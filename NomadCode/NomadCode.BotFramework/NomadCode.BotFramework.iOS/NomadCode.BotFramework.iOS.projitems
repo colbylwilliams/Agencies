@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageImageHeadCell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellSubviews.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SocketExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ViewControllers\" />

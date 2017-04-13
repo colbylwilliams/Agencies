@@ -14,18 +14,46 @@ using Agencies.Shared;
 using System.Net;
 using Microsoft.Rest;
 
+#if __ANDROID__
+using Square.OkHttp3;
+using Square.OkHttp3.WS;
+
+using MessageArgs = Square.OkHttp3.WS.MessageEventArgs;
+using OpenArgs = Square.OkHttp3.WS.OpenEventArgs;
+using CloseArgs = Square.OkHttp3.WS.CloseEventArgs;
+using FailArgs = Square.OkHttp3.WS.FailureEventArgs;
+using PongArgs = Square.OkHttp3.WS.PongEventArgs;
+using Java.Nio.Charset;
+using NomadCode.BotFramework.Droid;
+#endif
+
 #if __IOS__
 using Foundation;
 using Square.SocketRocket;
+
+using MessageArgs = Square.SocketRocket.WebSocketReceivedMessageEventArgs;
+using OpenArgs = System.EventArgs;
+using CloseArgs = Square.SocketRocket.WebSocketClosedEventArgs;
+using FailArgs = Square.SocketRocket.WebSocketFailedEventArgs;
+using PongArgs = Square.SocketRocket.WebSocketReceivedPongEventArgs;
+using NomadCode.BotFramework.iOS;
 #endif
 
 namespace NomadCode.BotFramework
 {
-    public class ReadyStateChangedEventArgs : EventArgs
+    public enum SocketStates : long
     {
-        public ReadyState ReadyState { get; set; }
+        Connecting,
+        Open,
+        Closing,
+        Closed
+    }
 
-        public ReadyStateChangedEventArgs (ReadyState readyState) => ReadyState = readyState;
+    public class SocketStateChangedEventArgs : EventArgs
+    {
+        public SocketStates SocketState { get; set; }
+
+        public SocketStateChangedEventArgs (SocketStates socketState) => SocketState = socketState;
     }
 
 
@@ -79,17 +107,56 @@ namespace NomadCode.BotFramework
 
         #endregion
 
+        SocketStates _socketState;
+
+        SocketStates SocketState
+        {
+#if __ANDROID__
+            get => _socketState;
+#elif __IOS__
+            get => webSocket != null ? (SocketStates)webSocket.ReadyState : _socketState;
+#endif
+            set
+            {
+                if (_socketState != value)
+                {
+                    _socketState = value;
+
+                    ReadyStateChanged?.Invoke (this, new SocketStateChangedEventArgs (_socketState));
+                }
+            }
+        }
+
+#if __ANDROID__
+        void setSocketState (SocketStates state) => SocketState = state;
+#elif __IOS__
+        void setSocketState (SocketStates state) => SocketState = webSocket != null ? (SocketStates)webSocket.ReadyState : state;
+#endif
+
+#if __ANDROID__
+
+        OkHttpClient httpClient = new OkHttpClient ();
+
+        public IWebSocket webSocket { get; set; }
+
+        public WebSocketCall webSocketCall { get; set; }
+
+        public WebSocketListener webSocketListener { get; set; }
+
+        public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
+
+#else
 
         public WebSocket webSocket { get; set; }
-
         public bool Initialized => webSocket?.ReadyState == ReadyState.Open && HasValidCurrentUser && conversation != null;
+#endif
 
 
         public List<Message> Messages { get; set; } = new List<Message> ();
 
 
         public event EventHandler<Activity> UserTypingMessageReceived;
-        public event EventHandler<ReadyStateChangedEventArgs> ReadyStateChanged;
+        public event EventHandler<SocketStateChangedEventArgs> ReadyStateChanged;
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
@@ -102,7 +169,7 @@ namespace NomadCode.BotFramework
         public void Reset ()
         {
             ResetCurrentUser ();
-            webSocket.Close ();
+            webSocket.Close (1001L, "going away");
             webSocket = null;
             conversation = null;
             _directLineClient = null;
@@ -115,7 +182,7 @@ namespace NomadCode.BotFramework
         {
             try
             {
-                if (webSocket == null || webSocket.ReadyState == ReadyState.Closed)
+                if (webSocket == null || SocketState == SocketStates.Closed)
                 {
                     if (Settings.ResetConversation)
                     {
@@ -164,6 +231,21 @@ namespace NomadCode.BotFramework
 
                     if (!string.IsNullOrEmpty (conversation?.StreamUrl))
                     {
+#if __ANDROID__
+                        webSocketCall = WebSocketCall.Create (httpClient, new Request.Builder ().Url (conversation.StreamUrl).Build ());
+
+                        webSocketListener = webSocketCall.Enqueue ();
+
+                        webSocketListener.Message += handleWebSocketReceivedMessage;
+
+                        webSocketListener.Close += handleWebSocketClosed;
+
+                        webSocketListener.Failure += handleWebSocketFailed;
+
+                        webSocketListener.Open += handleWebSocketOpened;
+
+                        webSocketListener.Pong += handleWebSocketReceivedPong;
+#else
                         webSocket = new WebSocket (new NSUrl (conversation.StreamUrl));
 
                         webSocket.ReceivedMessage += handleWebSocketReceivedMessage;
@@ -179,9 +261,10 @@ namespace NomadCode.BotFramework
                         Log.Info ($"[Socket Connecting...] {conversation.StreamUrl}");
 
                         webSocket.Open ();
+#endif
                     }
                 }
-                else if (webSocket.ReadyState == ReadyState.Open)
+                else if (SocketState == SocketStates.Open)
                 {
                     Log.Info ($"[Socket already open, refreshing token and reconnecting...]");
 
@@ -220,7 +303,7 @@ namespace NomadCode.BotFramework
 
         public async Task ResetWebsocketAsync ()
         {
-            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (ReadyState.Closing));
+            setSocketState (SocketStates.Closing);
 
             var closed = await closeWebsocketAsync ();
 
@@ -241,24 +324,28 @@ namespace NomadCode.BotFramework
 
                 closeSocketTcs = new TaskCompletionSource<bool> ();
 
-
+#if __ANDROID__
+                webSocketListener.Close += handleWebSocketClosedAsync;
+#elif __IOS__
                 webSocket.WebSocketClosed += handleWebSocketClosedAsync;
+#endif
 
-
-                webSocket.Close ();
-
+                webSocket.Close (1001L, "going away");
 
                 return closeSocketTcs.Task;
             }
 
 
-            void handleWebSocketClosedAsync (object sender, WebSocketClosedEventArgs e)
+            void handleWebSocketClosedAsync (object sender, CloseArgs e)
             {
+#if __ANDROID__
+                webSocketListener.Close -= handleWebSocketClosedAsync;
+#elif __IOS__
                 webSocket.WebSocketClosed -= handleWebSocketClosedAsync;
-
+#endif
                 Log.Debug ($"e.Code: {e.Code}");
                 Log.Debug ($"e.Reason: {e.Reason}");
-                Log.Debug ($"e.WasClean: {e.WasClean}");
+                //Log.Debug ($"e.WasClean: {e.WasClean}");
 
                 if (!closeSocketTcs.TrySetResult (true))
                 {
@@ -266,6 +353,79 @@ namespace NomadCode.BotFramework
                 }
             }
         }
+
+
+
+
+        #region WebSocket Event Handlers
+
+        void handleWebSocketReceivedMessage (object sender, MessageArgs e)
+        {
+#if __ANDROID__
+            string message = e.Message.String ();
+            e.Message.Close ();
+#elif __IOS__
+            var message = e.Message.ToString ();
+#endif
+            // Ignore empty messages 
+            if (string.IsNullOrEmpty (message))
+            {
+                Log.Info ($"[Socket Message Received] Empty message, ignoring");
+
+                return;
+            }
+
+            //Log.Info ($"[Socket Message Received] \n{message}");
+
+            var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
+
+            handleNewActvitySet (activitySet);
+        }
+
+
+        void handleWebSocketReceivedPong (object sender, PongArgs e)
+        {
+#if __ANDROID__
+            string payload = e.Payload.ReadString (Charset.DefaultCharset ());
+            e.Payload.Close ();
+#elif __IOS__
+
+#endif
+            Log.Info ($"[Socket Received Pong] {Environment.NewLine}");
+        }
+
+
+        void handleWebSocketClosed (object sender, CloseArgs e)
+        {
+            Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
+            //#if __ANDROID__
+            //            //webSocket = e.WebSocket;
+            //#endif
+            setSocketState (SocketStates.Closed);
+        }
+
+
+        void handleWebSocketFailed (object sender, FailArgs e)
+        {
+#if __ANDROID__
+            Log.Info ($"[Socket Failed to Connect] Error: {e.Exception?.LocalizedMessage}  Code: {e.Response?.Code ()}");
+#else
+            Log.Info ($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
+#endif
+        }
+
+
+        void handleWebSocketOpened (object sender, OpenArgs e)
+        {
+            Log.Info ($"[Socket Connected] {conversation?.StreamUrl}");
+#if __ANDROID__
+            webSocket = e.WebSocket;
+#endif
+            setSocketState (SocketStates.Open);
+        }
+
+        #endregion
+
 
 
         void handleNewActvitySet (ActivitySet activitySet, bool changedEvents = true)
@@ -340,70 +500,6 @@ namespace NomadCode.BotFramework
         }
 
 
-        #region WebSocket Event Handlers
-
-        void handleWebSocketReceivedMessage (object sender, WebSocketReceivedMessageEventArgs e)
-        {
-            var message = e.Message.ToString ();
-
-            // Ignore empty messages 
-            if (string.IsNullOrEmpty (message))
-            {
-                Log.Info ($"[Socket Message Received] Empty message, ignoring");
-
-                return;
-            }
-
-            //Log.Info ($"[Socket Message Received] \n{message}");
-
-            var activitySet = JsonConvert.DeserializeObject<ActivitySet> (message);
-
-            handleNewActvitySet (activitySet);
-        }
-
-
-        void handleWebSocketReceivedPong (object sender, WebSocketReceivedPongEventArgs e)
-        {
-            Log.Info ($"[Socket Received Pong] {Environment.NewLine}");
-        }
-
-
-        void handleWebSocketClosed (object sender, WebSocketClosedEventArgs e)
-        {
-            Log.Info ($"[Socket Disconnected] Reason: {e.Reason}  Code: {e.Code}");
-
-            //webSocket.ReceivedMessage -= handleWebSocketReceivedMessage;
-            //webSocket.WebSocketClosed -= handleWebSocketClosed;
-            //webSocket.WebSocketFailed -= handleWebSocketFailed;
-            //webSocket.WebSocketOpened -= handleWebSocketOpened;
-            //webSocket.ReceivedPong -= handleWebSocketReceivedPong;
-            //if (attemptReconnect)
-            //{
-            //    attemptReconnect = false;
-
-            //    Task.Run
-
-            //}
-
-            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-        }
-
-
-        void handleWebSocketFailed (object sender, WebSocketFailedEventArgs e)
-        {
-            Log.Info ($"[Socket Failed to Connect] Error: {e.Error?.LocalizedDescription}  Code: {e.Error?.Code}");
-            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-
-        }
-
-
-        void handleWebSocketOpened (object sender, EventArgs e)
-        {
-            Log.Info ($"[Socket Connected] {conversation?.StreamUrl}");
-            ReadyStateChanged?.Invoke (this, new ReadyStateChangedEventArgs (webSocket.ReadyState));
-        }
-
-        #endregion
 
         public bool SendMessage (string text)
         {
@@ -528,7 +624,11 @@ namespace NomadCode.BotFramework
         {
             if (!Initialized) return false;
 
+#if __ANDROID__
+            webSocket.SendPing (new Square.OkIO.OkBuffer ().WriteString ("ping", Charset.DefaultCharset ()));
+#else
             webSocket.SendPing ();
+#endif
 
             return true;
         }

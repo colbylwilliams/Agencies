@@ -669,19 +669,19 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        void handleBotClientReadyStateChanged (object sender, ReadyStateChangedEventArgs e)
+        void handleBotClientReadyStateChanged (object sender, SocketStateChangedEventArgs e)
         {
-            Log.Debug ($"{e.ReadyState}");
+            Log.Debug ($"{e.SocketState}");
 
             BeginInvokeOnMainThread (() =>
             {
-                switch (e.ReadyState)
+                switch (e.SocketState)
                 {
-                    case ReadyState.Open:
+                    case SocketStates.Open:
                         //BotClient.Shared.SendMessage ("Hello World");
                         RightButton.Enabled = true;
                         break;
-                    case ReadyState.Closing:
+                    case SocketStates.Closing:
                         RightButton.Enabled = false;
                         break;
                 }
