@@ -11,8 +11,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Domain", "Agencies
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.Azure", "..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.shproj", "{049FF267-02CB-4168-9EC5-0768D053EF77}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Bot", "Agencies.Bot\Agencies.Bot.shproj", "{75111560-5294-49FD-8349-B9F738237344}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework", "..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.shproj", "{9BB6E7A1-9998-41B9-A508-8C06FF1D6E6F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.BotFramework.iOS", "..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.shproj", "{F2D08DC5-20D9-4A13-8859-D9F7F5215630}"
@@ -60,8 +58,6 @@ Global
 		$2.inheritsSet = null
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
-		$3.SpacingAfterMethodDeclarationName = True
-		$3.SpaceAfterMethodCallName = True
 		$3.scope = text/x-csharp
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution

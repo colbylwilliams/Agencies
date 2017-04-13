@@ -182,13 +182,14 @@ namespace NomadCode.BotFramework
             {
                 if (webSocket == null || SocketState == SocketStates.Closed)
                 {
+#if DEBUG
                     if (Settings.ResetConversation)
                     {
                         Log.Info ("Resetting conversation...");
 
                         ConversationId = string.Empty;
                     }
-
+#endif
                     if (!HasValidCurrentUser)
                     {
                         throw new InvalidOperationException ("BotClient.CurrentUserId and BotClient.CurrentUserName must have values before connecting");

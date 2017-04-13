@@ -14,7 +14,7 @@ namespace SettingsStudio
         {
             get => StringForKey (SettingsKeys.VersionNumber);
 #if __ANDROID__
-			set => SetSetting (SettingsKeys.VersionNumber, value);
+            set => SetSetting (SettingsKeys.VersionNumber, value);
 #endif
         }
 
@@ -23,7 +23,7 @@ namespace SettingsStudio
         {
             get => StringForKey (SettingsKeys.BuildNumber);
 #if __ANDROID__
-			set => SetSetting (SettingsKeys.BuildNumber, value);
+            set => SetSetting (SettingsKeys.BuildNumber, value);
 #endif
         }
 
