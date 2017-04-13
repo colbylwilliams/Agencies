@@ -59,6 +59,9 @@ Global
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
 		$3.scope = text/x-csharp
+		$3.SpacingAfterMethodDeclarationName = True
+		$3.SpaceAfterMethodCallName = True
+		$3.SpaceBeforeOpenSquareBracket = True
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{049FF267-02CB-4168-9EC5-0768D053EF77} = {704ED759-2625-4F2E-8E83-05A118EA802A}
