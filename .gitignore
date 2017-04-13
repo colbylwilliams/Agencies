@@ -299,3 +299,5 @@ Agencies/Agencies.Shared/Keys/PrivateKeys.cs
 Agencies/Agencies.iOS/GoogleService-Info.plist
 
 Agencies/Agencies.iOS/GoogleService-Info.plist
+
+Agencies/Agencies.Droid/google-services.json
