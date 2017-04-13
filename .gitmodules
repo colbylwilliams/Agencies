@@ -1,0 +1,6 @@
+[submodule "NomadCode/NomadCode.Azure"]
+	path = NomadCode/NomadCode.Azure
+	url = https://github.com/colbylwilliams/NomadCode.Azure
+[submodule "NomadCode/NomadCode.UIExtensions"]
+	path = NomadCode/NomadCode.UIExtensions
+	url = https://github.com/colbylwilliams/NomadCode.UIExtensions
