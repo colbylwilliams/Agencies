@@ -15,28 +15,28 @@ using System.Net;
 using Microsoft.Rest;
 
 #if __ANDROID__
+using Java.Nio.Charset;
 using Square.OkHttp3;
 using Square.OkHttp3.WS;
+using NomadCode.BotFramework.Droid;
 
 using MessageArgs = Square.OkHttp3.WS.MessageEventArgs;
 using OpenArgs = Square.OkHttp3.WS.OpenEventArgs;
 using CloseArgs = Square.OkHttp3.WS.CloseEventArgs;
 using FailArgs = Square.OkHttp3.WS.FailureEventArgs;
 using PongArgs = Square.OkHttp3.WS.PongEventArgs;
-using Java.Nio.Charset;
-using NomadCode.BotFramework.Droid;
 #endif
 
 #if __IOS__
 using Foundation;
 using Square.SocketRocket;
+using NomadCode.BotFramework.iOS;
 
 using MessageArgs = Square.SocketRocket.WebSocketReceivedMessageEventArgs;
 using OpenArgs = System.EventArgs;
 using CloseArgs = Square.SocketRocket.WebSocketClosedEventArgs;
 using FailArgs = Square.SocketRocket.WebSocketFailedEventArgs;
 using PongArgs = Square.SocketRocket.WebSocketReceivedPongEventArgs;
-using NomadCode.BotFramework.iOS;
 #endif
 
 namespace NomadCode.BotFramework
@@ -67,6 +67,59 @@ namespace NomadCode.BotFramework
 
 
         Conversation conversation;
+
+        SocketStates _socketState;
+
+        SocketStates SocketState
+        {
+#if __ANDROID__
+            get => _socketState;
+#elif __IOS__
+            get => webSocket != null ? (SocketStates)webSocket.ReadyState : _socketState;
+#endif
+            set
+            {
+                if (_socketState != value)
+                {
+                    _socketState = value;
+
+                    ReadyStateChanged?.Invoke (this, new SocketStateChangedEventArgs (_socketState));
+                }
+            }
+        }
+
+
+#if __ANDROID__
+        OkHttpClient httpClient = new OkHttpClient ();
+
+        public IWebSocket webSocket { get; set; }
+
+        public WebSocketCall webSocketCall { get; set; }
+
+        public WebSocketListener webSocketListener { get; set; }
+
+        public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
+
+        void setSocketState (SocketStates state) => SocketState = state;
+#else
+        public WebSocket webSocket { get; set; }
+
+        public bool Initialized => webSocket?.ReadyState == ReadyState.Open && HasValidCurrentUser && conversation != null;
+
+        void setSocketState (SocketStates state) => SocketState = webSocket != null ? (SocketStates)webSocket.ReadyState : state;
+#endif
+
+
+        public List<Message> Messages { get; set; } = new List<Message> ();
+
+
+        public event EventHandler<Activity> UserTypingMessageReceived;
+        public event EventHandler<SocketStateChangedEventArgs> ReadyStateChanged;
+        public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
+
+
+        bool attemptingReconnect;
+
 
         #region Current User
 
@@ -106,61 +159,6 @@ namespace NomadCode.BotFramework
         public bool HasValidCurrentUser => !(string.IsNullOrWhiteSpace (CurrentUserId) || string.IsNullOrWhiteSpace (CurrentUserName));
 
         #endregion
-
-        SocketStates _socketState;
-
-        SocketStates SocketState
-        {
-#if __ANDROID__
-            get => _socketState;
-#elif __IOS__
-            get => webSocket != null ? (SocketStates)webSocket.ReadyState : _socketState;
-#endif
-            set
-            {
-                if (_socketState != value)
-                {
-                    _socketState = value;
-
-                    ReadyStateChanged?.Invoke (this, new SocketStateChangedEventArgs (_socketState));
-                }
-            }
-        }
-
-#if __ANDROID__
-        void setSocketState (SocketStates state) => SocketState = state;
-#elif __IOS__
-        void setSocketState (SocketStates state) => SocketState = webSocket != null ? (SocketStates)webSocket.ReadyState : state;
-#endif
-
-#if __ANDROID__
-
-        OkHttpClient httpClient = new OkHttpClient ();
-
-        public IWebSocket webSocket { get; set; }
-
-        public WebSocketCall webSocketCall { get; set; }
-
-        public WebSocketListener webSocketListener { get; set; }
-
-        public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
-
-#else
-
-        public WebSocket webSocket { get; set; }
-        public bool Initialized => webSocket?.ReadyState == ReadyState.Open && HasValidCurrentUser && conversation != null;
-#endif
-
-
-        public List<Message> Messages { get; set; } = new List<Message> ();
-
-
-        public event EventHandler<Activity> UserTypingMessageReceived;
-        public event EventHandler<SocketStateChangedEventArgs> ReadyStateChanged;
-        public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
-
-
-        bool attemptingReconnect;
 
 
         BotClient () { }
