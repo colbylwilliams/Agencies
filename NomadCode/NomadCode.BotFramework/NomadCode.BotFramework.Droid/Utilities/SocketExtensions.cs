@@ -1,5 +1,6 @@
-﻿using System;
-using Square.OkHttp3.WS;
+﻿
+using Square.OkHttp3;
+
 namespace NomadCode.BotFramework.Droid
 {
     public static class SocketExtensions

@@ -16,6 +16,10 @@ using Android.Gms.Auth.Api;
 using Android.Support.V4.App;
 using Android.Gms.Common;
 
+using NomadCode.BotFramework;
+using System.Threading.Tasks;
+using NomadCode.Azure;
+
 namespace Agencies.Droid
 {
     [Activity (Label = "LoginActivity")]
@@ -33,9 +37,16 @@ namespace Agencies.Droid
 
             SetContentView (Resource.Layout.LoginActivityLayout);
 
+            // use this format to help users set up the app
+            //if (GetString (Resource.String.google_app_id) == "YOUR-APP-ID")
+            //throw new System.Exception ("Invalid google-services.json file.  Make sure you've downloaded your own config file and added it to your app project with the 'GoogleServicesJson' build action.");
+
+            var webClientId = GetString (Resource.String.default_web_client_id);
+
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder (GoogleSignInOptions.DefaultSignIn)
                                                              .RequestEmail ()
-                                                             .RequestIdToken (Keys.Google.ServerClientId)
+                                                             .RequestIdToken (webClientId)
+                                                             .RequestServerAuthCode (webClientId)
                                                              .Build ();
 
             googleApiClient = new GoogleApiClient.Builder (this)
@@ -86,12 +97,39 @@ namespace Agencies.Droid
             if (result.IsSuccess)
             {
                 // Signed in successfully, show authenticated UI.
-                GoogleSignInAccount acct = result.SignInAccount;
-                //mStatusTextView.setText (getString (R.string.signed_in_fmt, acct.getDisplayName ()));
+                GoogleSignInAccount user = result.SignInAccount;
+
+                if (user != null)
+                {
+                    Log.Debug ($"user.Account.Name: {user.Account.Name}");
+                    Log.Debug ($"acct.DisplayName: {user.DisplayName}");
+                    Log.Debug ($"acct.Email: {user.Email}");
+                    Log.Debug ($"acct.FamilyName: {user.FamilyName}");
+                    Log.Debug ($"acct.GivenName: {user.GivenName}");
+                    Log.Debug ($"acct.GrantedScopes: {string.Join (",", user.GrantedScopes)}");
+                    Log.Debug ($"acct.Id: {user.Id}");
+                    Log.Debug ($"acct.IdToken: {user.IdToken}");
+                    Log.Debug ($"acct.PhotoUrl: {user.PhotoUrl}");
+                    Log.Debug ($"acct.ServerAuthCode: {user.ServerAuthCode}");
+
+                    BotClient.CurrentUserName = user.DisplayName;
+                    BotClient.CurrentUserEmail = user.Email;
+
+                    Task.Run (async () =>
+                    {
+                        var auth = await AzureClient.Shared.AuthenticateAsync (user.IdToken, user.ServerAuthCode);
+
+                        BotClient.CurrentUserId = auth.Sid;
+
+                        RunOnUiThread (() => Finish ());
+                        //BeginInvokeOnMainThread (() => DismissViewController (true, null));
+                    });
+                }
             }
             else
             {
                 // Signed out, show unauthenticated UI.
+                Log.Error ($"Google SingIn failed with code:{result.Status}");
             }
         }
 

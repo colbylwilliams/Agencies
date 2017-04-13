@@ -41,29 +41,33 @@ namespace Agencies.iOS
         {
             if (error == null)
             {
-                // Perform any operations on signed in user here.
-                var userId = user.UserID;                  // For client-side use only!
-                var idToken = user.Authentication.IdToken; // Safe to send to the server
-                var accessToken = user.Authentication.AccessToken;
-                var serverAuth = user.ServerAuthCode;
-                var fullName = user.Profile.Name;
-                var givenName = user.Profile.GivenName;
-                var familyName = user.Profile.FamilyName;
-                var email = user.Profile.Email;
-                // ...;
-                Log.Debug ($"\n\tuserId: {userId},\n\tidToken: {idToken},\n\taccessToken: {accessToken},\n\tserverAuth: {serverAuth},\n\tfullName: {fullName},\n\tgivenName: {givenName},\n\tfamilyName: {familyName},\n\temail: {email},\n\t");
-
-                BotClient.CurrentUserName = user?.Profile?.Name;
-                BotClient.CurrentUserEmail = user?.Profile?.Email;
-
-                Task.Run (async () =>
+                if (user != null)
                 {
-                    var auth = await AzureClient.Shared.AuthenticateAsync (user.Authentication.IdToken, user.ServerAuthCode);
+                    // Perform any operations on signed in user here.
+                    var userId = user.UserID;                  // For client-side use only!
+                    var idToken = user.Authentication.IdToken; // Safe to send to the server
+                    var accessToken = user.Authentication.AccessToken;
+                    var serverAuth = user.ServerAuthCode;
+                    var fullName = user.Profile.Name;
+                    var givenName = user.Profile.GivenName;
+                    var familyName = user.Profile.FamilyName;
+                    var email = user.Profile.Email;
+                    var imageUrl = user.Profile.GetImageUrl (64);
+                    // ...;
+                    Log.Debug ($"\n\tuserId: {userId},\n\tidToken: {idToken},\n\taccessToken: {accessToken},\n\tserverAuth: {serverAuth},\n\tfullName: {fullName},\n\tgivenName: {givenName},\n\tfamilyName: {familyName},\n\temail: {email},\n\timageUrl: {imageUrl},\n\t");
 
-                    BotClient.CurrentUserId = auth.Sid;
+                    BotClient.CurrentUserName = user?.Profile?.Name;
+                    BotClient.CurrentUserEmail = user?.Profile?.Email;
 
-                    BeginInvokeOnMainThread (() => DismissViewController (true, null));
-                });
+                    Task.Run (async () =>
+                    {
+                        var auth = await AzureClient.Shared.AuthenticateAsync (user.Authentication.IdToken, user.ServerAuthCode);
+
+                        BotClient.CurrentUserId = auth.Sid;
+
+                        BeginInvokeOnMainThread (() => DismissViewController (true, null));
+                    });
+                }
             }
             else
             {
