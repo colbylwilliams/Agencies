@@ -22,17 +22,21 @@
 
                 public static string BaseUrl = $"https://{AccountName}.blob.{EndpointSuffix}";
             }
-
         }
 
         public static partial class CognitiveServices
         {
             public static partial class FaceApi
             {
-                public const string SubscriptionKey = @"";
-
+                //public const string SubscriptionKey = @"";
             }
         }
 
+        public static partial class Google
+        {
+            //public const string ServerClientId = @"";
+
+            //public const string ClientId = @"";
+        }
     }
 }

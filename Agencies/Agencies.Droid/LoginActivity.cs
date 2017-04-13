@@ -60,11 +60,13 @@ namespace Agencies.Droid
             }
         }
 
+
         void signIn ()
         {
             var signInIntent = Auth.GoogleSignInApi.GetSignInIntent (googleApiClient);
             StartActivityForResult (signInIntent, RC_SIGN_IN);
         }
+
 
         protected override void OnActivityResult (int requestCode, Result resultCode, Intent data)
         {
@@ -92,6 +94,7 @@ namespace Agencies.Droid
                 // Signed out, show unauthenticated UI.
             }
         }
+
 
         public void OnConnectionFailed (ConnectionResult result)
         {
