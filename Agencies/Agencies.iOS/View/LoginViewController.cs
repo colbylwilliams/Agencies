@@ -6,7 +6,6 @@ using Google.SignIn;
 using System.Threading.Tasks;
 using NomadCode.Azure;
 using NomadCode.BotFramework;
-
 using NomadCode.BotFramework.iOS;
 
 namespace Agencies.iOS
@@ -28,11 +27,32 @@ namespace Agencies.iOS
             googleSignInButton.Style = ButtonStyle.Wide;
             googleSignInButton.ColorScheme = ButtonColorScheme.Dark;
 
+
+            facebookSignInButton.ReadPermissions = new string [] { @"public_profile", @"email"/*, @"user_friends"*/};
+
+
             // Uncomment to automatically sign in the user.
             SignIn.SharedInstance.SignInUserSilently ();
 
             // Uncomment to automatically sign out the user.
             //SignIn.SharedInstance.SignOutUser ();
+
+        }
+
+
+        public override void ViewDidAppear (bool animated)
+        {
+            base.ViewDidAppear (animated);
+
+            if (Facebook.CoreKit.AccessToken.CurrentAccessToken != null)
+            {
+                // User is logged in, do work such as go to next view controller. 
+                Log.Debug ($"Facebook Current Access Token: {Facebook.CoreKit.AccessToken.CurrentAccessToken}");
+            }
+            else
+            {
+                Log.Debug ($"Facebook Current Access Token: null");
+            }
         }
 
 
