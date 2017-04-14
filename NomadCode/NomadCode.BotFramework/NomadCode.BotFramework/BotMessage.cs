@@ -9,7 +9,7 @@ using Foundation;
 
 namespace NomadCode.BotFramework
 {
-    public class Message : IComparable<Message>, IEquatable<Message>
+    public class BotMessage : IComparable<BotMessage>, IEquatable<BotMessage>
     {
 #if __IOS__
         public nfloat CellHeight { get; set; }
@@ -34,10 +34,10 @@ namespace NomadCode.BotFramework
         public DateTime? LocalTimeStamp => Activity.Timestamp?.ToLocalTime () ?? Activity.LocalTimestamp?.LocalDateTime;
 
 
-        public Message (Activity activity) => Activity = activity;
+        public BotMessage (Activity activity) => Activity = activity;
 
 
-        public int CompareTo (Message other)
+        public int CompareTo (BotMessage other)
         {
             if (!string.IsNullOrEmpty (Activity?.Id) && !string.IsNullOrEmpty (other?.Activity?.Id))
             {
@@ -48,7 +48,7 @@ namespace NomadCode.BotFramework
         }
 
 
-        public bool Equals (Message other)
+        public bool Equals (BotMessage other)
         {
             // HACK: This is nasty, but I want to be able to compare the message based on timestamp
             //       However, even if I set the timestamp, the server re-sets it so they tend to be

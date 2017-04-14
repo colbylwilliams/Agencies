@@ -11,35 +11,19 @@ using UIKit;
 
 using SlackHQ;
 
-using Microsoft.Bot.Connector.DirectLine;
-
-using NomadCode.Azure;
-using NomadCode.UIExtensions;
-
-using Agencies;
-using Agencies.Shared;
-using Agencies.iOS;
-
-using Google.SignIn;
-
 namespace NomadCode.BotFramework.iOS
 {
-    public interface IAutoCompleteResult
-    {
-        string id { get; }
-        string name { get; }
-    }
-
-
     [Register ("BotViewController")]
     public class BotViewController : SlackTextViewController
     {
         UIWindow pipWindow;
 
-        List<IAutoCompleteResult> searchResult = new List<IAutoCompleteResult> ();
+        List<BotMessage> Messages => BotClient.Shared.Messages;
 
-        List<Message> Messages => BotClient.Shared.Messages;
+        List<(string Id, string Name)> searchResult = new List<(string Id, string Name)> ();
 
+
+        #region ViewController Lifecycle
 
         [Export ("initWithCoder:")]
         public BotViewController (NSCoder coder) : base (coder) => commonInit ();
@@ -65,46 +49,9 @@ namespace NomadCode.BotFramework.iOS
 
             TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
-            //TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.ReuseId);
             TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.MessageCellReuseId);
             TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.MessageHeaderCellReuseId);
             TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.AutoCompleteReuseId);
-
-            //NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Break", UIBarButtonItemStyle.Plain, (sender, e) =>
-            //{
-            //    BotClient.Shared.FuckupToken ();
-            //}), false);
-
-            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
-            {
-                SignIn.SharedInstance.SignOutUser ();
-
-                await AzureClient.Shared.LogoutAsync ();
-
-                BotClient.Shared.Reset ();
-
-                authenticate ();
-
-            }), false);
-
-            //AutoCompletionView.RegisterClassForCellReuse(typeof(MessageHeadCell), MessageHeadCell.AutoCompleteReuseId);
-
-            //RegisterPrefixesForAutoCompletion (new [] { @"@", @"#", @":", @"+:", @"/" });
-
-            //TextView.RegisterMarkdownFormattingSymbol (@"*", @"Bold");
-            //TextView.RegisterMarkdownFormattingSymbol (@"_", @"Italics");
-            //TextView.RegisterMarkdownFormattingSymbol (@"~", @"Strike");
-            //TextView.RegisterMarkdownFormattingSymbol (@"`", @"Code");
-            //TextView.RegisterMarkdownFormattingSymbol (@"```", @"Preformatted");
-            //TextView.RegisterMarkdownFormattingSymbol (@">", @"Quote");
-        }
-
-
-        public override void ViewWillAppear (bool animated)
-        {
-            base.ViewWillAppear (animated);
-
-            connectAllTheseEvents ();
         }
 
 
@@ -112,15 +59,19 @@ namespace NomadCode.BotFramework.iOS
         {
             base.ViewDidAppear (animated);
 
-            authenticate ();
+            BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
+            BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesChanged;
+            BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
         }
 
 
-        public override void ViewWillDisappear (bool animated)
+        public override void ViewDidDisappear (bool animated)
         {
-            disconnectAllTheseEvents ();
+            BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
+            BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesChanged;
+            BotClient.Shared.UserTypingMessageReceived -= handleBotClientUserTypingMessageReceived;
 
-            base.ViewWillDisappear (animated);
+            base.ViewDidDisappear (animated);
         }
 
 
@@ -131,91 +82,10 @@ namespace NomadCode.BotFramework.iOS
             TableView.ContentInset = new UIEdgeInsets (0, 0, 0, 0);
         }
 
-
-        void authenticate ()
-        {
-            Task.Run (async () =>
-            {
-                try
-                {
-                    if (!AzureClient.Shared.Initialized)
-                    {
-                        await Bootstrap.InitializeDataStoreAsync ();
-                    }
-
-                    if (!AzureClient.Shared.Authenticated)
-                    {
-                        // try authenticating with an existing token
-                        await AzureClient.Shared.AuthenticateAsync ();
-                    }
-
-                    // if that worked, initialize the bot
-                    if (AzureClient.Shared.Authenticated && !BotClient.Shared.Initialized)
-                    {
-                        await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
-                    }
-                    else
-                    {
-                        // otherwise prompt the user to login
-                        BeginInvokeOnMainThread (() =>
-                        {
-                            var loginNavController = Storyboard.Instantiate<LoginNavigationController> ();
-
-                            if (loginNavController != null)
-                            {
-                                PresentViewController (loginNavController, true, null);
-                            }
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error (ex.Message);
-                    throw;
-                }
-            });
-
-        }
-
-
-        #region Connect & Disonnect Events
-
-
-        void connectAllTheseEvents ()
-        {
-            AzureClient.Shared.AthorizationChanged += handleAzureClientAthorizationChanged;
-            BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
-            BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesChanged;
-            BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
-        }
-
-        void disconnectAllTheseEvents ()
-        {
-            AzureClient.Shared.AthorizationChanged -= handleAzureClientAthorizationChanged;
-            BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
-            BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesChanged;
-            BotClient.Shared.UserTypingMessageReceived -= handleBotClientUserTypingMessageReceived;
-        }
-
-
         #endregion
 
 
-        void handleAzureClientAthorizationChanged (object sender, bool e)
-        {
-            Log.Debug (e.ToString ());
-        }
-
         #region Action Methods
-
-
-        void hideOrShowTextInputBar (object s, EventArgs e)
-        {
-            //var hide = TextInputbarHidden;
-
-            SetTextInputbarHidden (!TextInputbarHidden, true);
-        }
-
 
         void togglePIPWindow (object s, EventArgs e)
         {
@@ -232,8 +102,10 @@ namespace NomadCode.BotFramework.iOS
 
         void showPIPWindow ()
         {
-            var frame = new CGRect (View.Frame.Width - 60, 0, 50, 50);
-            frame.Y = TextInputbar.Frame.GetMinY () - 60;
+            var frame = new CGRect (View.Frame.Width - 60, 0, 50, 50)
+            {
+                Y = TextInputbar.Frame.GetMinY () - 60
+            };
 
             pipWindow = new UIWindow (frame)
             {
@@ -280,49 +152,24 @@ namespace NomadCode.BotFramework.iOS
 
         #region Overriden Methods (Slack)
 
-
-        public override bool IgnoreTextInputbarAdjustment => base.IgnoreTextInputbarAdjustment;
-
-        public override bool ForceTextInputbarAdjustmentForResponder (UIResponder responder) => base.ForceTextInputbarAdjustmentForResponder (responder);
-
-        public override void DidChangeKeyboardStatus (KeyboardStatus status) => base.DidChangeKeyboardStatus (status);
-
-        public override void TextWillUpdate () => base.TextWillUpdate ();
+        public override bool CanPressRightButton => BotClient.Shared.Initialized;
 
 
-        long timeStampCache;
+        public override string KeyForTextCaching => NSBundle.MainBundle.BundleIdentifier;
 
-        const long delayTicks = TimeSpan.TicksPerSecond * 3;
 
         public override void TextDidUpdate (bool animated)
         {
-            var utcNowTicks = DateTime.UtcNow.Ticks;
-
-            if (timeStampCache == 0 || utcNowTicks - timeStampCache > delayTicks)
-            {
-                timeStampCache = utcNowTicks;
-
-                BotClient.Shared.SendUserTyping ();
-                //Task.Run(async () => await BotClient.Shared.SendUserTyping());
-            }
+            BotClient.Shared.SendUserTyping ();
 
             base.TextDidUpdate (animated);
         }
 
 
-        public override void DidPressLeftButton (NSObject sender)
-        {
-            Log.Debug ($"DidPressLeftButton");
-            base.DidPressLeftButton (sender);
-        }
-
-
+        // Notifies the view controller when the right button's action has been triggered, 
+        //   manually or by using the keyboard return key.
         public override void DidPressRightButton (NSObject sender)
         {
-            Log.Debug ($"DidPressRightButton : TextView.Text = {TextView.Text}");
-
-            // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
-
             addNewMessage ();
 
             base.DidPressRightButton (sender);
@@ -336,11 +183,9 @@ namespace NomadCode.BotFramework.iOS
             // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
             TextView.RefreshFirstResponder ();
 
-            var indexPath = NSIndexPath.FromRowSection (0, 0); //NSIndexPath.FromRowSection (row, section);
+            var indexPath = NSIndexPath.FromRowSection (0, 0);
             var rowAnimation = Inverted ? UITableViewRowAnimation.Bottom : UITableViewRowAnimation.Top;
             var scrollPosition = Inverted ? UITableViewScrollPosition.Bottom : UITableViewScrollPosition.Top;
-
-            //var sections = TableView.NumberOfSections ();
 
             TableView.BeginUpdates ();
 
@@ -365,71 +210,6 @@ namespace NomadCode.BotFramework.iOS
             // TableView.ReloadRows (new [] { indexPath }, UITableViewRowAnimation.Automatic);
         }
 
-
-
-        public override void DidPressArrowKey (UIKeyCommand sender) => base.DidPressArrowKey (sender);
-
-        public override string KeyForTextCaching => NSBundle.MainBundle.BundleIdentifier;
-
-        public override void DidPasteMediaContent (NSDictionary userInfo) => base.DidPasteMediaContent (userInfo);
-
-        public override void WillRequestUndo () => base.WillRequestUndo ();
-
-        public override void DidCommitTextEditing (NSObject sender) => base.DidCommitTextEditing (sender);
-
-        public override void DidCancelTextEditing (NSObject sender) => base.DidCancelTextEditing (sender);
-
-        public override bool CanPressRightButton => base.CanPressRightButton;
-
-        public override void ShowAutoCompletionView (bool show) => base.ShowAutoCompletionView (show);
-
-        public override bool AutoCompleting => base.AutoCompleting;
-
-        //public override void DidChangeAutoCompletionPrefix (string prefix, string word)
-        //{
-        //	var wordIsEmpty = string.IsNullOrEmpty (word);
-
-        //	IEnumerable<IAutoCompleteResult> array = null;
-
-        //	searchResult = null;
-
-        //	if (prefix.Equals (atStr))
-        //	{
-        //		array = wordIsEmpty ? BotClient.Shared.Users : BotClient.Shared.Users.Where (u => u.name.StartsWithIgnoreCase (word));
-        //	}
-        //	else if (prefix.Equals (hashStr) && !wordIsEmpty)
-        //	{
-        //		array = BotClient.Shared.Channels.Where (c => c.name.StartsWithIgnoreCase (word));
-        //	}
-        //	else if (prefix.Equals (colonStr) || prefix.Equals (plusColonStr) && !wordIsEmpty && word.Length > 1)
-        //	{
-        //		array = BotClient.Shared.Emojis.Where (e => e.name.StartsWithIgnoreCase (word));
-        //	}
-        //	else if (prefix.Equals (slashStr) && FoundPrefixRange.Location == 0)
-        //	{
-        //		array = wordIsEmpty ? BotClient.Shared.Commands : BotClient.Shared.Commands.Where (c => c.name.StartsWithIgnoreCase (word));
-        //	}
-
-        //	// array?.Sort ();
-
-        //	searchResult = array?.OrderBy (i => i.name).ToList ();
-
-        //	var show = searchResult?.Count > 0;
-
-        //	ShowAutoCompletionView (show);
-        //}
-
-
-        public override nfloat HeightForAutoCompletionView
-        {
-            get
-            {
-                var cellHeight = AutoCompletionView.Delegate.GetHeightForRow (AutoCompletionView, NSIndexPath.FromRowSection (0, 0));
-
-                return cellHeight * searchResult?.Count ?? 0;//  base.HeightForAutoCompletionView;
-            }
-        }
-
         #endregion
 
 
@@ -437,173 +217,28 @@ namespace NomadCode.BotFramework.iOS
 
         [Export ("numberOfSectionsInTableView:")]
         public nint NumberOfSections (UITableView tableView) => 1;
-        //=> tableView.Equals (TableView) ? MessageDataSource.SectionCount () : 1;
 
 
         public override nint RowsInSection (UITableView tableView, nint section)
-            => tableView.Equals (TableView) ? BotClient.Shared.Messages?.Count ?? 0 : (searchResult?.Count ?? 0);
+            => tableView.Equals (TableView) ? Messages?.Count ?? 0
+                                            : searchResult?.Count ?? 0;
 
 
         public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
-             => tableView.Equals (TableView) ? GetMessageCell (indexPath) : GetAutoCompleteCell (indexPath);
-
-
-        UITableViewCell GetMessageCell (NSIndexPath indexPath)
-        {
-            var message = Messages [indexPath.Row];
-
-            var reuseId = message.Head ? MessageCellReuseIds.MessageHeaderCellReuseId : MessageCellReuseIds.MessageCellReuseId;
-
-            var cell = TableView.DequeueReusableCell (reuseId, indexPath) as MessageCell;
-
-            if (message.Head)
-            {
-                var username = message.Activity.From.Name == "Digital Agencies" ? "Agency Bot" : message.Activity.From.Name;
-
-                cell.IndexPath = indexPath;
-
-                var key = cell.SetMessage (message.LocalTimeStamp, username, message.AttributedText);
-
-                if (message.Activity.From.Id == "DigitalAgencies")
-                {
-                    cell.SetAvatar (key, UIImage.FromBundle ("avatar_microsoft"));
-                }
-                else
-                {
-                    cell.SetAvatar (key, UIImage.FromBundle ("avatar_colby"));
-                }
-            }
-            else
-            {
-                cell.IndexPath = indexPath;
-
-                cell.SetMessage (message.AttributedText);
-
-                //bodyCell.UsedForMessage = true;
-            }
-
-            // Cells must inherit the table view's transform
-            // This is very important, since the main table view may be inverted
-            cell.Transform = TableView.Transform;
-
-            //Log.Debug($"{cell.BodyLabel.Bounds.Width}");
-
-            return cell;
-        }
-
-
-        MessageCell GetAutoCompleteCell (NSIndexPath indexPath)
-        {
-            //Log.Debug ($"GetAutoCompleteCell = [{indexPath}]");
-
-            var cell = AutoCompletionView.DequeueReusableCell (MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageCell;
-            cell.IndexPath = indexPath;
-
-            var text = searchResult [indexPath.Row].name;
-
-            //if (FoundPrefix.Equals (hashStr))
-            //{
-            //	text = $"# {text}";
-            //}
-            //else if (FoundPrefix.Equals (colonStr) || FoundPrefix.Equals (plusColonStr))
-            //{
-            //	text = $":{text}:";
-            //}
-
-            cell.TitleLabel.Text = text;
-            cell.SelectionStyle = UITableViewCellSelectionStyle.Default;
-
-            return cell;
-        }
+            => tableView.Equals (TableView) ? Messages.GetMessageCell (tableView, indexPath)
+                                            : searchResult.GetAutoCompleteCell (tableView, indexPath);
 
 
         [Export ("tableView:heightForRowAtIndexPath:")]
         public nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
-            => tableView.Equals (AutoCompletionView) ? MessageCell.AutoCompleteHeight : getMessageHeight (indexPath, tableView.Frame.Width);
-
-
-        nfloat getMessageHeight (NSIndexPath indexPath, nfloat width)
-        {
-            var row = indexPath.Row;
-
-            var message = Messages [row];
-
-            nfloat height = message.CellHeight;
-
-            if (height > 0)
-            {
-                return height;
-            }
-
-            message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages [row + 1].Activity.From.Name != message.Activity.From.Name);
-
-            width -= 49;
-
-            if (string.IsNullOrEmpty (message?.Activity.Text)) return 0;
-
-            var bodyBounds = message.AttributedText.GetBoundingRect (new CGSize (width, nfloat.MaxValue), NSStringDrawingOptions.UsesLineFragmentOrigin, null);
-
-            height = bodyBounds.Height + 5;// + 8.5f; // empty stackView = 3.5f + bottom padding = 5
-
-            //Log.Debug($"{width}");
-
-            if (message.Head) height += 36.5f; // pading(10) + title(21.5) + padding(5) + content(height)
-
-            //if message has buttons
-            if (message.ButtonCount > 0)
-            {
-                height += (32 * message.ButtonCount);
-                height += 4 * (message.ButtonCount - 1);
-                height += 5;
-            }
-
-            message.CellHeight = height;
-
-            return height;
-        }
-
+            => tableView.Equals (TableView) ? Messages.GetMessageHeight (tableView, indexPath)
+                                            : MessageCell.AutoCompleteHeight;
 
 
         [Export ("tableView:heightForFooterInSection:")]
-        public nfloat GetHeightForFooter (UITableView tableView, nint section) => tableView.Equals (TableView) ? 60.0f : 0.0f;
-
-
-        [Export ("tableView:willDisplayFooterView:forSection:")]
-        public void WillDisplayFooterView (UITableView tableView, UIView footerView, nint section)
-        {
-            footerView.Transform = TableView.Transform;
-
-            if (footerView is UITableViewHeaderFooterView footer)
-            {
-                footer.ContentView.BackgroundColor = UIColor.White;
-                footer.TextLabel.TextColor = UIColor.Gray;
-                footer.TextLabel.TextAlignment = UITextAlignment.Center;
-            }
-        }
-
-
-        //[Export ("tableView:titleForFooterInSection:")]
-        //public string TitleForFooter (UITableView tableView, nint section)
-        //	=> tableView.Equals (TableView) ? BotClient.Shared.Messages?.ElementAt ((int)section).Key.ToString ("MMM dd, yyyy") : null;
-
-
-        //[Export ("tableView:didSelectRowAtIndexPath:")]
-        //public void RowSelected (UITableView tableView, NSIndexPath indexPath)
-        //{
-        //	if (tableView.Equals (AutoCompletionView))
-        //	{
-        //		var item = searchResult [indexPath.Row].name;
-
-        //		if ((FoundPrefix.Equals (atStr) && FoundPrefixRange.Location == 0) || (FoundPrefix.Equals (colonStr) || FoundPrefix.Equals (plusColonStr)))
-        //		{
-        //			item += colonStr;
-        //		}
-
-        //		item = $"{item} ";
-
-        //		AcceptAutoCompletion (item, true);
-        //	}
-        //}
+        public nfloat GetHeightForFooter (UITableView tableView, nint section)
+            => tableView.Equals (TableView) ? 60.0f
+                                            : 0.0f;
 
         #endregion
 
@@ -617,16 +252,10 @@ namespace NomadCode.BotFramework.iOS
         [Export ("textViewShouldEndEditing:")]
         public bool ShouldEndEditing (UITextView textView) => true;
 
-
-        public override bool ShouldChangeText (UITextView textView, NSRange range, string text) => base.ShouldChangeText (textView, range, text);
-
-        public override bool ShouldOfferFormattingForSymbol (SlackTextView textView, string symbol) => base.ShouldOfferFormattingForSymbol (textView, symbol);
-
-        public override bool ShouldInsertSuffixForFormattingWithSymbol (SlackTextView textView, string symbol, NSRange prefixRange) => base.ShouldInsertSuffixForFormattingWithSymbol (textView, symbol, prefixRange);
-
-
         #endregion
 
+
+        #region BotClient Event Handlers
 
         void handleBotClientMessagesChanged (object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -663,30 +292,31 @@ namespace NomadCode.BotFramework.iOS
                 switch (e.SocketState)
                 {
                     case SocketStates.Open:
-                        //BotClient.Shared.SendMessage ("Hello World");
-                        RightButton.Enabled = true;
+                        //RightButton.Enabled = true;
                         break;
                     case SocketStates.Closing:
-                        RightButton.Enabled = false;
+                        //RightButton.Enabled = false;
                         break;
                 }
             });
         }
 
 
-        void handleBotClientUserTypingMessageReceived (object sender, Activity e)
+        void handleBotClientUserTypingMessageReceived (object sender, string e)
         {
-            if (!string.IsNullOrEmpty (e?.From?.Name))
+            if (!string.IsNullOrEmpty (e))
             {
-                TypingIndicatorView.InsertUsername (e.From.Name);
+                TypingIndicatorView.InsertUsername (e);
 
                 Task.Run (async () =>
                 {
                     await Task.Delay (3000);
 
-                    BeginInvokeOnMainThread (() => TypingIndicatorView.RemoveUsername (e.From.Name));
+                    BeginInvokeOnMainThread (() => TypingIndicatorView.RemoveUsername (e));
                 });
             }
         }
+
+        #endregion
     }
 }

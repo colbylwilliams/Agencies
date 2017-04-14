@@ -42,12 +42,12 @@ namespace NomadCode.BotFramework
         DirectLineClient directLineClient => _directLineClient ?? (!string.IsNullOrEmpty (conversation?.Token) ? _directLineClient = new DirectLineClient (conversation.Token) : throw new Exception ("must set initial client token"));
 
 
-        public event EventHandler<Activity> UserTypingMessageReceived;
+        public event EventHandler<string> UserTypingMessageReceived;
         public event EventHandler<SocketStateChangedEventArgs> ReadyStateChanged;
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
-        public List<Message> Messages { get; set; } = new List<Message> ();
+        public List<BotMessage> Messages { get; set; } = new List<BotMessage> ();
 
 
         public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
@@ -58,6 +58,8 @@ namespace NomadCode.BotFramework
         WebSocket webSocket;
 
         Conversation conversation;
+
+        long userTypingTimeStampCache;
 
         bool attemptingReconnect, closingWebsocketAsync;
 
@@ -95,7 +97,7 @@ namespace NomadCode.BotFramework
             webSocket = null;
             conversation = null;
             _directLineClient = null;
-            Messages = new List<Message> ();
+            Messages = new List<BotMessage> ();
             MessagesCollectionChanged?.Invoke (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
         }
 
@@ -320,7 +322,7 @@ namespace NomadCode.BotFramework
                     {
                         case ActivityTypes.Message:
 
-                            var newMessage = new Message (activity);
+                            var newMessage = new BotMessage (activity);
 
                             var message = Messages.FirstOrDefault (m => m.Equals (newMessage));
 
@@ -356,9 +358,9 @@ namespace NomadCode.BotFramework
                             break;
                         case ActivityTypes.Typing:
 
-                            if (activity?.From.Id != CurrentUserId)
+                            if (activity?.From.Id != CurrentUserId && !string.IsNullOrEmpty (activity?.From?.Name))
                             {
-                                UserTypingMessageReceived?.Invoke (this, activity);
+                                UserTypingMessageReceived?.Invoke (this, activity.From.Name);
                             }
 
                             break;
@@ -385,7 +387,7 @@ namespace NomadCode.BotFramework
                 Timestamp = DateTime.UtcNow
             };
 
-            var message = new Message (activity);
+            var message = new BotMessage (activity);
 
             var posted = postActivityAsync (activity);
 
@@ -398,29 +400,28 @@ namespace NomadCode.BotFramework
         }
 
 
-        public bool SendUserTyping ()
+        public void SendUserTyping ()
         {
-            if (attemptingReconnect) return false;
+            const long delayTicks = TimeSpan.TicksPerSecond * 3;
 
-            Log.Debug ("Sending User Typing");
+            if (attemptingReconnect) return;
 
-            var activity = new Activity
+            var utcNowTicks = DateTime.UtcNow.Ticks;
+
+            if (userTypingTimeStampCache == 0 || utcNowTicks - userTypingTimeStampCache > delayTicks)
             {
-                From = currentUser,
-                Type = ActivityTypes.Typing
-            };
+                userTypingTimeStampCache = utcNowTicks;
 
-            return postActivityAsync (activity, true);
-        }
+                Log.Debug ("Sending User Typing");
 
+                var activity = new Activity
+                {
+                    From = currentUser,
+                    Type = ActivityTypes.Typing
+                };
 
-        public void FuckupToken ()
-        {
-            var foo = @"uBCTlFDNvhY.dAA.MQBtAHIAOQB5AGsAVgBhAHEAawB2AEkANwBBAFQAQwB1ADMARQB5AE8AZQA.KJPywXKy0gE.YAWOEArEsMQ.U4jTITs6Y2z5at-5XnItwhqJP4mHUMIjiQ2m_2M0dGE";
-
-            conversation.Token = foo;
-
-            _directLineClient = null;
+                postActivityAsync (activity, true);
+            }
         }
 
 

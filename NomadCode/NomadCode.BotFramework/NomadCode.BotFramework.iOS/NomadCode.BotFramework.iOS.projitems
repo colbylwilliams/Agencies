@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UIConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellSubviews.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ViewControllers\" />
