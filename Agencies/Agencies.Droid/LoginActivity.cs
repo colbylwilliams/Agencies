@@ -112,14 +112,14 @@ namespace Agencies.Droid
                     Log.Debug ($"acct.PhotoUrl: {user.PhotoUrl}");
                     Log.Debug ($"acct.ServerAuthCode: {user.ServerAuthCode}");
 
-                    BotClient.CurrentUserName = user.DisplayName;
-                    BotClient.CurrentUserEmail = user.Email;
+                    BotClient.Shared.CurrentUserName = user.DisplayName;
+                    BotClient.Shared.CurrentUserEmail = user.Email;
 
                     Task.Run (async () =>
                     {
                         var auth = await AzureClient.Shared.AuthenticateAsync (user.IdToken, user.ServerAuthCode);
 
-                        BotClient.CurrentUserId = auth.Sid;
+                        BotClient.Shared.CurrentUserId = auth.Sid;
 
                         RunOnUiThread (() => Finish ());
                         //BeginInvokeOnMainThread (() => DismissViewController (true, null));
