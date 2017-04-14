@@ -250,17 +250,12 @@
     <Compile Include="View\BotNavigationController.designer.cs">
       <DependentUpon>BotNavigationController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\MessageDataSource.cs" />
-    <Compile Include="View\ViewController.cs" />
-    <Compile Include="View\ViewController.designer.cs">
-      <DependentUpon>ViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LoginNavigationController.cs" />
-    <Compile Include="LoginNavigationController.designer.cs">
+    <Compile Include="View\LoginNavigationController.cs" />
+    <Compile Include="View\LoginNavigationController.designer.cs">
       <DependentUpon>LoginNavigationController.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginViewController.cs" />
-    <Compile Include="LoginViewController.designer.cs">
+    <Compile Include="View\LoginViewController.cs" />
+    <Compile Include="View\LoginViewController.designer.cs">
       <DependentUpon>LoginViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
