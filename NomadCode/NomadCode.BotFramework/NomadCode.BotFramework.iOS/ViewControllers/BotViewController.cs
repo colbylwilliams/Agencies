@@ -11,17 +11,15 @@ using UIKit;
 
 using SlackHQ;
 
-using Square.SocketRocket;
-
 using Microsoft.Bot.Connector.DirectLine;
 
-using NomadCode.BotFramework;
-using Agencies;
-using Agencies.Shared;
-using SettingsStudio;
 using NomadCode.Azure;
 using NomadCode.UIExtensions;
+
+using Agencies;
+using Agencies.Shared;
 using Agencies.iOS;
+
 using Google.SignIn;
 
 namespace NomadCode.BotFramework.iOS
@@ -68,26 +66,26 @@ namespace NomadCode.BotFramework.iOS
             TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
             //TableView.RegisterClassForCellReuse(typeof(MessageBodyCell), MessageBodyCell.ReuseId);
-            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.MessageCellReuseId);
-            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.MessageHeaderCellReuseId);
-            TableView.RegisterClassForCellReuse (typeof (MessageBodyCell), MessageCellReuseIds.AutoCompleteReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.MessageCellReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.MessageHeaderCellReuseId);
+            TableView.RegisterClassForCellReuse (typeof (MessageCell), MessageCellReuseIds.AutoCompleteReuseId);
 
-            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Break", UIBarButtonItemStyle.Plain, (sender, e) =>
-            {
-                BotClient.Shared.FuckupToken ();
-            }), false);
-
-            //NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
+            //NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Break", UIBarButtonItemStyle.Plain, (sender, e) =>
             //{
-            //    SignIn.SharedInstance.SignOutUser ();
-
-            //    await AzureClient.Shared.LogoutAsync ();
-
-            //    BotClient.Shared.Reset ();
-
-            //    authenticate ();
-
+            //    BotClient.Shared.FuckupToken ();
             //}), false);
+
+            NavigationItem.SetLeftBarButtonItem (new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) =>
+            {
+                SignIn.SharedInstance.SignOutUser ();
+
+                await AzureClient.Shared.LogoutAsync ();
+
+                BotClient.Shared.Reset ();
+
+                authenticate ();
+
+            }), false);
 
             //AutoCompletionView.RegisterClassForCellReuse(typeof(MessageHeadCell), MessageHeadCell.AutoCompleteReuseId);
 
@@ -152,22 +150,9 @@ namespace NomadCode.BotFramework.iOS
                     }
 
                     // if that worked, initialize the bot
-                    if (AzureClient.Shared.Authenticated)
+                    if (AzureClient.Shared.Authenticated && !BotClient.Shared.Initialized)
                     {
-                        if (!BotClient.Shared.Initialized)
-                        {
-                            //if (!BotClient.Shared.HasToken)
-                            //{
-                            //    var channel = await AgenciesClient.Shared.GetConversation ();
-
-                            //    BotClient.Shared.SaveConversationToken (channel);
-                            //}
-
-                            //if (BotClient.Shared.HasToken)
-                            //{
-                            await BotClient.Shared.ConnectSocketAsync ();
-                            //}
-                        }
+                        await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
                     }
                     else
                     {
@@ -200,7 +185,7 @@ namespace NomadCode.BotFramework.iOS
         {
             AzureClient.Shared.AthorizationChanged += handleAzureClientAthorizationChanged;
             BotClient.Shared.ReadyStateChanged += handleBotClientReadyStateChanged;
-            BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesCollectionChanged;
+            BotClient.Shared.MessagesCollectionChanged += handleBotClientMessagesChanged;
             BotClient.Shared.UserTypingMessageReceived += handleBotClientUserTypingMessageReceived;
         }
 
@@ -208,7 +193,7 @@ namespace NomadCode.BotFramework.iOS
         {
             AzureClient.Shared.AthorizationChanged -= handleAzureClientAthorizationChanged;
             BotClient.Shared.ReadyStateChanged -= handleBotClientReadyStateChanged;
-            BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesCollectionChanged;
+            BotClient.Shared.MessagesCollectionChanged -= handleBotClientMessagesChanged;
             BotClient.Shared.UserTypingMessageReceived -= handleBotClientUserTypingMessageReceived;
         }
 
@@ -361,7 +346,7 @@ namespace NomadCode.BotFramework.iOS
 
             if ((send && BotClient.Shared.SendMessage (TextView.Text)) || !send)
             {
-                TableView.InsertRows (new[] { NSIndexPath.FromRowSection (0, 0) }, rowAnimation);
+                TableView.InsertRows (new [] { NSIndexPath.FromRowSection (0, 0) }, rowAnimation);
             }
 
             TableView.EndUpdates ();
@@ -465,11 +450,11 @@ namespace NomadCode.BotFramework.iOS
 
         UITableViewCell GetMessageCell (NSIndexPath indexPath)
         {
-            var message = Messages[indexPath.Row];
+            var message = Messages [indexPath.Row];
 
             var reuseId = message.Head ? MessageCellReuseIds.MessageHeaderCellReuseId : MessageCellReuseIds.MessageCellReuseId;
 
-            var cell = TableView.DequeueReusableCell (reuseId, indexPath) as MessageBodyCell;
+            var cell = TableView.DequeueReusableCell (reuseId, indexPath) as MessageCell;
 
             if (message.Head)
             {
@@ -507,14 +492,14 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        MessageBodyCell GetAutoCompleteCell (NSIndexPath indexPath)
+        MessageCell GetAutoCompleteCell (NSIndexPath indexPath)
         {
             //Log.Debug ($"GetAutoCompleteCell = [{indexPath}]");
 
-            var cell = AutoCompletionView.DequeueReusableCell (MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageBodyCell;
+            var cell = AutoCompletionView.DequeueReusableCell (MessageCellReuseIds.AutoCompleteReuseId, indexPath) as MessageCell;
             cell.IndexPath = indexPath;
 
-            var text = searchResult[indexPath.Row].name;
+            var text = searchResult [indexPath.Row].name;
 
             //if (FoundPrefix.Equals (hashStr))
             //{
@@ -534,14 +519,14 @@ namespace NomadCode.BotFramework.iOS
 
         [Export ("tableView:heightForRowAtIndexPath:")]
         public nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
-            => tableView.Equals (AutoCompletionView) ? MessageBodyCell.AutoCompleteHeight : getMessageHeight (indexPath, tableView.Frame.Width);
+            => tableView.Equals (AutoCompletionView) ? MessageCell.AutoCompleteHeight : getMessageHeight (indexPath, tableView.Frame.Width);
 
 
         nfloat getMessageHeight (NSIndexPath indexPath, nfloat width)
         {
             var row = indexPath.Row;
 
-            var message = Messages[row];
+            var message = Messages [row];
 
             nfloat height = message.CellHeight;
 
@@ -550,7 +535,7 @@ namespace NomadCode.BotFramework.iOS
                 return height;
             }
 
-            message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages[row + 1].Activity.From.Name != message.Activity.From.Name);
+            message.Head = row == Messages.Count - 1 || (row + 1 < Messages.Count) && (Messages [row + 1].Activity.From.Name != message.Activity.From.Name);
 
             width -= 49;
 
@@ -643,7 +628,7 @@ namespace NomadCode.BotFramework.iOS
         #endregion
 
 
-        void handleBotClientMessagesCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+        void handleBotClientMessagesChanged (object sender, NotifyCollectionChangedEventArgs e)
         {
             Log.Debug ($"{e.Action}");
 
@@ -655,7 +640,7 @@ namespace NomadCode.BotFramework.iOS
                         addNewMessage (false);
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        TableView.DeleteRows (new[] { NSIndexPath.FromIndex ((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
+                        TableView.DeleteRows (new [] { NSIndexPath.FromIndex ((nuint)e.OldStartingIndex) }, UITableViewRowAnimation.None);
                         break;
                     case NotifyCollectionChangedAction.Replace:
                         TableView.ReloadData ();

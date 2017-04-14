@@ -12,7 +12,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BotClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keychain.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SocketExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\PreferenceStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SocketStates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\AttributedStringUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Colors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TaskExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Utilities\" />
   </ItemGroup>
 </Project>

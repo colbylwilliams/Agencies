@@ -41,35 +41,6 @@ namespace SettingsStudio
         #endregion
 
 
-        #region Hidden Settings
-
-        public static string ConversationId
-        {
-            get => StringForKey (SettingsKeys.ConversationId);
-            set => SetSetting (SettingsKeys.ConversationId, value);
-        }
-
-        public static string CurrentUserName
-        {
-            get => StringForKey (SettingsKeys.CurrentUserName);
-            set => SetSetting (SettingsKeys.CurrentUserName, value);
-        }
-
-        public static string CurrentUserId
-        {
-            get => StringForKey (SettingsKeys.CurrentUserId);
-            set => SetSetting (SettingsKeys.CurrentUserId, value);
-        }
-
-        public static string CurrentUserEmail
-        {
-            get => StringForKey (SettingsKeys.CurrentUserEmail);
-            set => SetSetting (SettingsKeys.CurrentUserEmail, value);
-        }
-
-        #endregion
-
-
         #region Debug
 #if DEBUG
 

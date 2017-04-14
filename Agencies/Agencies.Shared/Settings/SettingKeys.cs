@@ -22,19 +22,6 @@ namespace SettingsStudio
         #endregion
 
 
-        #region Hidden Settings
-
-        public const string ConversationId = "ConversationId";
-
-        public const string CurrentUserName = "CurrentUserName";
-
-        public const string CurrentUserId = "CurrentUserId";
-
-        public const string CurrentUserEmail = "CurrentUserEmail";
-
-        #endregion
-
-
         #region Debug
 #if DEBUG
 

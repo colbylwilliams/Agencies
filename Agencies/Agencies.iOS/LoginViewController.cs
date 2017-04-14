@@ -56,14 +56,14 @@ namespace Agencies.iOS
                     // ...;
                     Log.Debug ($"\n\tuserId: {userId},\n\tidToken: {idToken},\n\taccessToken: {accessToken},\n\tserverAuth: {serverAuth},\n\tfullName: {fullName},\n\tgivenName: {givenName},\n\tfamilyName: {familyName},\n\temail: {email},\n\timageUrl: {imageUrl},\n\t");
 
-                    BotClient.CurrentUserName = user?.Profile?.Name;
-                    BotClient.CurrentUserEmail = user?.Profile?.Email;
+                    BotClient.Shared.CurrentUserName = user?.Profile?.Name;
+                    BotClient.Shared.CurrentUserEmail = user?.Profile?.Email;
 
                     Task.Run (async () =>
                     {
                         var auth = await AzureClient.Shared.AuthenticateAsync (user.Authentication.IdToken, user.ServerAuthCode);
 
-                        BotClient.CurrentUserId = auth.Sid;
+                        BotClient.Shared.CurrentUserId = auth.Sid;
 
                         BeginInvokeOnMainThread (() => DismissViewController (true, null));
                     });

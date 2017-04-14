@@ -1,6 +1,5 @@
-﻿#if __MOBILE__
+﻿#if __IOS__ || __ANDROID__
 
-using System;
 
 #if __IOS__
 
@@ -9,6 +8,7 @@ using Security;
 
 #elif __ANDROID__
 
+using System;
 using System.Collections.Generic;
 
 using Java.IO;
@@ -96,131 +96,131 @@ namespace NomadCode.BotFramework
 
 #else
 
-		static Dictionary<string, KeyStore> keyStoresCache = new Dictionary<string, KeyStore> ();
+        static Dictionary<string, KeyStore> keyStoresCache = new Dictionary<string, KeyStore> ();
 
 
-		KeyStore getKeystore (string service)
-		{
-			var context = Android.App.Application.Context;
+        KeyStore getKeystore (string service)
+        {
+            var context = Android.App.Application.Context;
 
-			KeyStore keystore;
+            KeyStore keystore;
 
-			var serviceId = $"{context.PackageName}-{service}";
+            var serviceId = $"{context.PackageName}-{service}";
 
-			if (keyStoresCache.TryGetValue (serviceId, out keystore))
-			{
-				return keystore;
-			}
+            if (keyStoresCache.TryGetValue (serviceId, out keystore))
+            {
+                return keystore;
+            }
 
-			var password = service.ToCharArray ();
+            var password = service.ToCharArray ();
 
-			keystore = KeyStore.GetInstance (KeyStore.DefaultType);
+            keystore = KeyStore.GetInstance (KeyStore.DefaultType);
 
-			// var protection = new KeyStore.PasswordProtection (password);
+            // var protection = new KeyStore.PasswordProtection (password);
 
-			try
-			{
-				// TODO: this isn't right, fix it
-				using (var stream = context.OpenFileInput (serviceId))
-				{
-					keystore.Load (stream, password);
-				}
-			}
-			catch (FileNotFoundException)
-			{
-				keystore.Load (null, password);
-			}
+            try
+            {
+                // TODO: this isn't right, fix it
+                using (var stream = context.OpenFileInput (serviceId))
+                {
+                    keystore.Load (stream, password);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                keystore.Load (null, password);
+            }
 
-			keyStoresCache [serviceId] = keystore;
+            keyStoresCache [serviceId] = keystore;
 
-			return keystore;
-		}
-
-
-		Tuple<string, string> getItemFromKeychain (string service)
-		{
-			var context = Android.App.Application.Context;
-
-			var password = service.ToCharArray ();
-
-			var protection = new KeyStore.PasswordProtection (password);
-
-			var keystore = getKeystore (service);
-
-			var aliases = keystore.Aliases ();
-
-			while (aliases.HasMoreElements)
-			{
-				var alias = aliases.NextElement ().ToString ();
-
-				var item = keystore.GetEntry (alias, protection) as KeyStore.SecretKeyEntry;
-
-				if (item != null)
-				{
-					var bytes = item.SecretKey.GetEncoded ();
-
-					var serialized = System.Text.Encoding.UTF8.GetString (bytes);
-
-					return new Tuple<string, string> (alias, serialized);
-				}
-			}
-
-			return null;
-		}
+            return keystore;
+        }
 
 
-		bool saveItemToKeychain (string service, string account, string privateKey)
-		{
-			var context = Android.App.Application.Context;
+        Tuple<string, string> getItemFromKeychain (string service)
+        {
+            var context = Android.App.Application.Context;
 
-			var password = service.ToCharArray ();
+            var password = service.ToCharArray ();
 
-			var serviceId = $"{context.PackageName}-{service}";
+            var protection = new KeyStore.PasswordProtection (password);
 
-			var keystore = getKeystore (service);
+            var keystore = getKeystore (service);
 
-			var item = new KeychainItem (privateKey);
+            var aliases = keystore.Aliases ();
 
-			var secretEntry = new KeyStore.SecretKeyEntry (item);
+            while (aliases.HasMoreElements)
+            {
+                var alias = aliases.NextElement ().ToString ();
 
-			keystore.SetEntry (account, secretEntry, new KeyStore.PasswordProtection (password));
+                var item = keystore.GetEntry (alias, protection) as KeyStore.SecretKeyEntry;
 
-			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
-			{
-				keystore.Store (stream, password);
-			}
+                if (item != null)
+                {
+                    var bytes = item.SecretKey.GetEncoded ();
 
-			return true;
-		}
+                    var serialized = System.Text.Encoding.UTF8.GetString (bytes);
+
+                    return new Tuple<string, string> (alias, serialized);
+                }
+            }
+
+            return null;
+        }
 
 
-		bool removeItemFromKeychain (string service)
-		{
-			throw new NotImplementedException ();
-		}
+        bool saveItemToKeychain (string service, string account, string privateKey)
+        {
+            var context = Android.App.Application.Context;
+
+            var password = service.ToCharArray ();
+
+            var serviceId = $"{context.PackageName}-{service}";
+
+            var keystore = getKeystore (service);
+
+            var item = new KeychainItem (privateKey);
+
+            var secretEntry = new KeyStore.SecretKeyEntry (item);
+
+            keystore.SetEntry (account, secretEntry, new KeyStore.PasswordProtection (password));
+
+            using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
+            {
+                keystore.Store (stream, password);
+            }
+
+            return true;
+        }
 
 
-		class KeychainItem : Java.Lang.Object, ISecretKey
-		{
-			const string raw = "RAW";
+        bool removeItemFromKeychain (string service)
+        {
+            throw new NotImplementedException ();
+        }
 
-			byte [] bytes;
 
-			public KeychainItem (string data)
-			{
-				if (data == null) throw new ArgumentNullException ();
+        class KeychainItem : Java.Lang.Object, ISecretKey
+        {
+            const string raw = "RAW";
 
-				bytes = System.Text.Encoding.UTF8.GetBytes (data);
-			}
+            byte [] bytes;
 
-			public byte [] GetEncoded () => bytes;
+            public KeychainItem (string data)
+            {
+                if (data == null) throw new ArgumentNullException ();
 
-			public string Algorithm => raw;
+                bytes = System.Text.Encoding.UTF8.GetBytes (data);
+            }
 
-			public string Format => raw;
-		}
+            public byte [] GetEncoded () => bytes;
 
+            public string Algorithm => raw;
+
+            public string Format => raw;
+        }
 #endif
     }
 }
+
 #endif

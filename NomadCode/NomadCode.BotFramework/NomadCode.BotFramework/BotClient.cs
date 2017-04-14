@@ -1,25 +1,21 @@
-﻿using System;
+﻿#if __IOS__ || __ANDROID__
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Connector.DirectLine;
+using Microsoft.Rest;
 
 using Newtonsoft.Json;
 
-using SettingsStudio;
-
-using Agencies.Shared;
-using System.Net;
-using Microsoft.Rest;
 
 #if __ANDROID__
-using Java.Nio.Charset;
-
 using Square.OkHttp3;
 
-using NomadCode.BotFramework.Droid;
+using WebSocket = Square.OkHttp3.IWebSocket;
 #endif
 
 #if __IOS__
@@ -27,29 +23,12 @@ using Foundation;
 
 using Square.SocketRocket;
 
-using NomadCode.BotFramework.iOS;
-
-using SocketStates = Square.SocketRocket.ReadyState;
+using WebSocket = Square.SocketRocket.WebSocket;
 #endif
+
 
 namespace NomadCode.BotFramework
 {
-    public enum SocketStates : long
-    {
-        Connecting,
-        Open,
-        Closing,
-        Closed
-    }
-
-    public class SocketStateChangedEventArgs : EventArgs
-    {
-        public SocketStates SocketState { get; set; }
-
-        public SocketStateChangedEventArgs (SocketStates socketState) => SocketState = socketState;
-    }
-
-
     public partial class BotClient
 #if __ANDROID__
         : WebSocketListener
@@ -58,49 +37,9 @@ namespace NomadCode.BotFramework
         static BotClient _shared;
         public static BotClient Shared => _shared ?? (_shared = new BotClient ());
 
+
         static DirectLineClient _directLineClient;
         DirectLineClient directLineClient => _directLineClient ?? (!string.IsNullOrEmpty (conversation?.Token) ? _directLineClient = new DirectLineClient (conversation.Token) : throw new Exception ("must set initial client token"));
-
-
-        Conversation conversation;
-
-        SocketStates _socketState;
-
-        SocketStates SocketState
-        {
-#if __ANDROID__
-            get => _socketState;
-#elif __IOS__
-            get => webSocket != null ? (SocketStates)webSocket.ReadyState : _socketState;
-#endif
-            set
-            {
-                if (_socketState != value)
-                {
-                    _socketState = value;
-
-                    ReadyStateChanged?.Invoke (this, new SocketStateChangedEventArgs (_socketState));
-                }
-            }
-        }
-
-
-#if __ANDROID__
-        OkHttpClient httpClient = new OkHttpClient.Builder ().ConnectTimeout (90, Java.Util.Concurrent.TimeUnit.Seconds).Build ();
-
-        public IWebSocket webSocket { get; set; }
-
-        void setSocketState (SocketStates state) => SocketState = state;
-#else
-        public WebSocket webSocket { get; set; }
-
-        void setSocketState (SocketStates state) => SocketState = webSocket != null ? (SocketStates)webSocket.ReadyState : state;
-#endif
-
-        public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
-
-
-        public List<Message> Messages { get; set; } = new List<Message> ();
 
 
         public event EventHandler<Activity> UserTypingMessageReceived;
@@ -108,47 +47,42 @@ namespace NomadCode.BotFramework
         public event NotifyCollectionChangedEventHandler MessagesCollectionChanged;
 
 
-        bool attemptingReconnect;
+        public List<Message> Messages { get; set; } = new List<Message> ();
 
 
-        #region Current User
+        public bool Initialized => SocketState == SocketStates.Open && HasValidCurrentUser && conversation != null;
 
-        public static void ResetCurrentUser ()
-        {
-            CurrentUserId = string.Empty;
-            CurrentUserName = string.Empty;
-            CurrentUserEmail = string.Empty;
-        }
+        public Func<string, Task<Conversation>> GetOrUpdateConversationAsync { get; set; }
 
-        public static string CurrentUserId
-        {
-            get => Settings.CurrentUserId;
-            set => Settings.CurrentUserId = value ?? string.Empty;
-        }
 
-        public static string CurrentUserName
-        {
-            get => Settings.CurrentUserName;
-            set => Settings.CurrentUserName = value ?? string.Empty;
-        }
+        WebSocket webSocket;
 
-        public static string CurrentUserEmail
-        {
-            get => Settings.CurrentUserEmail;
-            set => Settings.CurrentUserEmail = value ?? string.Empty;
-        }
+        Conversation conversation;
 
-        public static string ConversationId
-        {
-            get => Settings.ConversationId;
-            set => Settings.ConversationId = value ?? string.Empty;
-        }
+        bool attemptingReconnect, closingWebsocketAsync;
 
         ChannelAccount currentUser => new ChannelAccount (CurrentUserId, CurrentUserName);
 
-        public bool HasValidCurrentUser => !(string.IsNullOrWhiteSpace (CurrentUserId) || string.IsNullOrWhiteSpace (CurrentUserName));
+        TaskCompletionSource<bool> closeSocketTcs;
 
-        #endregion
+        SocketStates _ocketState;
+        SocketStates SocketState
+        {
+#if __ANDROID__
+            get => _ocketState;
+#elif __IOS__
+            get => webSocket != null ? (SocketStates)webSocket.ReadyState : _ocketState;
+#endif
+            set
+            {
+                if (_ocketState != value)
+                {
+                    _ocketState = value;
+
+                    ReadyStateChanged?.Invoke (this, new SocketStateChangedEventArgs (_ocketState));
+                }
+            }
+        }
 
 
         BotClient () { }
@@ -166,14 +100,14 @@ namespace NomadCode.BotFramework
         }
 
 
-        public async Task ConnectSocketAsync ()
+        public async Task ConnectSocketAsync (Func<string, Task<Conversation>> getOrUpdateConversationTask = null)
         {
             try
             {
                 if (webSocket == null || SocketState == SocketStates.Closed)
                 {
 #if DEBUG
-                    if (Settings.ResetConversation)
+                    if (ResetConversation)
                     {
                         Log.Info ("Resetting conversation...");
 
@@ -185,9 +119,20 @@ namespace NomadCode.BotFramework
                         throw new InvalidOperationException ("BotClient.CurrentUserId and BotClient.CurrentUserName must have values before connecting");
                     }
 
+                    if (getOrUpdateConversationTask == null && GetOrUpdateConversationAsync == null)
+                    {
+                        throw new InvalidOperationException ("GetOrUpdateConversationAsync must have a value before calling ConnectSocketAsync, otherwise pass it in as a paramater to ConnectSocketAsync");
+                    }
+
+                    if (getOrUpdateConversationTask != null)
+                    {
+                        GetOrUpdateConversationAsync = getOrUpdateConversationTask;
+                    }
+
+
                     Log.Info ("Getting conversation from server...");
 
-                    conversation = await AgenciesClient.Shared.GetConversation (ConversationId);
+                    conversation = await GetOrUpdateConversationAsync.Invoke (ConversationId);
 
                     // reset client so it'll pull new token
                     _directLineClient = null;
@@ -222,6 +167,9 @@ namespace NomadCode.BotFramework
                     {
                         Log.Info ($"[Socket Connecting...] {conversation.StreamUrl}");
 #if __ANDROID__
+                        // set the ConnectionTimeout to 90 seconds because the bot framework sends and empty message every 60 seconds
+                        var httpClient = new OkHttpClient.Builder ().ConnectTimeout (90, Java.Util.Concurrent.TimeUnit.Seconds).Build ();
+
                         webSocket = httpClient.NewWebSocket (new Request.Builder ().Url (conversation.StreamUrl).Build (), this);
 #else
                         webSocket = new WebSocket (new NSUrl (conversation.StreamUrl));
@@ -259,9 +207,6 @@ namespace NomadCode.BotFramework
             }
         }
 
-        static bool closingWebsocketAsync;
-
-        static TaskCompletionSource<bool> closeSocketTcs;
 
         public async Task ResetWebsocketAsync ()
         {
@@ -342,7 +287,7 @@ namespace NomadCode.BotFramework
         }
 
 
-        void handleMessage (string message, bool changedEvents = true)
+        void handleMessage (string message)
         {
             if (string.IsNullOrEmpty (message)) // Ignore empty messages 
             {
@@ -544,21 +489,19 @@ namespace NomadCode.BotFramework
         }
 
 
-        public bool SendPing ()
+        public void SendPing ()
         {
-            if (!Initialized) return false;
+            if (!Initialized) return;
 
             Log.Debug ("Sending Ping...");
 
-#if __ANDROID__
-            throw new NotImplementedException ();
-#else
             webSocket.SendPing ();
-            return true;
-#endif
         }
 
+
 #if __ANDROID__
+
+        void setSocketState (SocketStates state) => SocketState = state;
 
         public override void OnOpen (IWebSocket webSocket, Response response)
         {
@@ -592,6 +535,8 @@ namespace NomadCode.BotFramework
 
 #elif __IOS__
 
+        void setSocketState (SocketStates state) => SocketState = webSocket != null ? (SocketStates)webSocket.ReadyState : state;
+
         void handleWebSocketOpened (object sender, EventArgs e)
         {
             handleOpen ();
@@ -621,3 +566,5 @@ namespace NomadCode.BotFramework
 
     }
 }
+
+#endif

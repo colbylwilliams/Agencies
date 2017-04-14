@@ -9,17 +9,11 @@
     <Import_RootNamespace>NomadCode.BotFramework.iOS</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\AttributedStringUtilities.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Colors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewControllers\BotViewController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageBodyCell.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageHeadCell.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UIConstants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageImageCell.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageImageHeadCell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageCells\MessageCellSubviews.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SocketExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ViewControllers\" />

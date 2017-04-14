@@ -11,6 +11,7 @@ using Plugin.VersionTracking;
 using SettingsStudio;
 
 using NomadCode.Azure;
+using NomadCode.BotFramework;
 
 
 namespace Agencies
@@ -39,6 +40,8 @@ namespace Agencies
 
 			Settings.BuildNumber = CrossVersionTracking.Current.CurrentBuild;
 #endif
+
+            BotClient.Shared.ResetConversation = Settings.ResetConversation;
         }
 
         public static async Task InitializeDataStoreAsync ()

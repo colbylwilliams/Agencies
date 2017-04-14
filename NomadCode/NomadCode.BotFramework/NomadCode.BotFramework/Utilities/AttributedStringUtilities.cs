@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if __IOS__
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -6,7 +8,7 @@ using UIKit;
 
 using Foundation;
 
-namespace NomadCode.BotFramework.iOS
+namespace NomadCode.BotFramework
 {
     public enum MarkdownFmtStringType
     {
@@ -48,30 +50,30 @@ namespace NomadCode.BotFramework.iOS
         const string quoteFmt = @"\s+\>+\s+(.*)";
 
 
-        static readonly char[] linkTrim = { '[', ')' };
-        static readonly char[] boldTrim = { '*' };
-        static readonly char[] italicTrim = { '*' };
-        static readonly char[] imageTrim = { '!', '[', ')' };
-        static readonly char[] strikeTrim = { '~' };
-        static readonly char[] preTrim = { '`' };
+        static readonly char [] linkTrim = { '[', ')' };
+        static readonly char [] boldTrim = { '*' };
+        static readonly char [] italicTrim = { '*' };
+        static readonly char [] imageTrim = { '!', '[', ')' };
+        static readonly char [] strikeTrim = { '~' };
+        static readonly char [] preTrim = { '`' };
 
         static readonly (char Item, char With) ulReplace = ('*', '•');
 
 
-        static readonly string[] linkSplit = { "](" };
+        static readonly string [] linkSplit = { "](" };
 
 
         public static nfloat MessageFontSize = 16;
         public static nfloat HeaderFontSize = 18;
         public static nfloat TimestampFontSize = 11;
 
-        public static readonly UIFont HeaderFont = UIFont.BoldSystemFontOfSize(HeaderFontSize);
-        public static readonly UIFont MessageFont = UIFont.SystemFontOfSize(MessageFontSize);
-        public static readonly UIFont TimestampFont = UIFont.SystemFontOfSize(TimestampFontSize);
+        public static readonly UIFont HeaderFont = UIFont.BoldSystemFontOfSize (HeaderFontSize);
+        public static readonly UIFont MessageFont = UIFont.SystemFontOfSize (MessageFontSize);
+        public static readonly UIFont TimestampFont = UIFont.SystemFontOfSize (TimestampFontSize);
 
-        static UIFont messageFontBold = UIFont.BoldSystemFontOfSize(MessageFontSize);
-        static UIFont messageFontItalic = UIFont.ItalicSystemFontOfSize(MessageFontSize);
-        static UIFont messageFontPre = UIFont.FromName("Menlo-Regular", 15);
+        static UIFont messageFontBold = UIFont.BoldSystemFontOfSize (MessageFontSize);
+        static UIFont messageFontItalic = UIFont.ItalicSystemFontOfSize (MessageFontSize);
+        static UIFont messageFontPre = UIFont.FromName ("Menlo-Regular", 15);
 
 
         static readonly NSMutableParagraphStyle messageParagraphStyle = new NSMutableParagraphStyle
@@ -90,9 +92,9 @@ namespace NomadCode.BotFramework.iOS
 
 
 
-        public static NSMutableAttributedString GetMessageAttributedString(this string message)
+        public static NSMutableAttributedString GetMessageAttributedString (this string message)
         {
-            var markdownFmtStrings = new List<MarkdownFmtString>();
+            var markdownFmtStrings = new List<MarkdownFmtString> ();
 
             //message = message.Replace ("\r\n*", "\r\n•");
 
@@ -100,48 +102,48 @@ namespace NomadCode.BotFramework.iOS
 
             var messageCopy = message;
 
-            for (Match match = Regex.Match(message, linkFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Link));
+            for (Match match = Regex.Match (message, linkFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Link));
 
-            for (Match match = Regex.Match(message, imageFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Image));
+            for (Match match = Regex.Match (message, imageFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Image));
 
-            for (Match match = Regex.Match(message, boldFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Bold));
+            for (Match match = Regex.Match (message, boldFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Bold));
 
-            for (Match match = Regex.Match(message, italicFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Italic));
+            for (Match match = Regex.Match (message, italicFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Italic));
 
-            for (Match match = Regex.Match(message, ulFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.UnorderedList));
+            for (Match match = Regex.Match (message, ulFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.UnorderedList));
 
-            for (Match match = Regex.Match(message, olFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.OrderedList));
+            for (Match match = Regex.Match (message, olFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.OrderedList));
 
-            for (Match match = Regex.Match(message, strikeFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Strikethrough));
+            for (Match match = Regex.Match (message, strikeFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Strikethrough));
 
-            for (Match match = Regex.Match(message, preFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.Pre));
+            for (Match match = Regex.Match (message, preFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.Pre));
 
-            for (Match match = Regex.Match(message, quoteFmt); match.Success; match = match.NextMatch())
-                markdownFmtStrings.Add(match.Value.ToMarkdownFmtString(MarkdownFmtStringType.BlockQuote));
+            for (Match match = Regex.Match (message, quoteFmt); match.Success; match = match.NextMatch ())
+                markdownFmtStrings.Add (match.Value.ToMarkdownFmtString (MarkdownFmtStringType.BlockQuote));
 
 
             foreach (var markdownString in markdownFmtStrings)
             {
-                messageCopy = messageCopy.Replace(markdownString.Original, markdownString.Display);
+                messageCopy = messageCopy.Replace (markdownString.Original, markdownString.Display);
             }
 
 
-            var attrString = new NSMutableAttributedString(messageCopy);
+            var attrString = new NSMutableAttributedString (messageCopy);
 
-            attrString.AddAttributes(MessageStringAttributes, new NSRange(0, messageCopy.Length));
+            attrString.AddAttributes (MessageStringAttributes, new NSRange (0, messageCopy.Length));
 
 
             foreach (var markdownString in markdownFmtStrings)
             {
-                var range = new NSRange(messageCopy.IndexOf(markdownString.Display, StringComparison.Ordinal), markdownString.Display.Length);
+                var range = new NSRange (messageCopy.IndexOf (markdownString.Display, StringComparison.Ordinal), markdownString.Display.Length);
 
                 switch (markdownString.FmtStringType)
                 {
@@ -151,24 +153,24 @@ namespace NomadCode.BotFramework.iOS
                     case MarkdownFmtStringType.Link:
 
                         if (markdownString.Link != null)
-                            attrString.AddAttribute(UIStringAttributeKey.Link, markdownString.Link, range);
+                            attrString.AddAttribute (UIStringAttributeKey.Link, markdownString.Link, range);
 
-                        attrString.AddAttributes(LinkStringAttributes, range);
+                        attrString.AddAttributes (LinkStringAttributes, range);
 
                         break;
                     case MarkdownFmtStringType.Bold:
 
-                        attrString.AddAttributes(BoldStringAttributes, range);
+                        attrString.AddAttributes (BoldStringAttributes, range);
 
                         break;
                     case MarkdownFmtStringType.Italic:
 
-                        attrString.AddAttributes(ItalicStringAttributes, range);
+                        attrString.AddAttributes (ItalicStringAttributes, range);
 
                         break;
                     case MarkdownFmtStringType.Strikethrough:
 
-                        attrString.AddAttributes(StrikeStringAttributes, range);
+                        attrString.AddAttributes (StrikeStringAttributes, range);
 
                         break;
                     case MarkdownFmtStringType.UnorderedList:
@@ -183,7 +185,7 @@ namespace NomadCode.BotFramework.iOS
                         break;
                     case MarkdownFmtStringType.Pre:
 
-                        attrString.AddAttributes(PreStringAttributes, range);
+                        attrString.AddAttributes (PreStringAttributes, range);
 
                         break;
                     case MarkdownFmtStringType.BlockQuote:
@@ -194,9 +196,9 @@ namespace NomadCode.BotFramework.iOS
                     case MarkdownFmtStringType.Image:
 
                         if (markdownString.Link != null)
-                            attrString.AddAttribute(UIStringAttributeKey.Link, markdownString.Link, range);
+                            attrString.AddAttribute (UIStringAttributeKey.Link, markdownString.Link, range);
 
-                        attrString.AddAttributes(LinkStringAttributes, range);
+                        attrString.AddAttributes (LinkStringAttributes, range);
 
                         break;
                 }
@@ -206,7 +208,7 @@ namespace NomadCode.BotFramework.iOS
         }
 
 
-        public static MarkdownFmtString ToMarkdownFmtString(this string orig, MarkdownFmtStringType fmtStringType)
+        public static MarkdownFmtString ToMarkdownFmtString (this string orig, MarkdownFmtStringType fmtStringType)
         {
             var markdownString = new MarkdownFmtString
             {
@@ -221,31 +223,31 @@ namespace NomadCode.BotFramework.iOS
                     break;
                 case MarkdownFmtStringType.Link:
 
-                    var linkStringArr = orig.Trim(linkTrim).Split(linkSplit, StringSplitOptions.RemoveEmptyEntries);
+                    var linkStringArr = orig.Trim (linkTrim).Split (linkSplit, StringSplitOptions.RemoveEmptyEntries);
 
-                    markdownString.Display = linkStringArr[0];
+                    markdownString.Display = linkStringArr [0];
 
-                    markdownString.Link = (linkStringArr.Length > 1) ? NSUrl.FromString(linkStringArr[1]) : null;
+                    markdownString.Link = (linkStringArr.Length > 1) ? NSUrl.FromString (linkStringArr [1]) : null;
 
                     break;
                 case MarkdownFmtStringType.Bold:
 
-                    markdownString.Display = orig.Trim(boldTrim);
+                    markdownString.Display = orig.Trim (boldTrim);
 
                     break;
                 case MarkdownFmtStringType.Italic:
 
-                    markdownString.Display = orig.Trim(italicTrim);
+                    markdownString.Display = orig.Trim (italicTrim);
 
                     break;
                 case MarkdownFmtStringType.Strikethrough:
 
-                    markdownString.Display = orig.Trim(strikeTrim);
+                    markdownString.Display = orig.Trim (strikeTrim);
 
                     break;
                 case MarkdownFmtStringType.UnorderedList:
 
-                    markdownString.Display = orig.Replace(ulReplace.Item, ulReplace.With);
+                    markdownString.Display = orig.Replace (ulReplace.Item, ulReplace.With);
 
                     break;
                 case MarkdownFmtStringType.OrderedList:
@@ -255,7 +257,7 @@ namespace NomadCode.BotFramework.iOS
                     break;
                 case MarkdownFmtStringType.Pre:
 
-                    markdownString.Display = orig.Trim(preTrim);
+                    markdownString.Display = orig.Trim (preTrim);
 
                     break;
                 case MarkdownFmtStringType.BlockQuote:
@@ -265,11 +267,11 @@ namespace NomadCode.BotFramework.iOS
                     break;
                 case MarkdownFmtStringType.Image:
 
-                    var imageStringArr = orig.Trim(imageTrim).Split(linkSplit, StringSplitOptions.RemoveEmptyEntries);
+                    var imageStringArr = orig.Trim (imageTrim).Split (linkSplit, StringSplitOptions.RemoveEmptyEntries);
 
-                    markdownString.Display = imageStringArr[0];
+                    markdownString.Display = imageStringArr [0];
 
-                    markdownString.Link = (imageStringArr.Length > 1) ? NSUrl.FromString(imageStringArr[1]) : null;
+                    markdownString.Link = (imageStringArr.Length > 1) ? NSUrl.FromString (imageStringArr [1]) : null;
 
                     break;
             }
@@ -371,3 +373,5 @@ namespace NomadCode.BotFramework.iOS
 
     }
 }
+
+#endif
