@@ -1,8 +1,8 @@
-﻿using Microsoft.Azure.Mobile.Server;
+﻿using NomadCode.Azure;
 
 namespace Agencies.AppService.DataObjects
 {
-    public class TodoItem : EntityData
+    public class TodoItem : AzureEntity
     {
         public string Text { get; set; }
 
