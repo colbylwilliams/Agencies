@@ -202,8 +202,8 @@
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems')" />
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
+  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems')" />
+  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
   <Import Project="..\Agencies.Domain\Agencies.Domain.projitems" Label="Shared" Condition="Exists('..\Agencies.Domain\Agencies.Domain.projitems')" />
