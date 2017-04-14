@@ -27,7 +27,7 @@ namespace Agencies.iOS
 
             AzureClient.Shared.AthorizationChanged += handleAthorizationChanged;
 
-            if (TopViewController is BotViewController botViewController && botViewController.NavigationItem?.LeftBarButtonItem != null)
+            if (TopViewController is BotViewController botViewController && botViewController.NavigationItem?.LeftBarButtonItem == null)
             {
                 botViewController.NavigationItem.SetLeftBarButtonItem (
                     new UIBarButtonItem ("Logout", UIBarButtonItemStyle.Plain, async (sender, e) => await logoutAsync ()), false);
@@ -42,6 +42,11 @@ namespace Agencies.iOS
             AzureClient.Shared.AthorizationChanged -= handleAthorizationChanged;
 
             base.ViewDidDisappear (animated);
+        }
+
+        public override void DismissViewController (bool animated, Action completionHandler)
+        {
+            base.DismissViewController (animated, completionHandler);
         }
 
 
