@@ -10,13 +10,13 @@ using NomadCode.Azure;
 
 using Google.SignIn;
 
+using Facebook.CoreKit;
 
 namespace Agencies.iOS
 {
     [Register ("AppDelegate")]
     public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
     {
-
         static bool processingNotification;
 
 
@@ -36,8 +36,10 @@ namespace Agencies.iOS
 
             var googleServiceDictionary = NSDictionary.FromFile ("GoogleService-Info.plist");
 
-            SignIn.SharedInstance.ClientID = googleServiceDictionary["CLIENT_ID"].ToString ();
-            SignIn.SharedInstance.ServerClientID = googleServiceDictionary["SERVER_CLIENT_ID"].ToString ();
+            SignIn.SharedInstance.ClientID = googleServiceDictionary ["CLIENT_ID"].ToString ();
+            SignIn.SharedInstance.ServerClientID = googleServiceDictionary ["SERVER_CLIENT_ID"].ToString ();
+
+            ApplicationDelegate.SharedInstance.FinishedLaunching (application, launchOptions);
 
             return true;
         }
@@ -47,7 +49,14 @@ namespace Agencies.iOS
         {
             var openUrlOptions = new UIApplicationOpenUrlOptions (options);
 
-            return SignIn.SharedInstance.HandleUrl (url, openUrlOptions.SourceApplication, openUrlOptions.Annotation);
+            var opened = SignIn.SharedInstance.HandleUrl (url, openUrlOptions.SourceApplication, openUrlOptions.Annotation);
+
+            if (opened)
+            {
+                opened = ApplicationDelegate.SharedInstance.OpenUrl (app, url, openUrlOptions.SourceApplication, openUrlOptions.Annotation);
+            }
+
+            return opened;
 
             //return base.OpenUrl(app, url, options);
         }
@@ -82,7 +91,7 @@ namespace Agencies.iOS
 
             for (int i = 0; i < userInfo.Keys.Length; i++)
             {
-                Log.Debug ($"                             {userInfo.Keys[i]} : {userInfo.Values[i]}");
+                Log.Debug ($"                             {userInfo.Keys [i]} : {userInfo.Values [i]}");
             }
 
 

@@ -13,6 +13,9 @@ namespace Agencies.iOS
 	partial class LoginViewController
 	{
 		[Outlet]
+		Facebook.LoginKit.LoginButton facebookSignInButton { get; set; }
+
+		[Outlet]
 		Google.SignIn.SignInButton googleSignInButton { get; set; }
 		
 		void ReleaseDesignerOutlets ()
@@ -20,6 +23,11 @@ namespace Agencies.iOS
 			if (googleSignInButton != null) {
 				googleSignInButton.Dispose ();
 				googleSignInButton = null;
+			}
+
+			if (facebookSignInButton != null) {
+				facebookSignInButton.Dispose ();
+				facebookSignInButton = null;
 			}
 		}
 	}

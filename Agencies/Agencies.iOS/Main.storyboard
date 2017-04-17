@@ -58,15 +58,22 @@
                                 <rect key="frame" x="164.5" y="318.5" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QDe-z0-dhJ" customClass="FBSDKLoginButton">
+                                <rect key="frame" x="164" y="248.5" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="QDe-z0-dhJ" firstAttribute="centerX" secondItem="VLV-c8-yBI" secondAttribute="centerX" id="ChT-nL-PaV"/>
+                            <constraint firstItem="3lI-LM-YzI" firstAttribute="top" secondItem="QDe-z0-dhJ" secondAttribute="bottom" constant="40" id="Cqd-7P-9uX"/>
                             <constraint firstItem="3lI-LM-YzI" firstAttribute="centerY" secondItem="VLV-c8-yBI" secondAttribute="centerY" id="WsM-tk-tQ3"/>
                             <constraint firstItem="3lI-LM-YzI" firstAttribute="centerX" secondItem="VLV-c8-yBI" secondAttribute="centerX" id="erV-vQ-Mqq"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="szr-eN-62H"/>
                     <connections>
+                        <outlet property="facebookSignInButton" destination="QDe-z0-dhJ" id="w1e-GD-aDm"/>
                         <outlet property="googleSignInButton" destination="3lI-LM-YzI" id="ND2-Xj-ecj"/>
                     </connections>
                 </viewController>
