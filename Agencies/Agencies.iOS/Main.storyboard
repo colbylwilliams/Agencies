@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ZZZ-1Z-2Mk">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
@@ -15,7 +15,7 @@
             <objects>
                 <navigationController storyboardIdentifier="BotNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ZZZ-1Z-2Mk" customClass="BotNavigationController" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="IMU-nC-GAD">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="600" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -31,7 +31,7 @@
             <objects>
                 <navigationController storyboardIdentifier="LoginNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="o3A-78-TOA" customClass="LoginNavigationController" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="PY4-RX-eyq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="600" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -51,15 +51,15 @@
                         <viewControllerLayoutGuide type="bottom" id="cXK-5a-qeD"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="VLV-c8-yBI">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3lI-LM-YzI" customClass="GIDSignInButton">
-                                <rect key="frame" x="164.5" y="318.5" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3lI-LM-YzI" customClass="GIDSignInButton" misplaced="YES">
+                                <rect key="frame" x="165" y="319" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QDe-z0-dhJ" customClass="FBSDKLoginButton">
-                                <rect key="frame" x="164" y="248.5" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QDe-z0-dhJ" customClass="FBSDKLoginButton" misplaced="YES">
+                                <rect key="frame" x="164" y="249" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                             </button>
                         </subviews>
@@ -90,7 +90,7 @@
                         <viewControllerLayoutGuide type="bottom" id="mmU-pz-t7f"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="z5P-2d-q64">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -119,7 +119,7 @@
                         <viewControllerLayoutGuide type="bottom" id="0QH-5I-Lfw"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Up3-ok-kOq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yWl-St-vxU">
@@ -137,22 +137,22 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nnt-qV-grp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1892" y="-647.22638680659679"/>
+            <point key="canvasLocation" x="1892" y="-647.2264"/>
         </scene>
         <!--Groups-->
         <scene sceneID="XIe-FF-87S">
             <objects>
                 <tableViewController title="Groups" id="Xzv-To-k0Q" customClass="GroupsViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="4wY-lS-4np">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="s5y-4D-c53">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="s5y-4D-c53" id="yKH-Ba-XDO">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                             </tableViewCell>
@@ -183,7 +183,7 @@
                         <viewControllerLayoutGuide type="bottom" id="loE-YN-LuN"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="CxJ-ZN-IIr">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Gr-fc-IF1">
@@ -251,7 +251,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fdf-Fe-6MQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3676" y="-973.76311844077964"/>
+            <point key="canvasLocation" x="3676" y="-973.7631"/>
         </scene>
         <!--Person Detail-->
         <scene sceneID="0P7-26-zNR">
@@ -262,7 +262,7 @@
                         <viewControllerLayoutGuide type="bottom" id="oxg-ek-rXn"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="z5a-Ss-PIC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3tw-hy-6qm">
@@ -309,4 +309,8 @@
             <point key="canvasLocation" x="4458" y="-974"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="avatar_microsoft" width="24" height="24"/>
+        <image name="avatar_colby" width="24" height="24"/>
+    </resources>
 </document>

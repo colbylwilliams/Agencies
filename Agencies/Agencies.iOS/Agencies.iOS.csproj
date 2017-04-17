@@ -215,6 +215,9 @@
     <Reference Include="Facebook">
       <HintPath>..\packages\Xamarin.Facebook.iOS.4.18.0.1\lib\Xamarin.iOS10\Facebook.dll</HintPath>
     </Reference>
+    <Reference Include="Cognitive.Face.iOS">
+      <HintPath>..\..\Dependencies\Cognitive.Face.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -260,6 +263,22 @@
     <Compile Include="View\LoginViewController.cs" />
     <Compile Include="View\LoginViewController.designer.cs">
       <DependentUpon>LoginViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\AgenciesBotViewController.cs" />
+    <Compile Include="View\AgenciesBotViewController.designer.cs">
+      <DependentUpon>AgenciesBotViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\GroupDetailViewController.cs" />
+    <Compile Include="View\GroupDetailViewController.designer.cs">
+      <DependentUpon>GroupDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\GroupsViewController.cs" />
+    <Compile Include="View\GroupsViewController.designer.cs">
+      <DependentUpon>GroupsViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonDetailViewController.cs" />
+    <Compile Include="View\PersonDetailViewController.designer.cs">
+      <DependentUpon>PersonDetailViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
