@@ -215,6 +215,9 @@
     <Reference Include="Facebook">
       <HintPath>..\packages\Xamarin.Facebook.iOS.4.19.0\lib\Xamarin.iOS10\Facebook.dll</HintPath>
     </Reference>
+    <Reference Include="Cognitive.Face.iOS">
+      <HintPath>..\..\Dependencies\Cognitive.Face.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -293,6 +296,18 @@
     <Compile Include="View\RootTabBarController.cs" />
     <Compile Include="View\RootTabBarController.designer.cs">
       <DependentUpon>RootTabBarController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\GroupDetailViewController.cs" />
+    <Compile Include="View\GroupDetailViewController.designer.cs">
+      <DependentUpon>GroupDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\GroupsViewController.cs" />
+    <Compile Include="View\GroupsViewController.designer.cs">
+      <DependentUpon>GroupsViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonDetailViewController.cs" />
+    <Compile Include="View\PersonDetailViewController.designer.cs">
+      <DependentUpon>PersonDetailViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
