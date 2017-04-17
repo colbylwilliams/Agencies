@@ -277,6 +277,10 @@
     <Compile Include="PersonDetailViewController.designer.cs">
       <DependentUpon>PersonDetailViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="AgenciesBotViewController.cs" />
+    <Compile Include="AgenciesBotViewController.designer.cs">
+      <DependentUpon>AgenciesBotViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
