@@ -15,7 +15,7 @@ namespace Agencies.AppService.Controllers
         {
             MobileAppSettingsDictionary settings = this.Configuration.GetMobileAppSettingsProvider().GetMobileAppSettings();
             ITraceWriter traceWriter = this.Configuration.Services.GetTraceWriter();
-
+			
             string host = settings.HostName ?? "localhost";
             string greeting = "Hello from " + host;
 

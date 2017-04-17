@@ -1,15 +1,13 @@
-﻿using Agencies.AppService.Models;
-using Microsoft.Azure.Mobile.Server.Config;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.DirectLine;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
+
+using Microsoft.Azure.Mobile.Server.Config;
+using Microsoft.Bot.Connector.DirectLine;
+
+using Agencies.AppService.Models;
 
 
 namespace Agencies.AppService.Controllers
