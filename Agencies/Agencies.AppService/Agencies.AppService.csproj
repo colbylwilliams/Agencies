@@ -195,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\Startup.MobileApp.cs" />
+    <Compile Include="Controllers\GetAppConfigurationController.cs" />
     <Compile Include="Controllers\GetBotTokenController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\TodoItemController.cs" />
