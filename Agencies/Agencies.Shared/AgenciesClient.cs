@@ -8,8 +8,6 @@ using Microsoft.Bot.Connector.DirectLine;
 
 using NomadCode.Azure;
 
-using Agencies.Domain;
-
 namespace Agencies.Shared
 {
     public class AgenciesClient
@@ -53,9 +51,9 @@ namespace Agencies.Shared
             {
                 var paramDictionary = new Dictionary<string, string> ();
 
-                var key = await azureClient.InvokeApiAsync ("getFaceApiSubscription", HttpMethod.Get, paramDictionary);
+                var key = await azureClient.InvokeApiAsync<string> ("getFaceToken", HttpMethod.Get, paramDictionary);
 
-                return key.ToString ();
+                return key;
             }
             catch (Exception ex)
             {
