@@ -1,9 +1,14 @@
 ﻿using System;
-using NomadCode.Azure;
+
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
+
 using Microsoft.Bot.Connector.DirectLine;
+
+using NomadCode.Azure;
+
+using Agencies.Domain;
 
 namespace Agencies.Shared
 {
@@ -34,6 +39,23 @@ namespace Agencies.Shared
                 var channel = await azureClient.InvokeApiAsync<Conversation> ("getBotToken", HttpMethod.Get, paramDictionary);
 
                 return channel;
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<string> GetFaceApiSubscription ()
+        {
+            try
+            {
+                var paramDictionary = new Dictionary<string, string> ();
+
+                var key = await azureClient.InvokeApiAsync ("getFaceApiSubscription", HttpMethod.Get, paramDictionary);
+
+                return key.ToString ();
             }
             catch (Exception ex)
             {

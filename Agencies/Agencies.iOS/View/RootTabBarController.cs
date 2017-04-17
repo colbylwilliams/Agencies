@@ -58,9 +58,16 @@ namespace Agencies.iOS
                 if (!AzureClient.Shared.Authenticated) await AzureClient.Shared.AuthenticateAsync ();
 
                 // if that worked, initialize the bot
-                if (AzureClient.Shared.Authenticated && !BotClient.Shared.Initialized)
+                if (AzureClient.Shared.Authenticated)
                 {
-                    await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
+                    if (!BotClient.Shared.Initialized)
+                    {
+                        await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
+                    }
+
+                    var faceApiKey = await AgenciesClient.Shared.GetFaceApiSubscription ();
+
+                    Log.Debug ($"Face API Key: {faceApiKey}");
                 }
                 else // otherwise prompt the user to login
                 {
