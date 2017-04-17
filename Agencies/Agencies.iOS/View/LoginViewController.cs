@@ -86,7 +86,7 @@ namespace Agencies.iOS
                     {
                         BotClient.Shared.CurrentUserId = auth.Sid;
 
-                        BotClient.Shared.SetAvatarUrl (auth.Sid, user.Profile.GetImageUrl ((nuint)MessageCell.AvatarImageHeight)?.ToString ());
+                        BotClient.Shared.SetAvatarUrl (auth.Sid, user.Profile.GetImageUrl ((nuint)MessageCell.AvatarImageSize.Height)?.ToString ());
 
                         DismissViewController (true, null);
                     });
