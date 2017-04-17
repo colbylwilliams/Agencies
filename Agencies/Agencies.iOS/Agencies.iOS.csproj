@@ -261,6 +261,18 @@
     <Compile Include="View\LoginViewController.designer.cs">
       <DependentUpon>LoginViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\FaceNavigationController.cs" />
+    <Compile Include="View\FaceNavigationController.designer.cs">
+      <DependentUpon>FaceNavigationController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\FaceViewController.cs" />
+    <Compile Include="View\FaceViewController.designer.cs">
+      <DependentUpon>FaceViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\RootTabBarController.cs" />
+    <Compile Include="View\RootTabBarController.designer.cs">
+      <DependentUpon>RootTabBarController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

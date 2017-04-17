@@ -41,6 +41,19 @@ namespace SettingsStudio
         #endregion
 
 
+        #region Hidden Settings
+
+
+        public static int SelectedTabIndex
+        {
+            get => Int32ForKey (SettingsKeys.SelectedTabIndex);
+            set => SetSetting (SettingsKeys.SelectedTabIndex, value);
+        }
+
+
+        #endregion
+
+
         #region Debug
 #if DEBUG
 

@@ -22,6 +22,13 @@ namespace SettingsStudio
         #endregion
 
 
+        #region Hidden Settings
+
+        public const string SelectedTabIndex = "SelectedTabIndex";
+
+        #endregion
+
+
         #region Debug
 #if DEBUG
 
