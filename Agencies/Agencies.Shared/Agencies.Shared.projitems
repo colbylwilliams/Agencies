@@ -20,8 +20,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)AgenciesClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FaceClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\PersonGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Person.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\FaceModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Face.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Model\" />
   </ItemGroup>
 </Project>

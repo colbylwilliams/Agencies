@@ -21,7 +21,7 @@ namespace Agencies.Shared
             }
         }
 
-        public List<MPOPersonGroup> Groups { get; set; } = new List<MPOPersonGroup> ();
+        public List<PersonGroup> Groups { get; set; } = new List<PersonGroup> ();
 
         public FaceClient ()
         {
