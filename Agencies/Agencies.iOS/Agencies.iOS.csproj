@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;DEBUG;OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;DEBUG;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -45,7 +45,7 @@
     <DebugType></DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
-    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -69,7 +69,7 @@
     <DebugType></DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -94,7 +94,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;DEBUG;OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;DEBUG;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -255,7 +255,6 @@
     <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
     <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
     <Folder Include="Extensions\" />
-    <Folder Include="ClientAuth\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -295,20 +294,12 @@
     <Compile Include="View\RootTabBarController.designer.cs">
       <DependentUpon>RootTabBarController.cs</DependentUpon>
     </Compile>
-    <Compile Include="ClientAuth\Keychain.cs" />
-    <Compile Include="ClientAuth\AuthViewController.cs" />
-    <Compile Include="ClientAuth\ClientAuthManager.cs" />
-    <Compile Include="ClientAuth\SignInButton.cs" />
-    <Compile Include="ClientAuth\ClientAuthProvider.cs" />
-    <Compile Include="ClientAuth\ClientAuthDetails.cs" />
-    <Compile Include="ClientAuth\ClientAuthProviderExtensions.cs" />
-    <Compile Include="ClientAuth\ClientAuthProviders.cs" />
-    <Compile Include="ClientAuth\ClientAuthDetailTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
     <BundleResource Include="GoogleService-Info.plist" />
   </ItemGroup>
+  <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems')" />

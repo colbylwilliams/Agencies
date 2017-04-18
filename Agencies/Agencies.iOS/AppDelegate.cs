@@ -7,10 +7,7 @@ using UserNotifications;
 using Microsoft.WindowsAzure.MobileServices;
 
 using NomadCode.Azure;
-
-using Google.SignIn;
-
-using Facebook.CoreKit;
+using NomadCode.ClientAuth;
 
 namespace Agencies.iOS
 {
@@ -34,12 +31,7 @@ namespace Agencies.iOS
             // must assign delegate before app finishes launching.
             UNUserNotificationCenter.Current.Delegate = this;
 
-            var googleServiceDictionary = NSDictionary.FromFile ("GoogleService-Info.plist");
-
-            SignIn.SharedInstance.ClientID = googleServiceDictionary ["CLIENT_ID"].ToString ();
-            SignIn.SharedInstance.ServerClientID = googleServiceDictionary ["SERVER_CLIENT_ID"].ToString ();
-
-            ApplicationDelegate.SharedInstance.FinishedLaunching (application, launchOptions);
+            ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
 
             return true;
         }
@@ -47,18 +39,7 @@ namespace Agencies.iOS
 
         public override bool OpenUrl (UIApplication app, NSUrl url, NSDictionary options)
         {
-            var openUrlOptions = new UIApplicationOpenUrlOptions (options);
-
-            var opened = SignIn.SharedInstance.HandleUrl (url, openUrlOptions.SourceApplication, openUrlOptions.Annotation);
-
-            if (opened)
-            {
-                opened = ApplicationDelegate.SharedInstance.OpenUrl (app, url, openUrlOptions.SourceApplication, openUrlOptions.Annotation);
-            }
-
-            return opened;
-
-            //return base.OpenUrl(app, url, options);
+            return ClientAuthManager.Shared.OpenUrl (app, url, options) || base.OpenUrl (app, url, options);
         }
 
 

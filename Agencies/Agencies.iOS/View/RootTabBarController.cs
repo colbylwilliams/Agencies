@@ -7,7 +7,6 @@ using Google.SignIn;
 
 using NomadCode.Azure;
 using NomadCode.BotFramework;
-using NomadCode.UIExtensions;
 using NomadCode.ClientAuth;
 
 using SettingsStudio;

@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>DEBUG;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
@@ -43,7 +43,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>OFFLINE_SYNC_ENABLED;</DefineConstants>
+    <DefineConstants>OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
@@ -202,6 +202,7 @@
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
+  <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
