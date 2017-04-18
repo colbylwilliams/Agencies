@@ -164,7 +164,7 @@
                         <rightBarButtonItems>
                             <barButtonItem systemItem="add" id="0Ap-FO-syL">
                                 <connections>
-                                    <segue destination="cnE-0h-vM5" kind="show" id="IcH-kN-Ial"/>
+                                    <segue destination="JB5-H0-2jt" kind="show" id="8Mu-Ul-Fgi"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="save" id="gVx-EJ-vcW">
@@ -187,7 +187,7 @@
         <scene sceneID="dLx-TW-tZr">
             <objects>
                 <collectionViewController storyboardIdentifier="GroupPersonCollectionViewController" id="JGZ-jc-wEV" customClass="GroupPersonCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="G2T-CZ-hMr">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="G2T-CZ-hMr">
                         <rect key="frame" x="0.0" y="0.0" width="343" height="524"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -345,62 +345,52 @@
             <point key="canvasLocation" x="2726" y="116"/>
         </scene>
         <!--Person Detail-->
-        <scene sceneID="B2a-uR-oE2">
+        <scene sceneID="dB0-aE-h0b">
             <objects>
-                <viewController storyboardIdentifier="PersonDetailViewController" id="cnE-0h-vM5" customClass="PersonDetailViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="vhP-Es-Wtj"/>
-                        <viewControllerLayoutGuide type="bottom" id="TQv-Tx-D3J"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Kjo-jZ-99b">
+                <collectionViewController storyboardIdentifier="PersonDetailViewController" id="JB5-H0-2jt" customClass="PersonDetailViewController" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="8iX-Kb-LoF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="f0B-h4-SS1">
-                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="IZU-Me-d8t">
-                                    <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="UQJ-cF-FWo">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </view>
-                                    </collectionViewCell>
-                                </cells>
-                            </collectionView>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Person Detail" id="ech-nC-3R6">
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8NE-iJ-xEc">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="vbM-fL-9vK">
+                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="JB5-H0-2jt" id="CJ6-Rk-uf7"/>
+                            <outlet property="delegate" destination="JB5-H0-2jt" id="dNc-w6-ORc"/>
+                        </connections>
+                    </collectionView>
+                    <navigationItem key="navigationItem" title="Person Detail" id="kIq-1r-qyT">
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="add" id="sCf-Ai-Lig">
+                            <barButtonItem systemItem="add" id="7uA-xM-hzF">
                                 <connections>
-                                    <action selector="AddFaceAction:" destination="cnE-0h-vM5" id="5Eu-9G-mus"/>
+                                    <action selector="AddFaceAction:" destination="JB5-H0-2jt" id="5nK-wq-mFK"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="save" id="1re-bk-1vt">
+                            <barButtonItem systemItem="save" id="sgJ-Dp-YaQ">
                                 <connections>
-                                    <action selector="SaveAction:" destination="cnE-0h-vM5" id="vLl-iP-UpT"/>
+                                    <action selector="SaveAction:" destination="JB5-H0-2jt" id="HUp-1C-5Im"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
-                    <connections>
-                        <outlet property="FaceCollectionView" destination="f0B-h4-SS1" id="SV5-1b-pAB"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3HF-pD-ZmM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uAY-BB-CXH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4327" y="116"/>
+            <point key="canvasLocation" x="4318" y="116"/>
         </scene>
     </scenes>
 </document>
