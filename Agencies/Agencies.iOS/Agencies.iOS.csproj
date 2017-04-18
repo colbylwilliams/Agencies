@@ -218,6 +218,9 @@
     <Reference Include="Cognitive.Face.iOS">
       <HintPath>..\..\Dependencies\Cognitive.Face.iOS.dll</HintPath>
     </Reference>
+    <Reference Include="MBProgressHUD">
+      <HintPath>..\packages\mbprogresshud.0.9.2.0\lib\Xamarin.iOS\MBProgressHUD.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -308,6 +311,11 @@
     <Compile Include="View\PersonDetailViewController.cs" />
     <Compile Include="View\PersonDetailViewController.designer.cs">
       <DependentUpon>PersonDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\CommonUtil.cs" />
+    <Compile Include="View\GroupPersonCollectionViewController.cs" />
+    <Compile Include="View\GroupPersonCollectionViewController.designer.cs">
+      <DependentUpon>GroupPersonCollectionViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace Agencies.iOS
 	partial class GroupDetailViewController
 	{
 		[Outlet]
-		UIKit.UICollectionView GroupCollectionView { get; set; }
+		UIKit.UIView ContainerView { get; set; }
 
 		[Outlet]
 		UIKit.UITextField GroupName { get; set; }
@@ -28,9 +28,9 @@ namespace Agencies.iOS
 				GroupName = null;
 			}
 
-			if (GroupCollectionView != null) {
-				GroupCollectionView.Dispose ();
-				GroupCollectionView = null;
+			if (ContainerView != null) {
+				ContainerView.Dispose ();
+				ContainerView = null;
 			}
 		}
 	}
