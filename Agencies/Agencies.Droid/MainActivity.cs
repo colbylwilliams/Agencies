@@ -91,7 +91,10 @@ namespace Agencies.Droid
                         // otherwise prompt the user to login
                         RunOnUiThread (() =>
                         {
-                            ClientAuthManager.Shared.LoginResources = (Resource.String.default_web_client_id, Resource.Layout.LoginActivityLayout, Resource.Id.sign_in_button);
+                            ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
+
+                            ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
+                            ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 
                             StartActivity (typeof (AuthActivity));
                         });
