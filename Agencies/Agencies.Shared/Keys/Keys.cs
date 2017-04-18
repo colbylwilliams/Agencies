@@ -2,6 +2,15 @@
 {
     public static partial class Keys
     {
+        public static partial class MobileCenter
+        {
+#if __IOS__
+            public const string AppSecret = @"";
+#elif __ANDROID__
+            public const string AppSecret = @"";
+#endif
+        }
+
         public static partial class Azure
         {
 #if DEBUG
@@ -12,9 +21,9 @@
 
             public static partial class Storage
             {
-                //public const string AccountKey = @"";
+                public const string AccountKey = @"";
 
-                //public const string AccountName = @"";
+                public const string AccountName = @"";
 
                 public const string EndpointSuffix = @"core.windows.net";
 
