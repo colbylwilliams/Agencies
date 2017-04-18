@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Foundation;
 using UIKit;
+
 using Google.SignIn;
-using System.Threading.Tasks;
+
 using NomadCode.Azure;
 using NomadCode.BotFramework;
 using NomadCode.BotFramework.iOS;
@@ -35,7 +37,7 @@ namespace Agencies.iOS
             SignIn.SharedInstance.SignInUserSilently ();
 
             // Uncomment to automatically sign out the user.
-            //SignIn.SharedInstance.SignOutUser ();
+            // SignIn.SharedInstance.SignOutUser ();
 
         }
 

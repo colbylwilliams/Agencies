@@ -227,6 +227,22 @@
     <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_24.png" />
     <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_48.png" />
     <ImageAsset Include="Assets.xcassets\avatar_colby.imageset\avatar_colby_72.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft%402x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft%403x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter%402x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter%403x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google%402x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google%403x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook%402x.png" />
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -234,6 +250,12 @@
     <Folder Include="Utilities\" />
     <Folder Include="Assets.xcassets\avatar_colby.imageset\" />
     <Folder Include="Assets.xcassets\avatar_microsoft.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_google.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="ClientAuth\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -273,6 +295,15 @@
     <Compile Include="View\RootTabBarController.designer.cs">
       <DependentUpon>RootTabBarController.cs</DependentUpon>
     </Compile>
+    <Compile Include="ClientAuth\Keychain.cs" />
+    <Compile Include="ClientAuth\AuthViewController.cs" />
+    <Compile Include="ClientAuth\ClientAuthManager.cs" />
+    <Compile Include="ClientAuth\SignInButton.cs" />
+    <Compile Include="ClientAuth\ClientAuthProvider.cs" />
+    <Compile Include="ClientAuth\ClientAuthDetails.cs" />
+    <Compile Include="ClientAuth\ClientAuthProviderExtensions.cs" />
+    <Compile Include="ClientAuth\ClientAuthProviders.cs" />
+    <Compile Include="ClientAuth\ClientAuthDetailTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

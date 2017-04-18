@@ -8,6 +8,7 @@ using Google.SignIn;
 using NomadCode.Azure;
 using NomadCode.BotFramework;
 using NomadCode.UIExtensions;
+using NomadCode.ClientAuth;
 
 using SettingsStudio;
 
@@ -17,13 +18,18 @@ namespace Agencies.iOS
 {
     public partial class RootTabBarController : UITabBarController
     {
-        public RootTabBarController (IntPtr handle) : base (handle)
-        {
-        }
+        bool initialLoginAttempt = true;
+
+
+        public RootTabBarController (IntPtr handle) : base (handle) { }
+
 
         public override void ViewDidLoad ()
         {
             base.ViewDidLoad ();
+
+            AzureClient.Shared.AthorizationChanged += handleAzureAuthChanged;
+            ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
             SelectedIndex = Settings.SelectedTabIndex;
 
@@ -34,8 +40,6 @@ namespace Agencies.iOS
                     Settings.SelectedTabIndex = (int)tabController.SelectedIndex;
                 }
             };
-
-            AzureClient.Shared.AthorizationChanged += handleAthorizationChanged;
         }
 
 
@@ -47,6 +51,17 @@ namespace Agencies.iOS
         }
 
 
+        void handleAzureAuthChanged (object s, bool e)
+        {
+            Log.Debug ($"Authenticated: {e}");
+        }
+
+
+        void handleClientAuthChanged (object s, ClientAuthDetails e)
+        {
+            Log.Debug ($"Authenticated: {e}");
+        }
+
 
         async Task loginAsync ()
         {
@@ -55,7 +70,33 @@ namespace Agencies.iOS
                 if (!AzureClient.Shared.Initialized) await Bootstrap.InitializeDataStoreAsync ();
 
                 // try authenticating with an existing token
-                if (!AzureClient.Shared.Authenticated) await AzureClient.Shared.AuthenticateAsync ();
+                if (!AzureClient.Shared.Authenticated)
+                {
+                    if (initialLoginAttempt)
+                    {
+                        initialLoginAttempt = false;
+
+                        await AzureClient.Shared.AuthenticateAsync ();
+                    }
+                    else // see if we have what we need in the ClientAuthManager
+                    {
+                        var details = ClientAuthManager.Shared.ClientAuthDetails;
+
+                        var auth = await AzureClient.Shared.AuthenticateAsync (details?.Token, details?.AuthCode);
+
+                        if (auth.Authenticated)
+                        {
+                            BotClient.Shared.CurrentUserId = auth.Sid;
+
+                            if (details != null)
+                            {
+                                BotClient.Shared.CurrentUserName = details.Username;
+                                BotClient.Shared.CurrentUserEmail = details.Email;
+                                BotClient.Shared.SetAvatarUrl (auth.Sid, details.AvatarUrl);
+                            }
+                        }
+                    }
+                }
 
                 // if that worked, initialize the bot
                 if (AzureClient.Shared.Authenticated)
@@ -73,11 +114,16 @@ namespace Agencies.iOS
                 {
                     BeginInvokeOnMainThread (() =>
                     {
-                        var loginNavController = Storyboard.Instantiate<LoginNavigationController> ();
+                        var authViewController = new AuthViewController ();
 
-                        if (loginNavController != null)
+                        if (authViewController != null)
                         {
-                            PresentViewController (loginNavController, true, null);
+                            var authNavController = new UINavigationController (authViewController);
+
+                            if (authNavController != null)
+                            {
+                                PresentViewController (authNavController, true, null);
+                            }
                         }
                     });
                 }
@@ -107,12 +153,6 @@ namespace Agencies.iOS
                 Log.Error (ex.Message);
                 throw;
             }
-        }
-
-
-        void handleAthorizationChanged (object s, bool e)
-        {
-            Log.Debug ($"Authenticated: {e}");
         }
     }
 }
