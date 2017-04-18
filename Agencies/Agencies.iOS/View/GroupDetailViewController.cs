@@ -32,7 +32,7 @@ namespace Agencies.iOS
             }
             else
             {
-                var client = new MPOFaceServiceClient (Keys.CognitiveServices.FaceApi.SubscriptionKey);
+                var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
 
                 this.ShowHUD ("Saving Group");
 
@@ -57,7 +57,7 @@ namespace Agencies.iOS
 
         void createNewGroup ()
         {
-            var client = new MPOFaceServiceClient (Keys.CognitiveServices.FaceApi.SubscriptionKey);
+            var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
 
             this.ShowHUD ("Creating group");
 
@@ -77,7 +77,7 @@ namespace Agencies.iOS
                 group.Name = GroupName.Text;
                 group.Id = id;
 
-                FaceClient.Current.Groups.Add (group);
+                FaceClient.Shared.Groups.Add (group);
             });
         }
 

@@ -107,6 +107,8 @@ namespace Agencies.iOS
 
                     var faceApiKey = await AgenciesClient.Shared.GetFaceApiSubscription ();
 
+                    FaceClient.Shared.SubscriptionKey = faceApiKey;
+
                     Log.Debug ($"Face API Key: {faceApiKey}");
                 }
                 else // otherwise prompt the user to login

@@ -6,20 +6,10 @@ namespace Agencies.Shared
 {
     public class FaceClient
     {
-        static FaceClient instance;
+        static FaceClient _shared;
+        public static FaceClient Shared => _shared ?? (_shared = new FaceClient ());
 
-        public static FaceClient Current
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new FaceClient ();
-                }
-
-                return instance;
-            }
-        }
+        public string SubscriptionKey { get; set; }
 
         public List<PersonGroup> Groups { get; set; } = new List<PersonGroup> ();
 
