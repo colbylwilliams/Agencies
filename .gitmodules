@@ -4,9 +4,6 @@
 [submodule "NomadCode/NomadCode.UIExtensions"]
 	path = NomadCode/NomadCode.UIExtensions
 	url = https://github.com/colbylwilliams/NomadCode.UIExtensions
-[submodule "NomadCode/NomadCode.BotFramework"]
-	path = NomadCode/NomadCode.BotFramework
-	url = https://github.com/colbylwilliams/NomadCode.BotFramework
 [submodule "NomadCode/NomadCode.ClientAuth"]
 	path = NomadCode/NomadCode.ClientAuth
 	url = https://github.com/colbylwilliams/NomadCode.ClientAuth
