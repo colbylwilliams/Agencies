@@ -32,37 +32,43 @@ namespace Agencies.iOS
         //}
 
 
-        async partial void SaveAction (NSObject sender)
+        partial void SaveAction (NSObject sender)
         {
-            if (GroupName.Text.Length == 0)
+            Task.Run (async () =>
             {
-                this.ShowSimpleDialog ("Please input the group name");
-                return;
-            }
 
-            if (group == null)
-            {
-                await createNewGroup ();
-            }
-            else
-            {
-                try
-                {
-                    this.ShowHUD ("Saving Group");
 
-                    await FaceClient.Shared.UpdatePersonGroup (group, GroupName.Text);
-                }
-                catch (Exception)
+
+                if (GroupName.Text.Length == 0)
                 {
-                    this.ShowSimpleDialog ("Failed to update group.");
+                    this.ShowSimpleDialog ("Please input the group name");
+                    return;
                 }
 
+                if (group == null)
+                {
+                    await createNewGroup ();
+                }
+                else
+                {
+                    try
+                    {
+                        this.ShowHUD ("Saving Group");
 
-                this.HideHUD ();
+                        await FaceClient.Shared.UpdatePersonGroup (group, GroupName.Text);
+                    }
+                    catch (Exception)
+                    {
+                        this.ShowSimpleDialog ("Failed to update group.");
+                    }
 
-                //_shouldExit = NO;
-                await trainGroup ();
-            }
+
+                    this.HideHUD ();
+
+                    //_shouldExit = NO;
+                    await trainGroup ();
+                }
+            });
         }
 
 
