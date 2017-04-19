@@ -3,13 +3,24 @@
 using Foundation;
 using UIKit;
 using Agencies.Shared;
+using System.Collections.Generic;
 
 namespace Agencies.iOS
 {
     public partial class GroupsViewController : UITableViewController
     {
+        List<PersonGroup> Groups;
+
         public GroupsViewController (IntPtr handle) : base (handle)
         {
+        }
+
+
+        public async override void ViewDidLoad ()
+        {
+            Groups = await FaceClient.Shared.GetGroups ();
+
+            base.ViewDidLoad ();
         }
 
 
@@ -21,7 +32,7 @@ namespace Agencies.iOS
 
         public override nint RowsInSection (UITableView tableView, nint section)
         {
-            return FaceClient.Shared.Groups.Count;
+            return Groups.Count;
         }
 
 
@@ -31,10 +42,10 @@ namespace Agencies.iOS
 
             //cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleValue1 reuseIdentifier:showUserInfoCellIdentifier];
 
-            cell.TextLabel.Text = ((PersonGroup*)GLOBAL.groups [indexPath.row]).groupName;
+            cell.TextLabel.Text = Groups [indexPath.Row].Name;
             cell.BackgroundColor = UIColor.Clear;
-            return cell;
 
+            return cell;
         }
     }
 }

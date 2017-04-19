@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 #if __IOS__
 using Xamarin.Cognitive.Face.iOS;
 using Foundation;
@@ -17,7 +18,7 @@ namespace Agencies.Shared
 
         public string SubscriptionKey { get; set; }
 
-        public List<PersonGroup> Groups { get; set; } = new List<PersonGroup> ();
+        public List<PersonGroup> Groups { get; private set; } = new List<PersonGroup> ();
 
 
 #if __IOS__
@@ -34,6 +35,40 @@ namespace Agencies.Shared
         }
 
 
+        public Task<List<PersonGroup>> GetGroups ()
+        {
+#if __IOS__
+            var tcs = new TaskCompletionSource<List<PersonGroup>> ();
+
+            if (Groups.Count == 0)
+            {
+                Client.ListPersonGroupsWithCompletion ((groups, error) =>
+                {
+                    if (!FailTaskIfErrored (tcs, error))
+                    {
+                        Groups = new List<PersonGroup> (
+                            groups.Select (g => new PersonGroup
+                            {
+                                Id = g.PersonGroupId,
+                                Name = g.Name,
+                                UserData = g.UserData
+                            })
+                        );
+
+                        tcs.SetResult (Groups);
+                    }
+                }).Resume ();
+            }
+
+            return tcs.Task;
+#elif __ANDROID__
+            var groups = Client.ListPersonGroups ();
+
+            return Task.FromResult (Groups);
+#endif
+        }
+
+
         public Task CreatePersonGroup (string personGroupId, string groupName, string userData = null)
         {
 #if __IOS__
@@ -46,31 +81,32 @@ namespace Agencies.Shared
                     var group = new PersonGroup
                     {
                         Name = groupName,
-                        Id = personGroupId
+                        Id = personGroupId,
+                        UserData = userData
                     };
 
                     Groups.Add (group);
 
                     tcs.SetResult (true);
                 }
-            });
+            }).Resume ();
 
             return tcs.Task;
 
 #elif __ANDROID__
             Client.CreatePersonGroup (personGroupId, groupName, userData);
 
-            return Task.FromResult(true);
+            return Task.FromResult (true);
 #endif
         }
 
 
-        public Task UpdatePersonGroup (PersonGroup personGroup, string groupName, string userData = null)
+        public Task UpdatePersonGroup (PersonGroup personGroup, string groupName)
         {
 #if __IOS__
             var tcs = new TaskCompletionSource<bool> ();
 
-            Client.UpdatePersonGroupWithPersonGroupId (personGroup.Id, groupName, userData, error =>
+            Client.UpdatePersonGroupWithPersonGroupId (personGroup.Id, groupName, personGroup.UserData, error =>
             {
                 if (!FailTaskIfErrored (tcs, error))
                 {
@@ -78,16 +114,16 @@ namespace Agencies.Shared
 
                     tcs.SetResult (true);
                 }
-            });
+            }).Resume ();
 
             return tcs.Task;
 
 #elif __ANDROID__
-            Client.CreatePersonGroup (personGroupId, groupName, userData);
+            Client.CreatePersonGroup (personGroupId, groupName, personGroup.UserData);
 
             personGroup.Name = groupName;
 
-            return Task.FromResult(true);
+            return Task.FromResult (true);
 #endif
         }
 
@@ -103,11 +139,11 @@ namespace Agencies.Shared
                 {
                     tcs.SetResult (true);
                 }
-            });
+            }).Resume ();
 
             return tcs.Task;
 #elif __ANDROID__
-            return Task.FromResult(true);
+            return Task.FromResult (true);
 #endif
         }
 
