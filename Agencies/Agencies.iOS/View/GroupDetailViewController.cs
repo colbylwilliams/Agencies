@@ -3,6 +3,7 @@ using Xamarin.Cognitive.Face.iOS;
 using Foundation;
 using UIKit;
 using Agencies.Shared;
+using System.Threading.Tasks;
 
 namespace Agencies.iOS
 {
@@ -31,7 +32,7 @@ namespace Agencies.iOS
         //}
 
 
-        partial void SaveAction (NSObject sender)
+        async partial void SaveAction (NSObject sender)
         {
             if (GroupName.Text.Length == 0)
             {
@@ -41,98 +42,123 @@ namespace Agencies.iOS
 
             if (group == null)
             {
-                createNewGroup ();
+                await createNewGroup ();
             }
             else
             {
-                var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
-
-                this.ShowHUD ("Saving Group");
-
-                client.UpdatePersonGroupWithPersonGroupId (group.Id, GroupName.Text, null, error =>
+                try
                 {
-                    this.HideHUD ();
+                    this.ShowHUD ("Saving Group");
 
-                    if (error != null)
-                    {
-                        this.ShowSimpleDialog ("Failed in updating group.");
-                        return;
-                    }
+                    await FaceClient.Shared.UpdatePersonGroup (group, GroupName.Text);
+                }
+                catch (Exception)
+                {
+                    this.ShowSimpleDialog ("Failed to update group.");
+                }
 
-                    group.Name = GroupName.Text;
-                    //_shouldExit = NO;
-                    trainGroup ();
-                });
+
+                this.HideHUD ();
+
+                //_shouldExit = NO;
+                await trainGroup ();
             }
         }
 
 
-        void createNewGroup ()
+        //        - (void) longPressAction: (UIGestureRecognizer*) gestureRecognizer
+        //		{
+        //    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        //        _selectedPersonIndex = gestureRecognizer.view.tag;
+        //        UIActionSheet* confirm_sheet = [[UIActionSheet alloc]
+
+        //										 initWithTitle:@"Do you want to remove all of this person's faces?"
+        //                                         delegate:self
+        //										 cancelButtonTitle:@"Cancel"
+
+        //										 destructiveButtonTitle:nil
+        //										 otherButtonTitles:@"Yes", nil];
+        //        confirm_sheet.tag = 0;
+        //        [confirm_sheet showInView:self.view];
+        //    }
+        //}
+
+
+
+        //        - (void) addPerson: (id) sender
+        //		{
+        //    if (!self.group && _groupNameField.text.length == 0) {
+        //        [CommonUtil simpleDialog:@"please input the group name"];
+        //        return;
+        //    }
+        //    if (!self.group) {
+        //        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Hint"
+        //                                                            message:@"Do you want to create this new group?"
+        //                                                           delegate:self
+        //												  cancelButtonTitle:@"No"
+
+        //												  otherButtonTitles:@"Yes", nil];
+        //        _intension = INTENSION_ADD_PERSON;
+        //        alertView.tag = 0;
+        //        [alertView show];
+        //        return;
+        //    }
+        //MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
+        //    controller.needTraining = self.needTraining;
+        //    [self.navigationController pushViewController:controller animated:YES];
+        //}
+
+
+
+        async Task createNewGroup ()
         {
-            var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
-
-            this.ShowHUD ("Creating group");
-
-            var id = new NSUuid ().AsString ();
-
-            client.CreatePersonGroupWithId (id, GroupName.Text, null, error =>
+            try
             {
-                this.HideHUD ();
+                this.ShowHUD ("Creating group");
 
-                if (error != null)
-                {
-                    this.ShowSimpleDialog ("Failed in creating group.");
-                    return;
-                }
+                var id = new NSUuid ().AsString ();
 
-                group = new PersonGroup
-                {
-                    Name = GroupName.Text,
-                    Id = id
-                };
+                await FaceClient.Shared.CreatePersonGroup (id, GroupName.Text);
+            }
+            catch (Exception)
+            {
+                this.ShowSimpleDialog ("Failed to create group.");
+            }
 
-                FaceClient.Shared.Groups.Add (group);
-            });
+            this.HideHUD ();
+
+
+            //        if (_intension == INTENSION_ADD_PERSON) {
+            //            MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
+            //            controller.needTraining = self.needTraining;
+            //            [self.navigationController pushViewController:controller animated:YES];
+            //        } else {
+            //            [CommonUtil showSimpleHUD:@"Group created" forController:self.navigationController];
+            //        }
+            //    }];
+            //}
         }
 
 
-        void trainGroup ()
+        async Task trainGroup ()
         {
-            var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
-
-            this.ShowHUD ("Training group");
-
-            client.TrainPersonGroupWithPersonGroupId (group.Id, error =>
+            try
             {
-                this.HideHUD ();
+                this.ShowHUD ("Training group");
 
-                if (error != null)
-                {
-                    this.ShowSimpleHUD ("Failed in training group.");
-                }
-                else
-                {
-                    this.ShowSimpleHUD ("This group is trained.");
-                }
+                await FaceClient.Shared.TrainGroup (group);
+
+                this.ShowSimpleHUD ("This group is trained.");
 
                 //if (_shouldExit)
                 //{
                 //    this.NavigationController.PopViewController (true);
                 //}
-            });
+            }
+            catch (Exception)
+            {
+                this.ShowSimpleHUD ("Failed in training group.");
+            }
         }
-
-
-
-        //        if (_intension == INTENSION_ADD_PERSON) {
-        //            MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
-        //            controller.needTraining = self.needTraining;
-        //            [self.navigationController pushViewController:controller animated:YES];
-        //        } else {
-        //            [CommonUtil showSimpleHUD:@"Group created" forController:self.navigationController];
-        //        }
-        //    }];
-        //}
-
     }
 }

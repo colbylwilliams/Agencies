@@ -1,4 +1,6 @@
-﻿using MBProgressHUD;
+﻿using System;
+using Foundation;
+using MBProgressHUD;
 using UIKit;
 
 namespace Agencies.iOS
@@ -7,6 +9,8 @@ namespace Agencies.iOS
     {
         public static void ShowSimpleDialog (this UIViewController vc, string message)
         {
+            vc.HideHUD ();
+
             var alertController = UIAlertController.Create ("Hint", message, UIAlertControllerStyle.Alert);
 
             alertController.ShowViewController (vc, vc);
@@ -19,10 +23,7 @@ namespace Agencies.iOS
 
         public static void ShowHUD (this UIViewController vc, string message)
         {
-            if (currentHud != null)
-            {
-                vc.HideHUD ();
-            }
+            vc.HideHUD ();
 
             var hud = new MTMBProgressHUD (vc.View)
             {
@@ -50,6 +51,8 @@ namespace Agencies.iOS
 
         public static void ShowSimpleHUD (this UIViewController vc, string message)
         {
+            vc.HideHUD ();
+
             var hud = new MTMBProgressHUD (vc.View)
             {
                 LabelText = message,
@@ -60,6 +63,17 @@ namespace Agencies.iOS
             vc.View.AddSubview (hud);
             hud.Show (true);
             hud.Hide (true, 1.5);
+        }
+
+
+        public static Exception ToException (this NSError error)
+        {
+            if (error != null)
+            {
+                return new Exception (error.Description);
+            }
+
+            return new Exception ("No details");
         }
     }
 }
