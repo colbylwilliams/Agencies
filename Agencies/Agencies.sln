@@ -9,8 +9,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Shared", "Agencies
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agencies.Domain", "Agencies.Domain\Agencies.Domain.shproj", "{45BB624E-E0AA-4864-B1D9-D35E4AEAE4BC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.Azure", "..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.shproj", "{049FF267-02CB-4168-9EC5-0768D053EF77}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NomadCode", "NomadCode", "{704ED759-2625-4F2E-8E83-05A118EA802A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.UIExtensions", "..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.shproj", "{07555EA6-44F7-4889-974F-8191391705EB}"
@@ -55,9 +53,11 @@ Global
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
 		$3.scope = text/x-csharp
+		$3.SpacingAfterMethodDeclarationName = True
+		$3.SpaceAfterMethodCallName = True
+		$3.SpaceBeforeOpenSquareBracket = True
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{049FF267-02CB-4168-9EC5-0768D053EF77} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 		{07555EA6-44F7-4889-974F-8191391705EB} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 		{D55B8837-D117-48BE-AB87-B16CC6A86C42} = {704ED759-2625-4F2E-8E83-05A118EA802A}
 	EndGlobalSection
