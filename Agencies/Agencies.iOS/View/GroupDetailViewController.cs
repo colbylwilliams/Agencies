@@ -1,5 +1,5 @@
 ﻿using System;
-using Cognitive.Face.iOS;
+using Xamarin.Cognitive.Face.iOS;
 using Foundation;
 using UIKit;
 using Agencies.Shared;
