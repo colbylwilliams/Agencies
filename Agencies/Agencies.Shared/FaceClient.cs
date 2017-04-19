@@ -5,6 +5,7 @@ using Cognitive.Face.iOS;
 #elif __ANDROID__
 //using Cognitive.Face.Android;
 #endif
+
 namespace Agencies.Shared
 {
     public class FaceClient
@@ -18,6 +19,7 @@ namespace Agencies.Shared
 
         public FaceClient ()
         {
+
         }
     }
 }

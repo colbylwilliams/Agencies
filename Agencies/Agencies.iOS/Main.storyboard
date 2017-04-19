@@ -145,7 +145,7 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QV7-z0-VOo">
                                 <rect key="frame" x="16" y="143" width="343" height="524"/>
                                 <connections>
-                                    <segue destination="JGZ-jc-wEV" kind="embed" id="8lN-dq-IZs"/>
+                                    <segue destination="JGZ-jc-wEV" kind="embed" identifier="Embed" id="8lN-dq-IZs"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -198,7 +198,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="82e-d2-zh6">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="82e-d2-zh6" customClass="GroupPersonCVC">
                                 <rect key="frame" x="0.0" y="0.0" width="144" height="168"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -227,6 +227,10 @@
                                     <constraint firstItem="Exh-Pj-ctk" firstAttribute="top" secondItem="82e-d2-zh6" secondAttribute="top" constant="10" id="fAN-Bt-ErF"/>
                                     <constraint firstItem="Exh-Pj-ctk" firstAttribute="centerX" secondItem="82e-d2-zh6" secondAttribute="centerX" id="ixe-FD-FjE"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="ImageView" destination="Exh-Pj-ctk" id="PqL-wA-ycx"/>
+                                    <outlet property="TextView" destination="iFg-aE-YHx" id="Hus-As-hU8"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>
@@ -348,7 +352,7 @@
         <scene sceneID="dB0-aE-h0b">
             <objects>
                 <collectionViewController storyboardIdentifier="PersonDetailViewController" id="JB5-H0-2jt" customClass="PersonDetailViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="8iX-Kb-LoF">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="8iX-Kb-LoF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

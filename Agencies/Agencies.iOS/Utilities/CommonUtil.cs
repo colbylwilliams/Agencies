@@ -46,5 +46,20 @@ namespace Agencies.iOS
                 currentHud = null;
             }
         }
+
+
+        public static void ShowSimpleHUD (this UIViewController vc, string message)
+        {
+            var hud = new MTMBProgressHUD (vc.View)
+            {
+                LabelText = message,
+                Mode = MBProgressHUDMode.Text,
+                RemoveFromSuperViewOnHide = true
+            };
+
+            vc.View.AddSubview (hud);
+            hud.Show (true);
+            hud.Hide (true, 1.5);
+        }
     }
 }

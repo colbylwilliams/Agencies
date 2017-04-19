@@ -320,6 +320,10 @@
     <Compile Include="View\GroupPersonCollectionViewController.designer.cs">
       <DependentUpon>GroupPersonCollectionViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\GroupPersonCVC.cs" />
+    <Compile Include="View\GroupPersonCVC.designer.cs">
+      <DependentUpon>GroupPersonCVC.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

@@ -10,12 +10,25 @@ namespace Agencies.iOS
     {
         PersonGroup group;
 
+
+
         public GroupDetailViewController (IntPtr handle) : base (handle)
         {
+            //ContainerView.
         }
 
 
+        //public override void PrepareForSegue (UIStoryboardSegue segue, NSObject sender)
+        //{
+        //    base.PrepareForSegue (segue, sender);
 
+        //    if (segue.Identifier == "Embed")
+        //    {
+        //        var groupPeopleCVC = segue.DestinationViewController as GroupPersonCollectionViewController;
+
+        //        groupPeopleCVC.Group = group;
+        //    }
+        //}
 
 
         partial void SaveAction (NSObject sender)
@@ -48,8 +61,7 @@ namespace Agencies.iOS
 
                     group.Name = GroupName.Text;
                     //_shouldExit = NO;
-                    //trainGroup();
-
+                    trainGroup ();
                 });
             }
         }
@@ -73,13 +85,44 @@ namespace Agencies.iOS
                     return;
                 }
 
-                group = new PersonGroup ();
-                group.Name = GroupName.Text;
-                group.Id = id;
+                group = new PersonGroup
+                {
+                    Name = GroupName.Text,
+                    Id = id
+                };
 
                 FaceClient.Shared.Groups.Add (group);
             });
         }
+
+
+        void trainGroup ()
+        {
+            var client = new MPOFaceServiceClient (FaceClient.Shared.SubscriptionKey);
+
+            this.ShowHUD ("Training group");
+
+            client.TrainPersonGroupWithPersonGroupId (group.Id, error =>
+            {
+                this.HideHUD ();
+
+                if (error != null)
+                {
+                    this.ShowSimpleHUD ("Failed in training group.");
+                }
+                else
+                {
+                    this.ShowSimpleHUD ("This group is trained.");
+                }
+
+                //if (_shouldExit)
+                //{
+                //    this.NavigationController.PopViewController (true);
+                //}
+            });
+        }
+
+
 
         //        if (_intension == INTENSION_ADD_PERSON) {
         //            MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
