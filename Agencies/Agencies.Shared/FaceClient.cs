@@ -119,7 +119,7 @@ namespace Agencies.Shared
             return tcs.Task;
 
 #elif __ANDROID__
-            Client.CreatePersonGroup (personGroupId, groupName, personGroup.UserData);
+            Client.CreatePersonGroup (personGroup.Id, groupName, personGroup.UserData);
 
             personGroup.Name = groupName;
 
