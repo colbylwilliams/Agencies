@@ -6,10 +6,12 @@ using Android.App;
 using Android.OS;
 
 using NomadCode.Azure;
-using NomadCode.BotFramework;
+
 using NomadCode.ClientAuth;
 
 using Agencies.Shared;
+
+using BotClient = NomadCode.BotFramework.BotClient;
 
 namespace Agencies.Droid
 {

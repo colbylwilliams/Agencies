@@ -160,22 +160,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bot.Connector.DirectLine">
-      <HintPath>..\packages\Microsoft.Bot.Connector.DirectLine.3.0.0\lib\netstandard1.3\Microsoft.Bot.Connector.DirectLine.dll</HintPath>
-    </Reference>
-    <Reference Include="Square.SocketRocket">
-      <HintPath>..\packages\Square.SocketRocket.0.5.0.1\lib\Xamarin.iOS\Square.SocketRocket.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="Microsoft.Rest.ClientRuntime">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.6\lib\netstandard1.5\Microsoft.Rest.ClientRuntime.dll</HintPath>
-    </Reference>
-    <Reference Include="SlackTextViewController">
-      <HintPath>..\packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.TTTAttributedLabel">
-      <HintPath>..\packages\Xamarin.TTTAttributedLabel.2.0.0.2\lib\Xamarin.iOS\Xamarin.TTTAttributedLabel.dll</HintPath>
-    </Reference>
     <Reference Include="Firebase.Core">
       <HintPath>..\packages\Xamarin.Firebase.iOS.Core.3.4.6\lib\Xamarin.iOS10\Firebase.Core.dll</HintPath>
     </Reference>
@@ -209,9 +193,6 @@
     <Reference Include="Microsoft.Azure.Mobile.Crashes.iOS.Bindings">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.8.1\lib\Xamarin.iOS10\Microsoft.Azure.Mobile.Crashes.iOS.Bindings.dll</HintPath>
     </Reference>
-    <Reference Include="Haneke">
-      <HintPath>..\packages\Haneke.1.0.2.1\lib\Xamarin.iOS10\Haneke.dll</HintPath>
-    </Reference>
     <Reference Include="Facebook">
       <HintPath>..\packages\Xamarin.Facebook.iOS.4.19.0\lib\Xamarin.iOS10\Facebook.dll</HintPath>
     </Reference>
@@ -220,6 +201,25 @@
     </Reference>
     <Reference Include="MBProgressHUD">
       <HintPath>..\packages\mbprogresshud.0.9.2.0\lib\Xamarin.iOS\MBProgressHUD.dll</HintPath>
+    </Reference>
+    <Reference Include="Haneke">
+      <HintPath>..\packages\Haneke.1.0.2.1\lib\Xamarin.iOS10\Haneke.dll</HintPath>
+    </Reference>
+    <Reference Include="Square.SocketRocket">
+      <HintPath>..\packages\Square.SocketRocket.0.5.0.1\lib\Xamarin.iOS\Square.SocketRocket.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="Microsoft.Rest.ClientRuntime">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.6\lib\netstandard1.5\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="SlackTextViewController">
+      <HintPath>..\packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.TTTAttributedLabel">
+      <HintPath>..\packages\Xamarin.TTTAttributedLabel.2.0.0.2\lib\Xamarin.iOS\Xamarin.TTTAttributedLabel.dll</HintPath>
+    </Reference>
+    <Reference Include="NomadCode.BotFramework">
+      <HintPath>..\packages\NomadCode.BotFramework.0.4.0\lib\xamarinios10\NomadCode.BotFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -323,8 +323,6 @@
     <BundleResource Include="GoogleService-Info.plist" />
   </ItemGroup>
   <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.iOS\NomadCode.BotFramework.iOS.projitems')" />
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />

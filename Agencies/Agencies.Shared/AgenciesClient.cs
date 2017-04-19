@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
 
-using Microsoft.Bot.Connector.DirectLine;
-
 using NomadCode.Azure;
+using NomadCode.BotFramework;
 
 namespace Agencies.Shared
 {

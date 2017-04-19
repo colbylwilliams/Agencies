@@ -105,13 +105,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bot.Connector.DirectLine">
-      <HintPath>..\packages\Microsoft.Bot.Connector.DirectLine.3.0.0\lib\netstandard1.3\Microsoft.Bot.Connector.DirectLine.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="Microsoft.Rest.ClientRuntime">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.6\lib\netstandard1.5\Microsoft.Rest.ClientRuntime.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.Support.Compat">
       <HintPath>..\packages\Xamarin.Android.Support.Compat.25.1.0\lib\MonoAndroid70\Xamarin.Android.Support.Compat.dll</HintPath>
     </Reference>
@@ -145,12 +138,6 @@
     <Reference Include="Xamarin.GooglePlayServices.Auth">
       <HintPath>..\packages\Xamarin.GooglePlayServices.Auth.42.1001.0\lib\MonoAndroid70\Xamarin.GooglePlayServices.Auth.dll</HintPath>
     </Reference>
-    <Reference Include="Square.OkIO">
-      <HintPath>..\packages\Square.OkIO.1.11.0\lib\MonoAndroid\Square.OkIO.dll</HintPath>
-    </Reference>
-    <Reference Include="Square.OkHttp3">
-      <HintPath>..\packages\Square.OkHttp3.3.5.0\lib\MonoAndroid\Square.OkHttp3.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Android.Bindings">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.8.1\lib\MonoAndroid403\Microsoft.Azure.Mobile.Android.Bindings.dll</HintPath>
     </Reference>
@@ -168,6 +155,20 @@
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Crashes">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.8.1\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.dll</HintPath>
+    </Reference>
+    <Reference Include="Square.OkIO">
+      <HintPath>..\packages\Square.OkIO.1.11.0\lib\MonoAndroid\Square.OkIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Square.OkHttp3">
+      <HintPath>..\packages\Square.OkHttp3.3.5.0\lib\MonoAndroid\Square.OkHttp3.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="Microsoft.Rest.ClientRuntime">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.6\lib\netstandard1.5\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Java.Interop" />
+    <Reference Include="NomadCode.BotFramework">
+      <HintPath>..\packages\NomadCode.BotFramework.0.4.0\lib\monoandroid71\NomadCode.BotFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -203,8 +204,6 @@
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
   <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.Droid\NomadCode.BotFramework.Droid.projitems')" />
-  <Import Project="..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework\NomadCode.BotFramework.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure\NomadCode.Azure.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
   <Import Project="..\Agencies.Domain\Agencies.Domain.projitems" Label="Shared" Condition="Exists('..\Agencies.Domain\Agencies.Domain.projitems')" />

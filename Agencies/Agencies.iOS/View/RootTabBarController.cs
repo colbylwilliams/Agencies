@@ -66,7 +66,14 @@ namespace Agencies.iOS
         {
             try
             {
-                if (!AzureClient.Shared.Initialized) await Bootstrap.InitializeDataStoreAsync ();
+                if (!AzureClient.Shared.Initialized)
+                {
+                    await Bootstrap.InitializeDataStoreAsync ();
+
+                    //await AzureClient.Shared.LogoutAsync ();
+                    //BotClient.Shared.ResetCurrentUser ();
+                    //ClientAuthManager.Shared.LogoutAuthProviders ();
+                }
 
                 // try authenticating with an existing token
                 if (!AzureClient.Shared.Authenticated)
