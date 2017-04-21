@@ -147,7 +147,7 @@
       <HintPath>..\packages\Xamarin.Android.Support.v4.25.1.1\lib\MonoAndroid70\Xamarin.Android.Support.v4.dll</HintPath>
     </Reference>
     <Reference Include="NomadCode.BotFramework">
-      <HintPath>..\packages\NomadCode.BotFramework.0.4.3-preview\lib\monoandroid71\NomadCode.BotFramework.dll</HintPath>
+      <HintPath>..\packages\NomadCode.BotFramework.0.4.4-preview\lib\monoandroid71\NomadCode.BotFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Mobile">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Client.3.1.0\lib\monoandroid\Microsoft.WindowsAzure.Mobile.dll</HintPath>
@@ -177,7 +177,7 @@
       <HintPath>..\packages\Square.OkIO.1.11.0\lib\MonoAndroid\Square.OkIO.dll</HintPath>
     </Reference>
     <Reference Include="NomadCode.Azure.Offline">
-      <HintPath>..\packages\NomadCode.Azure.Offline.1.0.5\lib\monoandroid71\NomadCode.Azure.Offline.dll</HintPath>
+      <HintPath>..\packages\NomadCode.Azure.Offline.1.0.6\lib\monoandroid71\NomadCode.Azure.Offline.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
