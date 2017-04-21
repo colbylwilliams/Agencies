@@ -34,7 +34,7 @@ namespace Agencies.iOS
 
             ViewControllerSelected += (sender, e) =>
             {
-#if MOBILE_CENTER_BUILD
+#if CSHARP_6
                 var tabController = sender as UITabBarController;
 
                 if (sender != null)

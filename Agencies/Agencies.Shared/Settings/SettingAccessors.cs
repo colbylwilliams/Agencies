@@ -8,7 +8,7 @@ namespace SettingsStudio
     public static partial class Settings
     {
 
-#if MOBILE_CENTER_BUILD
+#if CSHARP_6
         #region Visible Settings
 
         public static string VersionNumber
