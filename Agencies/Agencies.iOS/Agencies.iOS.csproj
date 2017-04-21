@@ -242,7 +242,7 @@
       <HintPath>..\packages\Xamarin.Cognitive.Face.0.2.3-preview\lib\xamarinios10\Xamarin.Cognitive.Face.dll</HintPath>
     </Reference>
     <Reference Include="NomadCode.BotFramework">
-      <HintPath>..\packages\NomadCode.BotFramework.0.4.4-preview\lib\xamarinios10\NomadCode.BotFramework.dll</HintPath>
+      <HintPath>..\packages\NomadCode.BotFramework.0.4.5-preview\lib\xamarinios10\NomadCode.BotFramework.dll</HintPath>
     </Reference>
     <Reference Include="NomadCode.Azure.Offline">
       <HintPath>..\packages\NomadCode.Azure.Offline.1.0.6\lib\xamarinios10\NomadCode.Azure.Offline.dll</HintPath>
