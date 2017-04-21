@@ -306,14 +306,6 @@
     <Compile Include="View\BotNavigationController.designer.cs">
       <DependentUpon>BotNavigationController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\LoginNavigationController.cs" />
-    <Compile Include="View\LoginNavigationController.designer.cs">
-      <DependentUpon>LoginNavigationController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\LoginViewController.cs" />
-    <Compile Include="View\LoginViewController.designer.cs">
-      <DependentUpon>LoginViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\FaceNavigationController.cs" />
     <Compile Include="View\FaceNavigationController.designer.cs">
       <DependentUpon>FaceNavigationController.cs</DependentUpon>
