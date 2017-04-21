@@ -247,6 +247,9 @@
     <Reference Include="NomadCode.Azure.Offline">
       <HintPath>..\packages\NomadCode.Azure.Offline.1.0.5\lib\xamarinios10\NomadCode.Azure.Offline.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
