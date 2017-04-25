@@ -13,7 +13,7 @@ namespace Agencies.iOS
 	partial class PersonDetailViewController
 	{
 		[Outlet]
-		UIKit.UICollectionView FaceCollectionView { get; set; }
+		UIKit.UITextField PersonName { get; set; }
 
 		[Action ("AddFaceAction:")]
 		partial void AddFaceAction (Foundation.NSObject sender);
@@ -23,9 +23,9 @@ namespace Agencies.iOS
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (FaceCollectionView != null) {
-				FaceCollectionView.Dispose ();
-				FaceCollectionView = null;
+			if (PersonName != null) {
+				PersonName.Dispose ();
+				PersonName = null;
 			}
 		}
 	}

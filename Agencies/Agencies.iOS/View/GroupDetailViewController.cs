@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Foundation;
 using UIKit;
 using Agencies.Shared;
@@ -107,6 +107,8 @@ namespace Agencies.iOS
 
                 await FaceClient.Shared.UpdatePersonGroup (Group, GroupName.Text);
 
+                this.ShowSimpleHUD ("Group created");
+
                 //_shouldExit = NO;
                 await trainGroup ();
             }
@@ -144,11 +146,6 @@ namespace Agencies.iOS
                 Group = await FaceClient.Shared.CreatePersonGroup (GroupName.Text);
 
                 this.ShowSimpleHUD ("Group created");
-
-                //if (addPerson)
-                //{
-                //    PerformSegue (AddPersonSegueId, this);
-                //}
             }
             catch (Exception)
             {

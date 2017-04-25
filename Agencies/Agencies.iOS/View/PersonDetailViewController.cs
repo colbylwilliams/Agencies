@@ -5,26 +5,48 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class PersonDetailViewController : UICollectionViewController
+    public partial class PersonDetailViewController : UIViewController
     {
+		const string EmbedSegueId = "Embed";
+
         public PersonGroup Group { get; set; }
+        public Person Person { get; set; }
         public bool NeedsTraining { get; set; }
+
+		public override void PrepareForSegue (UIStoryboardSegue segue, NSObject sender)
+		{
+			base.PrepareForSegue (segue, sender);
+
+			if (segue.Identifier == EmbedSegueId && Group != null)
+			{
+				var personFaceCVC = segue.DestinationViewController as PersonFaceCollectionViewController;
+
+				personFaceCVC.Person = Person;
+			}
+			//else if (segue.Identifier == AddPersonSegueId)
+			//{
+			//	var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
+
+			//	groupPersonVC.Group = Group;
+			//	groupPersonVC.NeedsTraining = this.NeedsTraining;
+			//}
+		}
+
 
         public PersonDetailViewController (IntPtr handle) : base (handle)
         {
         }
 
 
-        public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)
-        {
-            throw new NotImplementedException ();
-        }
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
 
-
-        public override nint GetItemsCount (UICollectionView collectionView, nint section)
-        {
-            throw new NotImplementedException ();
-        }
+			if (Person != null)
+			{
+				PersonName.Text = Person.Name;
+			}
+		}
 
 
         partial void SaveAction (NSObject sender)
