@@ -18,19 +18,22 @@ namespace Agencies.iOS
 		[Outlet]
 		UIKit.UITextField GroupName { get; set; }
 
+		[Action ("AddAction:")]
+		partial void AddAction (Foundation.NSObject sender);
+
 		[Action ("SaveAction:")]
 		partial void SaveAction (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (GroupName != null) {
-				GroupName.Dispose ();
-				GroupName = null;
-			}
-
 			if (ContainerView != null) {
 				ContainerView.Dispose ();
 				ContainerView = null;
+			}
+
+			if (GroupName != null) {
+				GroupName.Dispose ();
+				GroupName = null;
 			}
 		}
 	}

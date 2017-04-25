@@ -21,6 +21,7 @@ namespace Agencies.Shared
         }
 
 
+		//http://stackoverflow.com/a/22864616/812415
 		public static async void Forget (this Task task, params Type [] acceptableExceptions)
 		{
 			try

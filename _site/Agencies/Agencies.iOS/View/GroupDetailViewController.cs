@@ -8,14 +8,11 @@ namespace Agencies.iOS
 {
     public partial class GroupDetailViewController : UIViewController
     {
-        const string EmbedSegueId = "Embed";
-        const string AddPersonSegueId = "AddPerson";
-
         public PersonGroup Group { get; set; }
-        public bool NeedsTraining { get; set; }
 
         public GroupDetailViewController (IntPtr handle) : base (handle)
         {
+            //ContainerView.
         }
 
 
@@ -23,83 +20,37 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == EmbedSegueId && Group != null)
+            if (segue.Identifier == "Embed" && Group != null)
             {
                 var groupPeopleCVC = segue.DestinationViewController as GroupPersonCollectionViewController;
 
                 groupPeopleCVC.Group = Group;
-            }
-            else if (segue.Identifier == AddPersonSegueId)
-            {
-				var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
-
-				groupPersonVC.Group = Group;
-                groupPersonVC.NeedsTraining = this.NeedsTraining;
-            }
-        }
-
-
-        public override void ViewWillAppear (bool animated)
-        {
-            base.ViewWillAppear (animated);
-
-            if (Group != null)
-            {
-                GroupName.Text = Group.Name;
             }
         }
 
 
         partial void SaveAction (NSObject sender)
         {
+            //InvokeOnMainThread ();
+
             if (GroupName.Text.Length == 0)
             {
-                this.ShowSimpleAlert ("Please input the group name");
+                this.ShowSimpleDialog ("Please input the group name");
                 return;
             }
 
             if (Group == null)
             {
-                createNewGroup ().Forget ();
+                createNewGroup ();
             }
             else
             {
-                updateGroup ().Forget ();
+                updateGroup ();
             }
         }
 
 
-        partial void AddAction (NSObject sender)
-        {
-            AddPerson ().Forget ();
-        }
-
-
-        async Task AddPerson ()
-        {
-            if (Group == null)
-            {
-                if (GroupName.Text.Length == 0)
-                {
-                    this.ShowSimpleAlert ("Please input the group name");
-                    return;
-                }
-
-                var createGroup = await this.ShowTwoOptionAlert ("Create Group?", "Do you want to create this new group?");
-
-                if (!createGroup)
-                {
-                    return;
-                }
-
-                await createNewGroup ();
-            }
-
-            PerformSegue (AddPersonSegueId, this);
-        }
-
-
-        async Task updateGroup ()
+        async void updateGroup ()
         {
             try
             {
@@ -112,7 +63,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to update group.");
+                this.ShowSimpleDialog ("Failed to update group.");
             }
         }
 
@@ -135,25 +86,59 @@ namespace Agencies.iOS
         //}
 
 
-        async Task createNewGroup ()//bool addPerson = false)
+
+        //        - (void) addPerson: (id) sender
+        //		{
+        //    if (!self.group && _groupNameField.text.length == 0) {
+        //        [CommonUtil simpleDialog:@"please input the group name"];
+        //        return;
+        //    }
+        //    if (!self.group) {
+        //        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Hint"
+        //                                                            message:@"Do you want to create this new group?"
+        //                                                           delegate:self
+        //												  cancelButtonTitle:@"No"
+
+        //												  otherButtonTitles:@"Yes", nil];
+        //        _intension = INTENSION_ADD_PERSON;
+        //        alertView.tag = 0;
+        //        [alertView show];
+        //        return;
+        //    }
+        //MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
+        //    controller.needTraining = self.needTraining;
+        //    [self.navigationController pushViewController:controller animated:YES];
+        //}
+
+
+
+        async void createNewGroup ()
         {
             try
             {
                 this.ShowHUD ("Creating group");
 
+                //var id = new NSUuid ().AsString ();
+
                 Group = await FaceClient.Shared.CreatePersonGroup (GroupName.Text);
 
                 this.ShowSimpleHUD ("Group created");
-
-                //if (addPerson)
-                //{
-                //    PerformSegue (AddPersonSegueId, this);
-                //}
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to create group.");
+                this.ShowSimpleDialog ("Failed to create group.");
             }
+
+
+            //        if (_intension == INTENSION_ADD_PERSON) {
+            //            MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group];
+            //            controller.needTraining = self.needTraining;
+            //            [self.navigationController pushViewController:controller animated:YES];
+            //        } else {
+            //            [CommonUtil showSimpleHUD:@"Group created" forController:self.navigationController];
+            //        }
+            //    }];
+            //}
         }
 
 
