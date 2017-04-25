@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Agencies.Shared
 {
@@ -17,5 +19,20 @@ namespace Agencies.Shared
         {
             return tcs == null || (int)tcs.Task.Status >= 5;
         }
+
+
+		public static async void Forget (this Task task, params Type [] acceptableExceptions)
+		{
+			try
+			{
+				await task.ConfigureAwait (false);
+			}
+			catch (Exception ex)
+			{
+				// TODO: consider whether derived types are also acceptable.
+				if (!acceptableExceptions.Contains (ex.GetType ()))
+					throw;
+			}
+		}
     }
 }
