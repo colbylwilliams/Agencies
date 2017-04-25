@@ -192,6 +192,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\SettingUtilities.cs" />
     <Compile Include="LoginActivity.cs" />
+    <Compile Include="FaceClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

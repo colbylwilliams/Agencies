@@ -353,6 +353,7 @@
     <Compile Include="View\PersonFaceCVC.designer.cs">
       <DependentUpon>PersonFaceCVC.cs</DependentUpon>
     </Compile>
+    <Compile Include="FaceClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

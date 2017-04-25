@@ -1,9 +1,13 @@
-﻿namespace Agencies.Shared
+﻿using System.Drawing;
+
+namespace Agencies.Shared
 {
     public class Face : FaceModel
     {
-        //MPOFace 
+        public string PhotoPath { get; set; }
 
-        public string Image { get; set; }
+        //public byte [] PhotoData { get; set; }
+
+        public RectangleF FaceRectangle { get; set; }
     }
 }
