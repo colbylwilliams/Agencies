@@ -34,7 +34,13 @@ namespace Agencies.iOS
 
             ViewControllerSelected += (sender, e) =>
             {
-                if (sender is UITabBarController tabController)
+#if CSHARP_6
+                var tabController = sender as UITabBarController;
+
+                if (sender != null)
+#else
+				if (sender is UITabBarController tabController)
+#endif
                 {
                     Settings.SelectedTabIndex = (int)tabController.SelectedIndex;
                 }

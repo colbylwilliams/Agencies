@@ -7,17 +7,57 @@ namespace SettingsStudio
 {
     public static partial class Settings
     {
+
+#if CSHARP_6
         #region Visible Settings
 
-
         public static string VersionNumber
+        {
+            get { return StringForKey (SettingsKeys.VersionNumber); }
+#if __ANDROID__
+            set { SetSetting (SettingsKeys.VersionNumber, value); }
+#endif
+        }
+
+        public static string BuildNumber
+        {
+            get { return StringForKey (SettingsKeys.BuildNumber); }
+#if __ANDROID__
+            set { SetSetting (SettingsKeys.BuildNumber, value); }
+#endif
+        }
+
+        public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
+
+        public static string UserReferenceKey
+        {
+            get { return StringForKey (SettingsKeys.UserReferenceKey); }
+            set { SetSetting (SettingsKeys.UserReferenceKey, value); }
+        }
+
+        #endregion
+
+
+        #region Hidden Settings
+
+        public static int SelectedTabIndex
+        {
+            get { return Int32ForKey (SettingsKeys.SelectedTabIndex); }
+            set { SetSetting (SettingsKeys.SelectedTabIndex, value); }
+        }
+
+        #endregion
+
+#else
+        #region Visible Settings
+
+		public static string VersionNumber
         {
             get => StringForKey (SettingsKeys.VersionNumber);
 #if __ANDROID__
             set => SetSetting (SettingsKeys.VersionNumber, value);
 #endif
         }
-
 
         public static string BuildNumber
         {
@@ -27,9 +67,7 @@ namespace SettingsStudio
 #endif
         }
 
-
         public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
-
 
         public static string UserReferenceKey
         {
@@ -37,12 +75,10 @@ namespace SettingsStudio
             set => SetSetting (SettingsKeys.UserReferenceKey, value);
         }
 
-
         #endregion
 
 
         #region Hidden Settings
-
 
         public static int SelectedTabIndex
         {
@@ -50,9 +86,8 @@ namespace SettingsStudio
             set => SetSetting (SettingsKeys.SelectedTabIndex, value);
         }
 
-
         #endregion
-
+#endif
 
         #region Debug
 #if DEBUG
