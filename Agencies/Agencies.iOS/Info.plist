@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>114</string>
+	<string>115</string>
 	<key>FacebookAppID</key>
 	<string>1816964071900916</string>
 	<key>FacebookDisplayName</key>
@@ -54,6 +54,8 @@
 	<string>10.2</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Agencies would like to access the device camera to capture images for facial recognition.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Agencies would like to access the device photo library to choose images for facial recognition.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -80,7 +82,5 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Agencies would like to access the device photo library to choose images for facial recognition.</string>
 </dict>
 </plist>
