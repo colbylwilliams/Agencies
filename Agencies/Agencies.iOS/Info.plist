@@ -78,5 +78,7 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Agencies would like to access the device camera to campture images for facial recognition.</string>
 </dict>
 </plist>
