@@ -71,6 +71,12 @@ namespace Agencies.iOS
 
         partial void AddAction (NSObject sender)
         {
+			if (GroupName.Text.Length == 0)
+			{
+				this.ShowSimpleAlert ("Please input the group name");
+				return;
+			}
+
             AddPerson ().Forget ();
         }
 
@@ -79,12 +85,6 @@ namespace Agencies.iOS
         {
             if (Group == null)
             {
-                if (GroupName.Text.Length == 0)
-                {
-                    this.ShowSimpleAlert ("Please input the group name");
-                    return;
-                }
-
                 var createGroup = await this.ShowTwoOptionAlert ("Create Group?", "Do you want to create this new group?");
 
                 if (!createGroup)
@@ -95,7 +95,10 @@ namespace Agencies.iOS
                 await createNewGroup ();
             }
 
-            PerformSegue (AddPersonSegueId, this);
+            if (Group != null) //just to make sure we succeeded in the case we created a new group above
+            {
+                PerformSegue (AddPersonSegueId, this);
+            }
         }
 
 
@@ -107,7 +110,7 @@ namespace Agencies.iOS
 
                 await FaceClient.Shared.UpdatePersonGroup (Group, GroupName.Text);
 
-                this.ShowSimpleHUD ("Group created");
+                this.ShowSimpleHUD ("Group saved");
 
                 //_shouldExit = NO;
                 await trainGroup ();

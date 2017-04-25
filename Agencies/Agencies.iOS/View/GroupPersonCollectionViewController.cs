@@ -27,7 +27,7 @@ namespace Agencies.iOS
             var person = Group.People [indexPath.Section];
             var face = person.Faces [indexPath.Row];
 
-            cell.PersonImage.Image = UIImage.FromFile (face.Image);
+            cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
             cell.PersonName.Text = person.Name;
 
             //cell.faceImageView.tag = indexPath.section;
