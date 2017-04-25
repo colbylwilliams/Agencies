@@ -5,6 +5,7 @@ using CoreGraphics;
 using Foundation;
 using MBProgressHUD;
 using UIKit;
+using Photos;
 
 namespace Agencies.iOS
 {
@@ -119,9 +120,14 @@ namespace Agencies.iOS
         }
 
 
-        public static Task<UIImage> ShowPhotoPicker (this UIViewController vc)
+        public async static Task<UIImage> ShowPhotoPicker (this UIViewController vc)
         {
-            return vc.ShowMediaPicker (UIImagePickerControllerSourceType.PhotoLibrary);
+            if (await CheckPhotoPermission ())
+            {
+                return await vc.ShowMediaPicker (UIImagePickerControllerSourceType.PhotoLibrary);
+            }
+
+            throw new Exception ("Need photo permission in order to pick photo");
         }
 
 
@@ -154,6 +160,42 @@ namespace Agencies.iOS
             picker.Canceled += (sender, e) => tcs.SetResult (null);
 
             vc.PresentViewController (picker, true, null);
+
+            return tcs.Task;
+        }
+
+
+        public static Task<bool> CheckPhotoPermission ()
+        {
+            var tcs = new TaskCompletionSource<bool> ();
+            var status = PHPhotoLibrary.AuthorizationStatus;
+
+            switch (status)
+            {
+                case PHAuthorizationStatus.Authorized:
+                    tcs.SetResult (true);
+                    break;
+                case PHAuthorizationStatus.Denied:
+                case PHAuthorizationStatus.Restricted:
+                    tcs.SetResult (false);
+                    break;
+                case PHAuthorizationStatus.NotDetermined:
+                    PHPhotoLibrary.RequestAuthorization (newStatus =>
+                    {
+                        switch (newStatus)
+                        {
+                            case PHAuthorizationStatus.Authorized:
+                                tcs.SetResult (true);
+                                break;
+                            case PHAuthorizationStatus.Denied:
+                            case PHAuthorizationStatus.Restricted:
+                            default:
+                                tcs.SetResult (false);
+                                break;
+                        }
+                    });
+                    break;
+            }
 
             return tcs.Task;
         }

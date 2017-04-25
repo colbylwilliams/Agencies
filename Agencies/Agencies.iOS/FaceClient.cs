@@ -232,25 +232,27 @@ namespace Agencies.Shared
                                                   detectedFace.FaceRectangle.Width.FloatValue,
                                                   detectedFace.FaceRectangle.Height.FloatValue);
 
-                            var croppedImage = photo.Crop (rect);
-                            var documentsDirectory = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-                            var file = Path.Combine (documentsDirectory, $"face-{detectedFace.FaceId}.jpg");
-
-                            //save to disk
-                            using (var data = croppedImage.AsJPEG ())
+                            using (var croppedImage = photo.Crop (rect))
                             {
-                                data.Save (file, true);
+                                var documentsDirectory = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+                                var file = Path.Combine (documentsDirectory, $"face-{detectedFace.FaceId}.jpg");
+
+                                //save to disk
+                                using (var data = croppedImage.AsJPEG ())
+                                {
+                                    data.Save (file, true);
+                                }
+
+                                var face = new Face
+                                {
+                                    Id = detectedFace.FaceId,
+                                    PhotoPath = file,
+                                    FaceRectangle = rect
+                                    //TODO: WHAT ELSE GOES HERE???
+                                };
+
+                                faces.Add (face);
                             }
-
-                            var face = new Face
-                            {
-                                Id = detectedFace.FaceId,
-                                PhotoPath = file,
-                                FaceRectangle = rect
-                                //TODO: WHAT ELSE GOES HERE???
-                            };
-
-                            faces.Add (face);
                         }
 
                         tcs.SetResult (faces);

@@ -14,6 +14,8 @@ namespace Agencies.iOS
         public Person Person { get; set; }
         public bool NeedsTraining { get; set; }
 
+        PersonFaceCollectionViewController PersonFaceCVC => ChildViewControllers [0] as PersonFaceCollectionViewController;
+
         public override void PrepareForSegue (UIStoryboardSegue segue, NSObject sender)
         {
             base.PrepareForSegue (segue, sender);
@@ -24,13 +26,6 @@ namespace Agencies.iOS
 
                 personFaceCVC.Person = Person;
             }
-            //else if (segue.Identifier == AddPersonSegueId)
-            //{
-            //	var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
-
-            //	groupPersonVC.Group = Group;
-            //	groupPersonVC.NeedsTraining = this.NeedsTraining;
-            //}
         }
 
 
@@ -77,6 +72,8 @@ namespace Agencies.iOS
                 this.ShowHUD ("Creating person");
 
                 Person = await FaceClient.Shared.CreatePerson (PersonName.Text, Group);
+
+                PersonFaceCVC.Person = Person;
 
                 this.ShowSimpleHUD ("Person created");
             }
@@ -150,7 +147,10 @@ namespace Agencies.iOS
                         return;
                 }
 
-                await detectFaces (image);
+                if (image != null)
+                {
+                    await detectFaces (image);
+                }
             }
         }
 
@@ -173,8 +173,11 @@ namespace Agencies.iOS
 
                     await FaceClient.Shared.AddFaceForPerson (Person, Group, faces [0], image);
 
-                    //reload CVC?
+                    PersonFaceCVC.CollectionView.ReloadData ();
+
                     NeedsTraining = true;
+
+                    this.ShowSimpleHUD ("Faces saved");
                 }
                 else // > 1 face
                 {
@@ -191,12 +194,6 @@ namespace Agencies.iOS
             {
                 this.ShowSimpleAlert ("Face detection failed");
             }
-        }
-
-
-        void takePhoto ()
-        {
-
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using Foundation;
 using UIKit;
 using Agencies.Shared;
@@ -31,9 +31,9 @@ namespace Agencies.iOS
             }
             else if (segue.Identifier == AddPersonSegueId)
             {
-				var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
+                var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
 
-				groupPersonVC.Group = Group;
+                groupPersonVC.Group = Group;
                 groupPersonVC.NeedsTraining = this.NeedsTraining;
             }
         }
@@ -71,11 +71,11 @@ namespace Agencies.iOS
 
         partial void AddAction (NSObject sender)
         {
-			if (GroupName.Text.Length == 0)
-			{
-				this.ShowSimpleAlert ("Please input the group name");
-				return;
-			}
+            if (GroupName.Text.Length == 0)
+            {
+                this.ShowSimpleAlert ("Please input the group name");
+                return;
+            }
 
             AddPerson ().Forget ();
         }
