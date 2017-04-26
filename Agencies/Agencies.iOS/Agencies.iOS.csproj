@@ -354,6 +354,7 @@
       <DependentUpon>PersonFaceCVC.cs</DependentUpon>
     </Compile>
     <Compile Include="FaceClient.cs" />
+    <Compile Include="Extensions\FaceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
