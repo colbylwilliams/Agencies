@@ -14,6 +14,8 @@ namespace Agencies.iOS
         public PersonGroup Group { get; set; }
         public bool NeedsTraining { get; set; }
 
+        GroupPersonCollectionViewController GroupPersonCVC => ChildViewControllers [0] as GroupPersonCollectionViewController;
+
         public GroupDetailViewController (IntPtr handle) : base (handle)
         {
         }
@@ -148,7 +150,11 @@ namespace Agencies.iOS
 
                 Group = await FaceClient.Shared.CreatePersonGroup (GroupName.Text);
 
+                GroupPersonCVC.Group = Group;
+
                 this.ShowSimpleHUD ("Group created");
+
+                GroupPersonCVC.CollectionView.ReloadData ();
             }
             catch (Exception)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
 using UIKit;
@@ -9,15 +10,68 @@ namespace Agencies.iOS
     {
         public PersonGroup Group { get; set; }
 
+        bool initialLoad = true;
+
         public GroupPersonCollectionViewController (IntPtr handle) : base (handle)
         {
+        }
+
+
+        public override void ViewDidLoad ()
+        {
+            base.ViewDidLoad ();
+
+            loadPeople ().Forget ();
+        }
+
+
+        public override void ViewWillAppear (bool animated)
+        {
+            base.ViewWillAppear (animated);
+
+            if (!initialLoad)
+            {
+                CollectionView.ReloadData ();
+            }
+
+            initialLoad = false;
+        }
+
+
+        async Task loadPeople ()
+        {
+            try
+            {
+                await FaceClient.Shared.GetPeopleForGroup (Group);
+
+                foreach (var person in Group.People)
+                {
+                    await FaceClient.Shared.GetFacesForPerson (person, Group);
+                }
+
+                CollectionView.ReloadData ();
+            }
+            catch (Exception ex)
+            {
+                Log.Error ($"Error getting people for group (FaceClient.Shared.GetPeopleForGroup) :: {ex.Message}");
+            }
         }
 
 
         public override nint NumberOfSections (UICollectionView collectionView) => Group?.People?.Count ?? 0;
 
 
-        public override nint GetItemsCount (UICollectionView collectionView, nint section) => Group?.People? [(int)section]?.Faces?.Count ?? 0;
+        public override nint GetItemsCount (UICollectionView collectionView, nint section)
+        {
+            var faces = Group?.People? [(int)section]?.Faces;
+
+            if (faces != null)
+            {
+                return faces.Count == 0 ? 1 : faces.Count; //always return 1 so we can draw a dummy face cell and allow deletion, etc.
+            }
+
+            return 0;
+        }
 
 
         public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)
@@ -25,26 +79,69 @@ namespace Agencies.iOS
             var cell = collectionView.DequeueReusableCell ("Cell", indexPath) as GroupPersonCVC;
 
             var person = Group.People [indexPath.Section];
-            var face = person.Faces [indexPath.Row];
 
-            cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
             cell.PersonName.Text = person.Name;
+            cell.PersonImage.Tag = indexPath.Section; //keep track of the person this imageview is for - used in longPressAction
+            cell.PersonImage.UserInteractionEnabled = true;
 
-            //cell.faceImageView.tag = indexPath.section;
-            //cell.faceImageView.userInteractionEnabled = YES;
+            if (person.Faces?.Count > 0)
+            {
+                var face = person.Faces? [indexPath.Row];
 
-            //if (cell.faceImageView.gestureRecognizers.count == 0)
-            //{
+                if (face != null)
+                {
+                    cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
+                }
+            }
+            else
+            {
+                cell.PersonImage.Layer.BorderColor = UIColor.Red.CGColor;
+                cell.PersonImage.Layer.BorderWidth = 2;
+            }
 
-            //[cell.faceImageView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector (longPressAction         
+            if (cell.PersonImage.GestureRecognizers == null || cell.PersonImage.GestureRecognizers?.Length == 0)
+            {
+                cell.PersonImage.AddGestureRecognizer (new UILongPressGestureRecognizer (longPressAction));
+            }
 
             return cell;
         }
 
 
+        async void longPressAction (UIGestureRecognizer gestureRecognizer)
+        {
+            if (gestureRecognizer.State == UIGestureRecognizerState.Began)
+            {
+                try
+                {
+                    var personIndex = gestureRecognizer.View.Tag;
+
+                    var result = await this.ShowActionSheet ("Do you want to remove all of this person's faces?", string.Empty, "Yes");
+
+                    if (result == "Yes")
+                    {
+                        var person = Group.People [(int)personIndex];
+
+                        this.ShowHUD ($"Deleting {person.Name}");
+
+                        await FaceClient.Shared.DeletePerson (person, Group);
+
+                        this.ShowSimpleHUD ($"{person.Name} deleted");
+
+                        CollectionView.ReloadData ();
+                    }
+                }
+                catch (Exception)
+                {
+                    this.ShowSimpleAlert ("Failed to delete person.");
+                }
+            }
+        }
+
+
         public override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
         {
-            base.ItemSelected (collectionView, indexPath);
+            //base.ItemSelected (collectionView, indexPath);
 
             //		_selectedPersonIndex = indexPath.section;
             //		if (self.isForVarification)
@@ -89,23 +186,7 @@ namespace Agencies.iOS
         //        - (void) actionSheet:(UIActionSheet*) actionSheet clickedButtonAtIndex:(NSInteger) buttonIndex
         //		{
         //    if (actionSheet.tag == 0) {
-        //        if (buttonIndex == 0) {
-        //            MPOFaceServiceClient* client = [[MPOFaceServiceClient alloc] initWithSubscriptionKey:ProjectOxfordFaceSubscriptionKey];
-        //            MBProgressHUD* HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
-        //            [self.navigationController.view addSubview:HUD];
-        //            HUD.labelText = @"Deleting this person";
-        //            [HUD show: YES];
-
-        //            [client deletePersonWithPersonGroupId:self.group.groupId personId:((GroupPerson*) self.group.people [_selectedPersonIndex]).personId completionBlock:^(NSError* error) {
-        //                [HUD removeFromSuperview];
-        //                if (error) {
-        //                    [CommonUtil showSimpleHUD:@"Failed in deleting this person" forController:self.navigationController];
-        //                    return;
-        //                }
-        //	[self.group.people removeObjectAtIndex:_selectedPersonIndex];
-        //                [_facesCollectionView reloadData];
-        //            }];
-        //        }
+        //        
         //    } else {
         //        if (buttonIndex == 0) {
         //            UIViewController* verificationController = nil;
