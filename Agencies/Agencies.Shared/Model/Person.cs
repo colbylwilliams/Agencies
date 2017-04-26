@@ -4,8 +4,8 @@ namespace Agencies.Shared
 {
     public class Person : FaceModel
     {
-        public List<Face> Faces { get; set; } = new List<Face> ();
+        public List<string> FaceIds { get; set; } = new List<string> ();
 
-        public string UserData { get; set; }
+        public List<Face> Faces { get; set; } = new List<Face> ();
     }
 }

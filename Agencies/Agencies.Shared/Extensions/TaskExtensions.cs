@@ -21,19 +21,37 @@ namespace Agencies.Shared
         }
 
 
-		//http://stackoverflow.com/a/22864616/812415
-		public static async void Forget (this Task task, params Type [] acceptableExceptions)
-		{
-			try
-			{
-				await task.ConfigureAwait (false);
-			}
-			catch (Exception ex)
-			{
-				// TODO: consider whether derived types are also acceptable.
-				if (!acceptableExceptions.Contains (ex.GetType ()))
-					throw;
-			}
-		}
+        //http://stackoverflow.com/a/22864616/812415
+        public static async void Forget (this Task task, params Type [] acceptableExceptions)
+        {
+            try
+            {
+                await task.ConfigureAwait (false);
+            }
+            catch (Exception ex)
+            {
+                // TODO: consider whether derived types are also acceptable.
+                if (!acceptableExceptions.Contains (ex.GetType ()))
+                    throw;
+            }
+        }
+
+
+        public static void FailTaskIfErrored<T> (this TaskCompletionSource<T> tcs, Exception error)
+        {
+            if (error != null)
+            {
+                tcs.SetException (error);
+            }
+        }
+
+
+        public static void FailTaskByCondition<T> (this TaskCompletionSource<T> tcs, bool failureCondition, string error)
+        {
+            if (failureCondition)
+            {
+                tcs.SetException (new Exception (error));
+            }
+        }
     }
 }

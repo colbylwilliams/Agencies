@@ -208,7 +208,7 @@ namespace Agencies.iOS
                 return new Exception (error.Description);
             }
 
-            return new Exception ("No details");
+            return null;
         }
 
 
