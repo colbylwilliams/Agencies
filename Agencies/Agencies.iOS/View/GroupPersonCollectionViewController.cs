@@ -10,7 +10,10 @@ namespace Agencies.iOS
     {
         public PersonGroup Group { get; set; }
 
+        public Person SelectedPerson { get; private set; }
+
         bool initialLoad = true;
+        bool isForVerification;
 
         public GroupPersonCollectionViewController (IntPtr handle) : base (handle)
         {
@@ -144,31 +147,37 @@ namespace Agencies.iOS
         }
 
 
-        public override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
+        public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
         {
-            //base.ItemSelected (collectionView, indexPath);
+            SelectedPerson = Group.People [indexPath.Section];
 
-            //		_selectedPersonIndex = indexPath.section;
-            //		if (self.isForVarification)
-            //		{
-            //			UIActionSheet* use_person_sheet = [[UIActionSheet alloc]
+            if (!isForVerification)
+            {
+                ParentViewController.PerformSegue (GroupDetailViewController.Segues.PersonDetail, this);
+            }
+            else
+            {
+                var choice = await this.ShowActionSheet ("Please choose", "What would you like to do with the selected person?", "Use for verification", "Edit");
 
-            //									 initWithTitle: @"Hint"
-
-            //									 delegate:self
-            //									 cancelButtonTitle:@"Cancel"
-
-            //									 destructiveButtonTitle: nil
-            //									  otherButtonTitles:@"Use this person for verification", @"Edit this person", nil];
-            //			use_person_sheet.tag = 1;
-
-            //	[use_person_sheet showInView:self.view];
-            //       return;
-            //   }
-            //MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group andPerson:self.group.people [indexPath.section]];
-            //controller.needTraining = self.needTraining;
-            //[self.navigationController pushViewController:controller animated:YES];
-
+                switch (choice)
+                {
+                    case "Use for verification":
+                        //            UIViewController* verificationController = nil;
+                        //            for (UIViewController* controller in self.navigationController.viewControllers) {
+                        //                if ([controller isKindOfClass:[MPOVerificationViewController class]]) {
+                        //                    verificationController = controller;
+                        //                    [(MPOVerificationViewController *)controller didSelectPerson: (GroupPerson*)self.group.people[_selectedPersonIndex] inGroup:self.group];
+                        //                }
+                        //            }
+                        //            [self.navigationController popToViewController:verificationController animated:YES];
+                        break;
+                    case "Edit":
+                        ParentViewController.PerformSegue (GroupDetailViewController.Segues.PersonDetail, this);
+                        break;
+                    default:
+                        return;
+                }
+            }
         }
 
 
@@ -186,29 +195,5 @@ namespace Agencies.iOS
         //{
         //return 10;
         //}
-
-
-        //        - (void) actionSheet:(UIActionSheet*) actionSheet clickedButtonAtIndex:(NSInteger) buttonIndex
-        //		{
-        //    if (actionSheet.tag == 0) {
-        //        
-        //    } else {
-        //        if (buttonIndex == 0) {
-        //            UIViewController* verificationController = nil;
-        //            for (UIViewController* controller in self.navigationController.viewControllers) {
-        //                if ([controller isKindOfClass:[MPOVerificationViewController class]]) {
-        //                    verificationController = controller;
-        //                    [(MPOVerificationViewController *)controller didSelectPerson: (GroupPerson*)self.group.people[_selectedPersonIndex] inGroup:self.group];
-        //                }
-        //            }
-        //            [self.navigationController popToViewController:verificationController animated:YES];
-        //        } else if (buttonIndex == 1) {
-        //            MPOPersonFacesController* controller = [[MPOPersonFacesController alloc] initWithGroup:self.group andPerson:self.group.people [_selectedPersonIndex]];
-        //            controller.needTraining = self.needTraining;
-        //            [self.navigationController pushViewController:controller animated:YES];
-        //        }
-        //    }
-        //}
-
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Foundation;
 using UIKit;
 using Agencies.Shared;
@@ -85,6 +84,8 @@ namespace Agencies.iOS
         {
             try
             {
+                //no UI feedback here since this is done via swipe to delete
+
                 //await this.ShowHUD ()
 
                 await FaceClient.Shared.DeleteGroup (personGroup);

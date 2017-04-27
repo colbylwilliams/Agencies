@@ -52,7 +52,6 @@ namespace Agencies.iOS.Extensions
             {
                 Id = mpoFace.FaceId,
                 FaceRectangle = rect
-                //TODO: WHAT ELSE GOES HERE???
             };
 
             face.UpdatePhotoPath ();

@@ -8,7 +8,10 @@ namespace Agencies.iOS
 {
     public partial class PersonDetailViewController : UIViewController
     {
-        const string EmbedSegueId = "Embed";
+        class Segues
+        {
+            public const string Embed = "Embed";
+        }
 
         public PersonGroup Group { get; set; }
         public Person Person { get; set; }
@@ -20,7 +23,7 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == EmbedSegueId && Group != null)
+            if (segue.Identifier == Segues.Embed && Group != null)
             {
                 var personFaceCVC = segue.DestinationViewController as PersonFaceCollectionViewController;
 
@@ -74,6 +77,7 @@ namespace Agencies.iOS
                 Person = await FaceClient.Shared.CreatePerson (PersonName.Text, Group);
 
                 PersonFaceCVC.Person = Person;
+                PersonFaceCVC.CollectionView.ReloadData ();
 
                 this.ShowSimpleHUD ("Person created");
             }
@@ -91,6 +95,8 @@ namespace Agencies.iOS
                 this.ShowHUD ("Saving person");
 
                 await FaceClient.Shared.UpdatePerson (Person, Group, PersonName.Text);
+
+                PersonFaceCVC.CollectionView.ReloadData ();
 
                 this.ShowSimpleHUD ("Person saved");
 

@@ -121,7 +121,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="GroupName" destination="gJE-hw-ewg" id="G85-0T-3Fl"/>
-                        <segue destination="BOs-PC-5ve" kind="show" identifier="AddPerson" id="alN-gS-KQL"/>
+                        <segue destination="BOs-PC-5ve" kind="show" identifier="PersonDetail" id="alN-gS-KQL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="co6-dg-gBN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -188,7 +188,7 @@
             </objects>
             <point key="canvasLocation" x="3534" y="749"/>
         </scene>
-        <!--People-->
+        <!--Face-->
         <scene sceneID="T4Q-al-uUX">
             <objects>
                 <viewController storyboardIdentifier="FaceViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="eHV-er-9oz" customClass="FaceViewController" sceneMemberID="viewController">
@@ -211,7 +211,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="People" id="SQI-7J-Wce"/>
+                    <navigationItem key="navigationItem" title="Face" id="SQI-7J-Wce"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X0y-Tv-dSL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
