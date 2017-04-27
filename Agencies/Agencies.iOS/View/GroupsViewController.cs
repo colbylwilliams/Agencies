@@ -4,6 +4,7 @@ using Foundation;
 using UIKit;
 using Agencies.Shared;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Agencies.iOS
 {
@@ -20,13 +21,13 @@ namespace Agencies.iOS
 
         public override void ViewWillAppear (bool animated)
         {
-            loadGroups ();
+            loadGroups ().Forget ();
 
             base.ViewWillAppear (animated);
         }
 
 
-        async void loadGroups ()
+        async Task loadGroups ()
         {
             try
             {
@@ -55,6 +56,45 @@ namespace Agencies.iOS
             cell.BackgroundColor = UIColor.Clear;
 
             return cell;
+        }
+
+
+        public override bool CanEditRow (UITableView tableView, NSIndexPath indexPath)
+        {
+            return true;
+        }
+
+
+        public override void CommitEditingStyle (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
+        {
+            if (editingStyle == UITableViewCellEditingStyle.Delete)
+            {
+                tableView.BeginUpdates ();
+
+                var group = Groups [indexPath.Row];
+                Groups.Remove (group);
+                deleteGroup (group).Forget ();
+
+                tableView.DeleteRows (new NSIndexPath [] { indexPath }, UITableViewRowAnimation.Automatic);
+                tableView.EndUpdates ();
+            }
+        }
+
+
+        async Task deleteGroup (PersonGroup personGroup)
+        {
+            try
+            {
+                //await this.ShowHUD ()
+
+                await FaceClient.Shared.DeleteGroup (personGroup);
+
+                //TableView.ReloadData ();
+            }
+            catch (Exception)
+            {
+                this.ShowSimpleAlert ("Error deleting group.");
+            }
         }
 
 

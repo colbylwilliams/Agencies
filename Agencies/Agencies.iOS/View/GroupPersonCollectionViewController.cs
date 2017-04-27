@@ -21,7 +21,10 @@ namespace Agencies.iOS
         {
             base.ViewDidLoad ();
 
-            loadPeople ().Forget ();
+            if (Group != null && Group.People?.Count == 0)
+            {
+                loadPeople ().Forget ();
+            }
         }
 
 
@@ -91,6 +94,8 @@ namespace Agencies.iOS
                 if (face != null)
                 {
                     cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
+                    //cell.PersonImage.Layer.BorderColor = UIColor.Clear.CGColor;
+                    cell.PersonImage.Layer.BorderWidth = 0;
                 }
             }
             else

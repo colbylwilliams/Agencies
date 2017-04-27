@@ -124,25 +124,7 @@ namespace Agencies.iOS
         }
 
 
-        //        - (void) longPressAction: (UIGestureRecognizer*) gestureRecognizer
-        //		{
-        //    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        //        _selectedPersonIndex = gestureRecognizer.view.tag;
-        //        UIActionSheet* confirm_sheet = [[UIActionSheet alloc]
-
-        //										 initWithTitle:@"Do you want to remove all of this person's faces?"
-        //                                         delegate:self
-        //										 cancelButtonTitle:@"Cancel"
-
-        //										 destructiveButtonTitle:nil
-        //										 otherButtonTitles:@"Yes", nil];
-        //        confirm_sheet.tag = 0;
-        //        [confirm_sheet showInView:self.view];
-        //    }
-        //}
-
-
-        async Task createNewGroup ()//bool addPerson = false)
+        async Task createNewGroup ()
         {
             try
             {

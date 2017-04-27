@@ -115,6 +115,34 @@ namespace Agencies.Shared
         }
 
 
+        public Task DeleteGroup (PersonGroup personGroup)
+        {
+            try
+            {
+                var tcs = new TaskCompletionSource<bool> ();
+
+                Client.DeletePersonGroupWithPersonGroupId (personGroup.Id, error =>
+                {
+                    tcs.FailTaskIfErrored (error.ToException ());
+
+                    if (Groups.Contains (personGroup))
+                    {
+                        Groups.Remove (personGroup);
+                    }
+
+                    tcs.SetResult (true);
+                }).Resume ();
+
+                return tcs.Task;
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
         public Task TrainGroup (PersonGroup personGroup)
         {
             try
@@ -151,14 +179,15 @@ namespace Agencies.Shared
             {
                 var tcs = new TaskCompletionSource<List<Person>> ();
 
-                Client.ListPersonsWithPersonGroupId (group.Id, (groupPeople, error) =>
+                Client.ListPersonsWithPersonGroupId (group.Id, (mpoPeople, error) =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
 
                     var people = new List<Person> (
-                        groupPeople.Select (p => p.ToPerson ())
+                        mpoPeople.Select (p => p.ToPerson ())
                     );
 
+                    group.People.Clear ();
                     group.People.AddRange (people);
 
                     tcs.SetResult (people);
@@ -324,15 +353,6 @@ namespace Agencies.Shared
                         {
                             var face = detectedFace.ToFace ();
                             faces.Add (face);
-
-                            using (var croppedImage = photo.Crop (face.FaceRectangle))
-                            {
-                                //save to disk
-                                using (var data = croppedImage.AsJPEG ())
-                                {
-                                    data.Save (face.PhotoPath, true);
-                                }
-                            }
                         }
 
                         tcs.SetResult (faces);
@@ -364,8 +384,18 @@ namespace Agencies.Shared
                         tcs.FailTaskByCondition (string.IsNullOrEmpty (result.PersistedFaceId), "AddPersistedFaceResult returned invalid face Id");
 
                         face.Id = result.PersistedFaceId;
+                        face.UpdatePhotoPath ();
 
                         person.Faces.Add (face);
+
+                        using (var croppedImage = photo.Crop (face.FaceRectangle))
+                        {
+                            //save to disk
+                            using (var data = croppedImage.AsJPEG ())
+                            {
+                                data.Save (face.PhotoPath, true);
+                            }
+                        }
 
                         tcs.SetResult (true);
                     }).Resume ();

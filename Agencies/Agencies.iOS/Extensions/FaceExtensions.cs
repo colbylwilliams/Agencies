@@ -36,7 +36,7 @@ namespace Agencies.iOS.Extensions
                 Id = person.PersonId,
                 Name = person.Name,
                 //UserData = p.UserData,
-                FaceIds = person.FaceIds?.Select (fid => fid.ToString ()).ToList ()
+                FaceIds = person.PersistedFaceIds?.ToList ()
             };
         }
 
@@ -48,29 +48,38 @@ namespace Agencies.iOS.Extensions
                                        mpoFace.FaceRectangle.Width.FloatValue,
                                        mpoFace.FaceRectangle.Height.FloatValue);
 
-            var file = Path.Combine (docsDir, $"face-{mpoFace.FaceId}.jpg");
-
-            return new Face
+            var face = new Face
             {
                 Id = mpoFace.FaceId,
-                PhotoPath = file,
-                FaceRectangle = rect,
+                FaceRectangle = rect
                 //TODO: WHAT ELSE GOES HERE???
             };
+
+            face.UpdatePhotoPath ();
+
+            return face;
         }
 
 
         public static Face ToFace (this MPOPersonFace mpoFace)
         {
-            var file = Path.Combine (docsDir, $"face-{mpoFace.FaceId}.jpg");
-
-            return new Face
+            var face = new Face
             {
-                Id = mpoFace.FaceId,
-                PhotoPath = file,
+                Id = mpoFace.PersistedFaceId
                 //UserData = mpoFace.UserData,
                 //FaceRectangle = rect
             };
+
+            face.UpdatePhotoPath ();
+
+            return face;
+        }
+
+
+        public static void UpdatePhotoPath (this Face face)
+        {
+            var filePath = Path.Combine (docsDir, face.FileName);
+            face.PhotoPath = filePath;
         }
 
 
