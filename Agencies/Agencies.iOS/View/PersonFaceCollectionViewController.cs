@@ -7,6 +7,7 @@ namespace Agencies.iOS
 {
     public partial class PersonFaceCollectionViewController : UICollectionViewController
     {
+        public PersonGroup Group { get; set; }
         public Person Person { get; set; }
 
         public PersonFaceCollectionViewController (IntPtr handle) : base (handle)
@@ -26,18 +27,48 @@ namespace Agencies.iOS
 
             var face = Person.Faces [indexPath.Row];
 
-            cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
             cell.PersonName.Text = Person.Name;
+            cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
+            cell.PersonImage.UserInteractionEnabled = true;
+            cell.PersonImage.Tag = indexPath.Section; //keep track of the person this imageview is for - used in longPressAction
 
-            //cell.faceImageView.tag = indexPath.section;
-            //cell.faceImageView.userInteractionEnabled = YES;
-
-            //if (cell.faceImageView.gestureRecognizers.count == 0)
-            //{
-
-            //[cell.faceImageView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector (longPressAction         
+            if (cell.PersonImage.GestureRecognizers == null || cell.PersonImage.GestureRecognizers?.Length == 0)
+            {
+                cell.PersonImage.AddGestureRecognizer (new UILongPressGestureRecognizer (longPressAction));
+            }
 
             return cell;
+        }
+
+
+        async void longPressAction (UIGestureRecognizer gestureRecognizer)
+        {
+            if (gestureRecognizer.State == UIGestureRecognizerState.Began)
+            {
+                try
+                {
+                    var faceIndex = gestureRecognizer.View.Tag;
+
+                    var result = await this.ShowActionSheet ("Do you want to remove this face?", string.Empty, "Yes");
+
+                    if (result == "Yes")
+                    {
+                        var face = Person.Faces [(int)faceIndex];
+
+                        this.ShowHUD ("Deleting this face");
+
+                        await FaceClient.Shared.DeleteFace (Person, Group, face);
+
+                        this.ShowSimpleHUD ("Face deleted");
+
+                        CollectionView.ReloadData ();
+                    }
+                }
+                catch (Exception)
+                {
+                    this.ShowSimpleAlert ("Failed to delete person.");
+                }
+            }
         }
     }
 }

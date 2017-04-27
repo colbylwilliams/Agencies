@@ -28,6 +28,7 @@ namespace Agencies.iOS
                 var personFaceCVC = segue.DestinationViewController as PersonFaceCollectionViewController;
 
                 personFaceCVC.Person = Person;
+                personFaceCVC.Group = Group;
             }
         }
 

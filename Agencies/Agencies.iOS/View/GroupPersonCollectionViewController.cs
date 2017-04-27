@@ -97,12 +97,12 @@ namespace Agencies.iOS
                 if (face != null)
                 {
                     cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
-                    //cell.PersonImage.Layer.BorderColor = UIColor.Clear.CGColor;
                     cell.PersonImage.Layer.BorderWidth = 0;
                 }
             }
             else
             {
+                cell.PersonImage.Image = null;
                 cell.PersonImage.Layer.BorderColor = UIColor.Red.CGColor;
                 cell.PersonImage.Layer.BorderWidth = 2;
             }
@@ -123,13 +123,12 @@ namespace Agencies.iOS
                 try
                 {
                     var personIndex = gestureRecognizer.View.Tag;
+                    var person = Group.People [(int)personIndex];
 
-                    var result = await this.ShowActionSheet ("Do you want to remove all of this person's faces?", string.Empty, "Yes");
+                    var result = await this.ShowActionSheet ($"Do you want to remove all of {person.Name}'s faces?", string.Empty, "Yes");
 
                     if (result == "Yes")
                     {
-                        var person = Group.People [(int)personIndex];
-
                         this.ShowHUD ($"Deleting {person.Name}");
 
                         await FaceClient.Shared.DeletePerson (person, Group);
