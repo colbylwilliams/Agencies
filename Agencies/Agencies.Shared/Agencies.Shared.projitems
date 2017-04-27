@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Person.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\FaceModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Face.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
