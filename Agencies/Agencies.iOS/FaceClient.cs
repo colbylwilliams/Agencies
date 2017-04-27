@@ -302,7 +302,7 @@ namespace Agencies.Shared
             {
                 person.Faces.Clear ();
 
-                if (person.FaceIds != null)
+                if (person.FaceIds?.Count > 0)
                 {
                     var tcs = new TaskCompletionSource<List<Face>> ();
 
@@ -400,6 +400,34 @@ namespace Agencies.Shared
                         tcs.SetResult (true);
                     }).Resume ();
                 }
+
+                return tcs.Task;
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
+        public Task DeleteFace (Person person, PersonGroup group, Face face)
+        {
+            try
+            {
+                var tcs = new TaskCompletionSource<bool> ();
+
+                Client.DeletePersonFaceWithPersonGroupId (group.Id, person.Id, face.Id, error =>
+                {
+                    tcs.FailTaskIfErrored (error.ToException ());
+
+                    if (person.Faces.Contains (face))
+                    {
+                        person.Faces.Remove (face);
+                    }
+
+                    tcs.SetResult (true);
+                }).Resume ();
 
                 return tcs.Task;
             }
