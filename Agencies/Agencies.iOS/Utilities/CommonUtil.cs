@@ -157,7 +157,11 @@ namespace Agencies.iOS
                 tcs.SetResult (image);
             };
 
-            picker.Canceled += (sender, e) => tcs.SetResult (null);
+            picker.Canceled += (sender, e) =>
+            {
+                picker.DismissViewController (true, null);
+                tcs.SetResult (null);
+            };
 
             vc.PresentViewController (picker, true, null);
 
