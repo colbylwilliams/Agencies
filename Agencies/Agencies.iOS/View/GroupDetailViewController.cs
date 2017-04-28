@@ -28,16 +28,12 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == Segues.Embed && Group != null)
+            if (segue.Identifier == Segues.Embed && segue.DestinationViewController is GroupPersonCollectionViewController groupPeopleCVC)
             {
-                var groupPeopleCVC = segue.DestinationViewController as GroupPersonCollectionViewController;
-
                 groupPeopleCVC.Group = Group;
             }
-            else if (segue.Identifier == Segues.PersonDetail)
+            else if (segue.Identifier == Segues.PersonDetail && segue.DestinationViewController is PersonDetailViewController groupPersonVC)
             {
-                var groupPersonVC = segue.DestinationViewController as PersonDetailViewController;
-
                 groupPersonVC.Group = Group;
                 groupPersonVC.Person = GroupPersonCVC.SelectedPerson;
                 groupPersonVC.NeedsTraining = NeedsTraining;

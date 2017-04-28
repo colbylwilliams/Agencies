@@ -5,7 +5,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class PersonFaceCollectionViewController : UICollectionViewController
+    public partial class PersonFaceCollectionViewController : BaseCollectionViewController
     {
         public PersonGroup Group { get; set; }
         public Person Person { get; set; }
@@ -15,7 +15,18 @@ namespace Agencies.iOS
         }
 
 
-        public override nint NumberOfSections (UICollectionView collectionView) => Person?.Faces?.Count ?? 0;
+        public override void ViewWillAppear (bool animated)
+        {
+            base.ViewWillAppear (animated);
+
+            if (!IsInitialLoad)
+            {
+                CollectionView.ReloadData ();
+            }
+        }
+
+
+        public override nint NumberOfSections (UICollectionView collectionView) => 1;
 
 
         public override nint GetItemsCount (UICollectionView collectionView, nint section) => Person?.Faces?.Count ?? 0;
@@ -30,7 +41,7 @@ namespace Agencies.iOS
             cell.PersonName.Text = Person.Name;
             cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
             cell.PersonImage.UserInteractionEnabled = true;
-            cell.PersonImage.Tag = indexPath.Section; //keep track of the person this imageview is for - used in longPressAction
+            cell.PersonImage.Tag = indexPath.Row; //keep track of the face this imageview is for - used in longPressAction
 
             if (cell.PersonImage.GestureRecognizers == null || cell.PersonImage.GestureRecognizers?.Length == 0)
             {

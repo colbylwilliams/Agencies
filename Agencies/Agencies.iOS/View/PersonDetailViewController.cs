@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
@@ -11,10 +12,13 @@ namespace Agencies.iOS
         class Segues
         {
             public const string Embed = "Embed";
+            public const string SelectFaces = "SelectFaces";
         }
 
         public PersonGroup Group { get; set; }
         public Person Person { get; set; }
+        public List<Face> DetectedFaces { get; set; }
+        public UIImage SourceImage { get; set; }
         public bool NeedsTraining { get; set; }
 
         PersonFaceCollectionViewController PersonFaceCVC => ChildViewControllers [0] as PersonFaceCollectionViewController;
@@ -23,12 +27,18 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == Segues.Embed && Group != null)
+            if (segue.Identifier == Segues.Embed && segue.DestinationViewController is PersonFaceCollectionViewController personFaceCVC)
             {
-                var personFaceCVC = segue.DestinationViewController as PersonFaceCollectionViewController;
-
                 personFaceCVC.Person = Person;
                 personFaceCVC.Group = Group;
+            }
+            else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionViewController faceSelectionController)
+            {
+                faceSelectionController.Person = Person;
+                faceSelectionController.Group = Group;
+                faceSelectionController.DetectedFaces = DetectedFaces;
+                faceSelectionController.NeedsTraining = NeedsTraining;
+                faceSelectionController.SourceImage = SourceImage;
             }
         }
 
@@ -59,7 +69,6 @@ namespace Agencies.iOS
 
             if (Person == null)
             {
-                //     _intension = INTENSION_SAVE_PERSON;
                 createNewPerson ().Forget ();
             }
             else
@@ -100,8 +109,6 @@ namespace Agencies.iOS
                 PersonFaceCVC.CollectionView.ReloadData ();
 
                 this.ShowSimpleHUD ("Person saved");
-
-                //reload collection view?
             }
             catch (Exception)
             {
@@ -156,29 +163,30 @@ namespace Agencies.iOS
 
                 if (image != null)
                 {
-                    await detectFaces (image);
+                    SourceImage = image;
+                    await detectFaces ();
                 }
             }
         }
 
 
-        async Task detectFaces (UIImage image)
+        async Task detectFaces ()
         {
             try
             {
                 this.ShowHUD ("Detecting faces");
 
-                var faces = await FaceClient.Shared.DetectFacesInPhoto (image);
+                DetectedFaces = await FaceClient.Shared.DetectFacesInPhoto (SourceImage);
 
-                if (faces.Count == 0)
+                if (DetectedFaces.Count == 0)
                 {
                     this.ShowSimpleHUD ("No faces detected");
                 }
-                else if (faces.Count == 1)
+                else if (DetectedFaces.Count == 1)
                 {
                     this.ShowHUD ("Adding faces");
 
-                    await FaceClient.Shared.AddFaceForPerson (Person, Group, faces [0], image);
+                    await FaceClient.Shared.AddFaceForPerson (Person, Group, DetectedFaces [0], SourceImage);
 
                     PersonFaceCVC.CollectionView.ReloadData ();
 
@@ -188,13 +196,9 @@ namespace Agencies.iOS
                 }
                 else // > 1 face
                 {
-                    //            MPOAddPersonFaceController* controller = [[MPOAddPersonFaceController alloc] init];
-                    //            controller.group = self.group;
-                    //            controller.person = self.person;
-                    //            controller.detectedFaces = _detectedFaces;
-                    //            controller.image = selectedImage;
-                    //            controller.needTraining = self.needTraining;
-                    //            [self.navigationController pushViewController:controller animated:YES];
+                    this.HideHUD ();
+
+                    PerformSegue (Segues.SelectFaces, this);
                 }
             }
             catch (Exception)

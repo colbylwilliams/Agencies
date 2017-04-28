@@ -6,13 +6,12 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class GroupPersonCollectionViewController : UICollectionViewController
+    public partial class GroupPersonCollectionViewController : BaseCollectionViewController
     {
         public PersonGroup Group { get; set; }
 
         public Person SelectedPerson { get; private set; }
 
-        bool initialLoad = true;
         bool isForVerification;
 
         public GroupPersonCollectionViewController (IntPtr handle) : base (handle)
@@ -35,12 +34,10 @@ namespace Agencies.iOS
         {
             base.ViewWillAppear (animated);
 
-            if (!initialLoad)
+            if (!IsInitialLoad)
             {
                 CollectionView.ReloadData ();
             }
-
-            initialLoad = false;
         }
 
 
