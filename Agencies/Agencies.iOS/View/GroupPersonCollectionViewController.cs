@@ -6,7 +6,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class GroupPersonCollectionViewController : BaseCollectionViewController
+    public partial class GroupPersonCollectionViewController : ThreeItemRowCollectionViewController
     {
         public PersonGroup Group { get; set; }
 
@@ -19,25 +19,27 @@ namespace Agencies.iOS
         }
 
 
-        public override void ViewDidLoad ()
-        {
-            base.ViewDidLoad ();
-
-            if (Group != null && Group.People?.Count == 0)
-            {
-                loadPeople ().Forget ();
-            }
-        }
-
-
         public override void ViewWillAppear (bool animated)
         {
             base.ViewWillAppear (animated);
 
-            if (!IsInitialLoad)
+            if (IsInitialLoad)
+            {
+                if (Group != null && Group.People?.Count == 0)
+                {
+                    loadPeople ().Forget ();
+                }
+            }
+            else
             {
                 CollectionView.ReloadData ();
             }
+        }
+
+
+        public override void WillMoveToParentViewController (UIViewController parent)
+        {
+            base.WillMoveToParentViewController (parent);
         }
 
 
@@ -45,6 +47,8 @@ namespace Agencies.iOS
         {
             try
             {
+                this.ShowHUD ("Loading group");
+
                 await FaceClient.Shared.GetPeopleForGroup (Group);
 
                 foreach (var person in Group.People)
@@ -53,10 +57,14 @@ namespace Agencies.iOS
                 }
 
                 CollectionView.ReloadData ();
+
+                this.HideHUD ();
             }
             catch (Exception ex)
             {
                 Log.Error ($"Error getting people for group (FaceClient.Shared.GetPeopleForGroup) :: {ex.Message}");
+
+                this.ShowSimpleHUD ("Error retrieving people for group");
             }
         }
 
@@ -175,21 +183,5 @@ namespace Agencies.iOS
                 }
             }
         }
-
-
-        //        - (CGSize) collectionView:(UICollectionView*) collectionView layout:(UICollectionViewLayout*) collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath*) indexPath
-        //        {
-        //    return CGSizeMake(_facesCollectionView.width / 3 - 10, (_facesCollectionView.width / 3 - 10) * 4 / 3);
-        //}
-
-        //- (CGFloat) collectionView:(UICollectionView*) collectionView layout:(UICollectionViewLayout*) collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger) section
-        //    {
-        //    return 10;
-        //    }
-
-        //- (CGFloat) collectionView:(UICollectionView*) collectionView layout:(UICollectionViewLayout*) collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger) section
-        //{
-        //return 10;
-        //}
     }
 }

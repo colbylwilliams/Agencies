@@ -30,6 +30,8 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
+                Log.Error ($"Exception thrown on unmonitored Task: {ex.Message}");
+
                 // TODO: consider whether derived types are also acceptable.
                 if (!acceptableExceptions.Contains (ex.GetType ()))
                     throw;

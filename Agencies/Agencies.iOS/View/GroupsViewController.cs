@@ -30,9 +30,13 @@ namespace Agencies.iOS
         {
             try
             {
+                this.ShowHUD ("Loading groups");
+
                 Groups = await FaceClient.Shared.GetGroups ();
 
                 TableView.ReloadData ();
+
+                this.HideHUD ();
             }
             catch (Exception)
             {

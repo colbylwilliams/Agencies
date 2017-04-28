@@ -359,6 +359,7 @@
       <DependentUpon>FaceCVC.cs</DependentUpon>
     </Compile>
     <Compile Include="View\BaseCollectionViewController.cs" />
+    <Compile Include="View\ThreeItemRowCollectionViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
