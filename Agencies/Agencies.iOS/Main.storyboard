@@ -88,7 +88,7 @@
                                 </constraints>
                             </view>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QV7-z0-VOo">
-                                <rect key="frame" x="16" y="143" width="343" height="524"/>
+                                <rect key="frame" x="16" y="143" width="343" height="475"/>
                                 <connections>
                                     <segue destination="JGZ-jc-wEV" kind="embed" identifier="Embed" id="8lN-dq-IZs"/>
                                 </connections>
@@ -101,7 +101,7 @@
                             <constraint firstItem="QV7-z0-VOo" firstAttribute="top" secondItem="8P9-is-iog" secondAttribute="bottom" constant="8" id="GjM-ce-sZY"/>
                             <constraint firstItem="8P9-is-iog" firstAttribute="leading" secondItem="K84-zr-1q6" secondAttribute="leadingMargin" id="NJp-Nr-F1J"/>
                             <constraint firstItem="QV7-z0-VOo" firstAttribute="leading" secondItem="K84-zr-1q6" secondAttribute="leadingMargin" id="Qta-P2-reB"/>
-                            <constraint firstItem="QV7-z0-VOo" firstAttribute="bottom" secondItem="K84-zr-1q6" secondAttribute="bottomMargin" id="nPk-3H-IiD"/>
+                            <constraint firstItem="Qft-wI-2Fj" firstAttribute="top" secondItem="QV7-z0-VOo" secondAttribute="bottom" id="T5l-Cx-l2d"/>
                             <constraint firstItem="8P9-is-iog" firstAttribute="top" secondItem="K84-zr-1q6" secondAttribute="topMargin" constant="68" id="zpk-el-3VD"/>
                         </constraints>
                     </view>
@@ -126,14 +126,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="co6-dg-gBN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3535" y="116"/>
+            <point key="canvasLocation" x="3533.5999999999999" y="115.59220389805098"/>
         </scene>
         <!--Group Person Collection View Controller-->
         <scene sceneID="dLx-TW-tZr">
             <objects>
                 <collectionViewController storyboardIdentifier="GroupPersonCollectionViewController" id="JGZ-jc-wEV" customClass="GroupPersonCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="G2T-CZ-hMr">
-                        <rect key="frame" x="0.0" y="0.0" width="343" height="524"/>
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="G2T-CZ-hMr">
+                        <rect key="frame" x="0.0" y="0.0" width="343" height="475"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="mRg-Qn-1fb">
@@ -342,7 +342,7 @@
                                 </constraints>
                             </view>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Ta-XZ-agj">
-                                <rect key="frame" x="16" y="143" width="343" height="524"/>
+                                <rect key="frame" x="16" y="143" width="343" height="475"/>
                                 <connections>
                                     <segue destination="DSD-hg-MZ2" kind="embed" identifier="Embed" id="y2d-Ik-Kj1"/>
                                 </connections>
@@ -351,12 +351,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="yW8-FO-mJj" firstAttribute="leading" secondItem="tdT-aA-zGL" secondAttribute="leadingMargin" id="3ip-eP-yBO"/>
-                            <constraint firstItem="0Ta-XZ-agj" firstAttribute="bottom" secondItem="tdT-aA-zGL" secondAttribute="bottomMargin" id="C4i-E5-kbe"/>
                             <constraint firstItem="yW8-FO-mJj" firstAttribute="trailing" secondItem="tdT-aA-zGL" secondAttribute="trailingMargin" id="J3U-8t-aUg"/>
                             <constraint firstItem="0Ta-XZ-agj" firstAttribute="top" secondItem="yW8-FO-mJj" secondAttribute="bottom" constant="8" id="LoB-T1-pbO"/>
                             <constraint firstItem="yW8-FO-mJj" firstAttribute="top" secondItem="tdT-aA-zGL" secondAttribute="topMargin" constant="68" id="UuY-go-7Sa"/>
                             <constraint firstItem="0Ta-XZ-agj" firstAttribute="trailing" secondItem="tdT-aA-zGL" secondAttribute="trailingMargin" id="VIb-7M-4lO"/>
                             <constraint firstItem="0Ta-XZ-agj" firstAttribute="leading" secondItem="tdT-aA-zGL" secondAttribute="leadingMargin" id="cs3-3Q-d8w"/>
+                            <constraint firstItem="0Dc-2R-279" firstAttribute="top" secondItem="0Ta-XZ-agj" secondAttribute="bottom" id="ruR-dL-2Ah"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Person Detail" id="dVC-IE-569">
@@ -380,14 +380,14 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRG-fG-ddh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4329" y="116"/>
+            <point key="canvasLocation" x="4328.8000000000002" y="115.59220389805098"/>
         </scene>
         <!--Person Face Collection View Controller-->
         <scene sceneID="1z5-np-kfq">
             <objects>
                 <collectionViewController storyboardIdentifier="PersonFaceCollectionViewController" id="DSD-hg-MZ2" customClass="PersonFaceCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="cHk-Tt-Fmt">
-                        <rect key="frame" x="0.0" y="0.0" width="343" height="524"/>
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="cHk-Tt-Fmt">
+                        <rect key="frame" x="0.0" y="0.0" width="343" height="475"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="WpL-1c-QWl">
@@ -472,7 +472,7 @@
                                 </constraints>
                             </view>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aro-s2-1QV">
-                                <rect key="frame" x="16" y="113" width="343" height="554"/>
+                                <rect key="frame" x="16" y="113" width="343" height="505"/>
                                 <connections>
                                     <segue destination="zcA-Ql-fJb" kind="embed" identifier="Embed" id="aAz-z1-y0f"/>
                                 </connections>
@@ -485,22 +485,22 @@
                             <constraint firstItem="aro-s2-1QV" firstAttribute="top" secondItem="iSR-kq-8X1" secondAttribute="bottom" constant="8" id="Trd-bJ-NVT"/>
                             <constraint firstItem="aro-s2-1QV" firstAttribute="leading" secondItem="lwH-8Y-O23" secondAttribute="leadingMargin" id="UyE-5e-Ndi"/>
                             <constraint firstItem="aro-s2-1QV" firstAttribute="trailing" secondItem="lwH-8Y-O23" secondAttribute="trailingMargin" id="Vgc-wc-NaI"/>
-                            <constraint firstItem="aro-s2-1QV" firstAttribute="bottom" secondItem="lwH-8Y-O23" secondAttribute="bottomMargin" id="hM6-bl-kAC"/>
                             <constraint firstItem="iSR-kq-8X1" firstAttribute="trailing" secondItem="lwH-8Y-O23" secondAttribute="trailingMargin" id="qEH-Q0-At5"/>
+                            <constraint firstItem="UvH-di-Z4K" firstAttribute="top" secondItem="aro-s2-1QV" secondAttribute="bottom" id="wfx-Ns-hQe"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Select Faces" id="WbR-hM-Avj"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T1q-oU-nho" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5122" y="116"/>
+            <point key="canvasLocation" x="5120.8000000000002" y="115.59220389805098"/>
         </scene>
         <!--Face Selection Collection View Controller-->
         <scene sceneID="g5D-5h-V7S">
             <objects>
                 <collectionViewController storyboardIdentifier="FaceSelectionCollectionViewController" id="zcA-Ql-fJb" customClass="FaceSelectionCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="0IF-ro-SHx">
-                        <rect key="frame" x="0.0" y="0.0" width="343" height="554"/>
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="0IF-ro-SHx">
+                        <rect key="frame" x="0.0" y="0.0" width="343" height="505"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TzM-4A-TfM">
