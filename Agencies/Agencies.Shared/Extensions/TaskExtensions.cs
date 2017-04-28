@@ -41,7 +41,7 @@ namespace Agencies.Shared
         {
             if (error != null)
             {
-                tcs.SetException (error);
+                tcs.TrySetException (error);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Agencies.Shared
         {
             if (failureCondition)
             {
-                tcs.SetException (new Exception (error));
+                tcs.TrySetException (new Exception (error));
             }
         }
     }

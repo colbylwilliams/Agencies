@@ -34,6 +34,7 @@ namespace Agencies.Shared
                     Client.ListPersonGroupsWithCompletion ((groups, error) =>
                     {
                         tcs.FailTaskIfErrored (error.ToException ());
+                        if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                         Groups = new List<PersonGroup> (
                             groups.Select (g => g.ToPersonGroup ())
@@ -66,6 +67,7 @@ namespace Agencies.Shared
                 Client.CreatePersonGroupWithId (personGroupId, groupName, userData, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     var group = new PersonGroup
                     {
@@ -98,6 +100,7 @@ namespace Agencies.Shared
                 Client.UpdatePersonGroupWithPersonGroupId (personGroup.Id, groupName, userData, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     personGroup.Name = groupName;
                     personGroup.UserData = userData;
@@ -124,6 +127,7 @@ namespace Agencies.Shared
                 Client.DeletePersonGroupWithPersonGroupId (personGroup.Id, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     if (Groups.Contains (personGroup))
                     {
@@ -152,6 +156,7 @@ namespace Agencies.Shared
                 Client.TrainPersonGroupWithPersonGroupId (personGroup.Id, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     tcs.SetResult (true);
 
@@ -182,6 +187,7 @@ namespace Agencies.Shared
                 Client.ListPersonsWithPersonGroupId (group.Id, (mpoPeople, error) =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     var people = new List<Person> (
                         mpoPeople.Select (p => p.ToPerson ())
@@ -213,6 +219,7 @@ namespace Agencies.Shared
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
                     tcs.FailTaskByCondition (string.IsNullOrEmpty (result.PersonId), "CreatePersonResult returned invalid person Id");
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     var person = new Person
                     {
@@ -245,6 +252,7 @@ namespace Agencies.Shared
                 Client.UpdatePersonWithPersonGroupId (group.Id, person.Id, personName, userData, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     person.Name = personName;
                     person.UserData = userData;
@@ -271,6 +279,7 @@ namespace Agencies.Shared
                 Client.DeletePersonWithPersonGroupId (group.Id, person.Id, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     if (group.People.Contains (person))
                     {
@@ -311,6 +320,7 @@ namespace Agencies.Shared
                         Client.GetPersonFaceWithPersonGroupId (group.Id, person.Id, faceId, (mpoFace, error) =>
                         {
                             tcs.FailTaskIfErrored (error.ToException ());
+                            if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                             var face = mpoFace.ToFace ();
 
@@ -336,18 +346,19 @@ namespace Agencies.Shared
         }
 
 
-        public Task<List<Face>> DetectFacesInPhoto (UIImage photo)
+        public Task<List<Face>> DetectFacesInPhoto (UIImage photo, float quality = .8f)
         {
             try
             {
                 List<Face> faces = new List<Face> ();
                 var tcs = new TaskCompletionSource<List<Face>> ();
 
-                using (var jpgData = photo.AsJPEG (.8f))
+                using (var jpgData = photo.AsJPEG (quality))
                 {
                     Client.DetectWithData (jpgData, true, true, new NSObject [0], (detectedFaces, error) =>
                     {
                         tcs.FailTaskIfErrored (error.ToException ());
+                        if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                         foreach (var detectedFace in detectedFaces)
                         {
@@ -369,32 +380,30 @@ namespace Agencies.Shared
         }
 
 
-        public Task AddFaceForPerson (Person person, PersonGroup group, Face face, UIImage photo, string userData = null)
+        public Task AddFaceForPerson (Person person, PersonGroup group, Face face, UIImage photo, string userData = null, float quality = .8f)
         {
+            var tcs = new TaskCompletionSource<bool> ();
+
             try
             {
-                var tcs = new TaskCompletionSource<bool> ();
                 var faceRect = face.FaceRectangle.ToMPOFaceRect ();
 
-                using (var jpgData = photo.AsJPEG (.8f))
+                using (var jpgData = photo.AsJPEG (quality))
                 {
                     Client.AddPersonFaceWithPersonGroupId (group.Id, person.Id, jpgData, userData, faceRect, (result, error) =>
                     {
                         tcs.FailTaskIfErrored (error.ToException ());
-                        tcs.FailTaskByCondition (string.IsNullOrEmpty (result.PersistedFaceId), "AddPersistedFaceResult returned invalid face Id");
+                        tcs.FailTaskByCondition (string.IsNullOrEmpty (result?.PersistedFaceId), "AddPersistedFaceResult returned invalid face Id");
+                        if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                         face.Id = result.PersistedFaceId;
                         face.UpdatePhotoPath ();
 
                         person.Faces.Add (face);
 
-                        using (var croppedImage = photo.Crop (face.FaceRectangle))
+                        using (var croppedImg = photo.Crop (face.FaceRectangle))
                         {
-                            //save to disk
-                            using (var data = croppedImage.AsJPEG ())
-                            {
-                                data.Save (face.PhotoPath, true);
-                            }
+                            SaveFaceImage (face, croppedImg);
                         }
 
                         tcs.SetResult (true);
@@ -411,6 +420,16 @@ namespace Agencies.Shared
         }
 
 
+        public void SaveFaceImage (Face face, UIImage photo)
+        {
+            using (var data = photo.AsJPEG ())
+            {
+                data.Save (face.PhotoPath, true);
+            }
+        }
+
+
+
         public Task DeleteFace (Person person, PersonGroup group, Face face)
         {
             try
@@ -420,6 +439,7 @@ namespace Agencies.Shared
                 Client.DeletePersonFaceWithPersonGroupId (group.Id, person.Id, face.Id, error =>
                 {
                     tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
                     if (person.Faces.Contains (face))
                     {
