@@ -7,7 +7,7 @@ namespace Agencies.iOS
     {
         public UIImageView PersonImage => ImageView;
 
-        public UILabel PersonName => TextView;
+        public UILabel FaceIdLabel => TextView;
 
         public GroupPersonCVC (IntPtr handle) : base (handle)
         {

@@ -8,6 +8,8 @@ namespace Agencies.iOS
 {
     public partial class GroupPersonCollectionViewController : ThreeItemRowCollectionViewController
     {
+        const string HeaderId = "Header";
+
         public PersonGroup Group { get; set; }
 
         public Person SelectedPerson { get; private set; }
@@ -72,6 +74,17 @@ namespace Agencies.iOS
         public override nint NumberOfSections (UICollectionView collectionView) => Group?.People?.Count ?? 0;
 
 
+        public override UICollectionReusableView GetViewForSupplementaryElement (UICollectionView collectionView, NSString elementKind, NSIndexPath indexPath)
+        {
+            var person = Group.People [indexPath.Section];
+
+			var headerView = (PersonGroupHeader)collectionView.DequeueReusableSupplementaryView (elementKind, HeaderId, indexPath);
+            headerView.PersonGroupNameLabel.Text = person.Name;
+
+			return headerView;
+        }
+
+
         public override nint GetItemsCount (UICollectionView collectionView, nint section)
         {
             var faces = Group?.People? [(int)section]?.Faces;
@@ -91,7 +104,6 @@ namespace Agencies.iOS
 
             var person = Group.People [indexPath.Section];
 
-            cell.PersonName.Text = person.Name;
             cell.PersonImage.Tag = indexPath.Section; //keep track of the person this imageview is for - used in longPressAction
             cell.PersonImage.UserInteractionEnabled = true;
 
@@ -101,6 +113,7 @@ namespace Agencies.iOS
 
                 if (face != null)
                 {
+                    cell.FaceIdLabel.Text = $"Face #{indexPath.Row + 1}";
                     cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
                     cell.PersonImage.Layer.BorderWidth = 0;
                 }
