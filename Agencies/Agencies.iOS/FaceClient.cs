@@ -17,6 +17,13 @@ namespace Agencies.Shared
 
         public FaceClient ()
         {
+            //TODO: possibly allow the user to switch region API is being called: 
+
+//			West US -westus.api.cognitive.microsoft.com
+//East US 2 - eastus2.api.cognitive.microsoft.com
+//West Central US - westcentralus.api.cognitive.microsoft.com
+//West Europe -westeurope.api.cognitive.microsoft.com
+//Southeast Asia -southeastasia.api.cognitive.microsoft.com
         }
 
 
