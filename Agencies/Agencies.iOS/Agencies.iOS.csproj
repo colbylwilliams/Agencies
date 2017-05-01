@@ -360,6 +360,10 @@
     </Compile>
     <Compile Include="View\BaseCollectionViewController.cs" />
     <Compile Include="View\ThreeItemRowCollectionViewController.cs" />
+    <Compile Include="View\PersonGroupHeader.cs" />
+    <Compile Include="View\PersonGroupHeader.designer.cs">
+      <DependentUpon>PersonGroupHeader.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
