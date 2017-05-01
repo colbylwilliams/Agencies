@@ -17,14 +17,13 @@ namespace Agencies.iOS.Extensions
         }
 
 
-        public static PersonGroup ToPersonGroup (this MPOPersonGroup group)
+        public static PersonGroup ToPersonGroup (this MPOPersonGroup personGroup)
         {
             return new PersonGroup
             {
-                Id = group.PersonGroupId,
-                Name = group.Name
-                // Dealing with a binding issue on UserData - since it's populated via a JSON NSDict, the value will be NSNull, but we're sending a Selector to it assuming it's an NSString
-                //UserData = g.UserData
+                Id = personGroup.PersonGroupId,
+                Name = personGroup.Name,
+                UserData = personGroup.UserData
             };
         }
 
@@ -35,7 +34,7 @@ namespace Agencies.iOS.Extensions
             {
                 Id = person.PersonId,
                 Name = person.Name,
-                //UserData = p.UserData,
+                UserData = person.UserData,
                 FaceIds = person.PersistedFaceIds?.ToList ()
             };
         }
@@ -64,9 +63,8 @@ namespace Agencies.iOS.Extensions
         {
             var face = new Face
             {
-                Id = mpoFace.PersistedFaceId
-                //UserData = mpoFace.UserData,
-                //FaceRectangle = rect
+                Id = mpoFace.PersistedFaceId,
+                UserData = mpoFace.UserData
             };
 
             face.UpdatePhotoPath ();
