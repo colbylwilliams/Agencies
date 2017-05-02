@@ -128,6 +128,75 @@
             </objects>
             <point key="canvasLocation" x="3533.5999999999999" y="115.59220389805098"/>
         </scene>
+        <!--Identify-->
+        <scene sceneID="Dqe-I9-4uZ">
+            <objects>
+                <viewController storyboardIdentifier="IdentifyFaceViewController" id="pQf-SW-6Sb" customClass="IdentifyFaceViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bbb-qp-KKi"/>
+                        <viewControllerLayoutGuide type="bottom" id="jTO-dw-hQF"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3FJ-vm-EYf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to choose an image containing the face you want to identify" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qF1-J8-5bl">
+                                <rect key="frame" x="42" y="76" width="325" height="41"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose a preconfigured Group containing people and faces to identify against" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6an-kH-xx7">
+                                <rect key="frame" x="42" y="255" width="317" height="61"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1)" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2mP-Ps-eEW">
+                                <rect key="frame" x="16" y="83.5" width="17.5" height="26.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2)" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="olc-Hf-UW7">
+                                <rect key="frame" x="16" y="272.5" width="20" height="26.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="N5k-kZ-sKv">
+                                <rect key="frame" x="137" y="139" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="2Da-2y-ZIc"/>
+                                    <constraint firstAttribute="height" constant="100" id="iPY-LP-uQ1"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="olc-Hf-UW7" firstAttribute="centerY" secondItem="6an-kH-xx7" secondAttribute="centerY" id="13R-yh-yMa"/>
+                            <constraint firstItem="qF1-J8-5bl" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" constant="26" id="6SM-AO-zaa"/>
+                            <constraint firstItem="N5k-kZ-sKv" firstAttribute="centerX" secondItem="3FJ-vm-EYf" secondAttribute="centerX" id="6f2-4a-SES"/>
+                            <constraint firstItem="6an-kH-xx7" firstAttribute="trailing" secondItem="3FJ-vm-EYf" secondAttribute="trailingMargin" id="BHJ-Nj-MU7"/>
+                            <constraint firstItem="qF1-J8-5bl" firstAttribute="centerY" secondItem="2mP-Ps-eEW" secondAttribute="centerY" id="FEg-DS-lIf"/>
+                            <constraint firstItem="olc-Hf-UW7" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" id="Nai-oF-9tW"/>
+                            <constraint firstItem="2mP-Ps-eEW" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" id="aYF-Eb-x6U"/>
+                            <constraint firstAttribute="trailing" secondItem="qF1-J8-5bl" secondAttribute="trailing" constant="8" id="hCN-vK-vk7"/>
+                            <constraint firstItem="6an-kH-xx7" firstAttribute="top" secondItem="N5k-kZ-sKv" secondAttribute="bottom" constant="16" id="mzG-e7-Ql4"/>
+                            <constraint firstItem="N5k-kZ-sKv" firstAttribute="top" secondItem="qF1-J8-5bl" secondAttribute="bottom" constant="22" id="q2g-oR-7Jd"/>
+                            <constraint firstItem="qF1-J8-5bl" firstAttribute="top" secondItem="bbb-qp-KKi" secondAttribute="bottom" constant="12" id="r8A-VP-Tcs"/>
+                            <constraint firstItem="6an-kH-xx7" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" constant="26" id="xJU-bb-bIv"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Identify" id="WsD-cs-3Z1"/>
+                    <connections>
+                        <segue destination="qGN-bK-n3O" kind="show" identifier="SelectFaces" id="Nva-pE-cbg"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rYW-z1-vGi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2725.5999999999999" y="1342.5787106446778"/>
+        </scene>
         <!--Group Person Collection View Controller-->
         <scene sceneID="dLx-TW-tZr">
             <objects>
@@ -222,11 +291,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uNI-lW-4Yf">
-                                <rect key="frame" x="133" y="84" width="109" height="30"/>
+                                <rect key="frame" x="124" y="84" width="128" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Manage Groups"/>
+                                <state key="normal" title="Manage Face Data"/>
                                 <connections>
                                     <segue destination="X3F-xh-GQ4" kind="show" id="NRb-WZ-Bc4"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jgy-i0-zIS">
+                                <rect key="frame" x="124" y="150" width="128" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Identify"/>
+                                <connections>
+                                    <segue destination="pQf-SW-6Sb" kind="show" id="wuj-1o-nZA"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -236,7 +313,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X0y-Tv-dSL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1910" y="116"/>
+            <point key="canvasLocation" x="1909.5999999999999" y="115.59220389805098"/>
         </scene>
         <!--Root Tab Bar Controller-->
         <scene sceneID="xiT-WM-Bkg">
@@ -461,7 +538,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRj-mX-rqe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4329" y="748"/>
+            <point key="canvasLocation" x="5095" y="115"/>
         </scene>
         <!--Select Faces-->
         <scene sceneID="Aug-Qu-QOT">
@@ -514,7 +591,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T1q-oU-nho" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5120.8000000000002" y="115.59220389805098"/>
+            <point key="canvasLocation" x="4329" y="1343"/>
         </scene>
         <!--Face Selection Collection View Controller-->
         <scene sceneID="g5D-5h-V7S">
@@ -565,7 +642,10 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bpL-tZ-NSs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5120.8000000000002" y="760.11994002998506"/>
+            <point key="canvasLocation" x="5094" y="1343"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Nva-pE-cbg"/>
+    </inferredMetricsTieBreakers>
 </document>

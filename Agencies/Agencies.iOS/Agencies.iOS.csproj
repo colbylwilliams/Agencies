@@ -360,6 +360,10 @@
     <Compile Include="View\PersonGroupHeader.designer.cs">
       <DependentUpon>PersonGroupHeader.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\IdentifyFaceViewController.cs" />
+    <Compile Include="View\IdentifyFaceViewController.designer.cs">
+      <DependentUpon>IdentifyFaceViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
