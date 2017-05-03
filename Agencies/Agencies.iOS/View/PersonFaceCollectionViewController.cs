@@ -1,6 +1,7 @@
 ﻿using System;
 using Agencies.Shared;
 using Foundation;
+using NomadCode.UIExtensions;
 using UIKit;
 
 namespace Agencies.iOS
@@ -77,7 +78,7 @@ namespace Agencies.iOS
                 }
                 catch (Exception)
                 {
-                    this.ShowSimpleAlert ("Failed to delete person.");
+                    this.HideHUD ().ShowSimpleAlert ("Failed to delete person.");
                 }
             }
         }

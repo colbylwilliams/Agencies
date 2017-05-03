@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
+using NomadCode.UIExtensions;
 using UIKit;
 
 namespace Agencies.iOS
@@ -99,7 +100,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to add face.");
+                this.HideHUD ().ShowSimpleAlert ("Failed to add face.");
             }
         }
     }

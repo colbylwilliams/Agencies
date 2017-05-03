@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
+using NomadCode.UIExtensions;
 using UIKit;
 
 namespace Agencies.iOS
@@ -93,7 +94,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to create person.");
+                this.HideHUD ().ShowSimpleAlert ("Failed to create person.");
             }
         }
 
@@ -112,7 +113,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to update person.");
+                this.HideHUD ().ShowSimpleAlert ("Failed to update person.");
             }
         }
 
@@ -203,7 +204,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Face detection failed");
+                this.HideHUD ().ShowSimpleAlert ("Face detection failed");
             }
         }
     }

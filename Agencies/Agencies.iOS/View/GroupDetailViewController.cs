@@ -3,6 +3,7 @@ using Foundation;
 using UIKit;
 using Agencies.Shared;
 using System.Threading.Tasks;
+using NomadCode.UIExtensions;
 
 namespace Agencies.iOS
 {
@@ -119,7 +120,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to update group.");
+                this.HideHUD ().ShowSimpleAlert ("Failed to update group.");
             }
         }
 
@@ -140,7 +141,7 @@ namespace Agencies.iOS
             }
             catch (Exception)
             {
-                this.ShowSimpleAlert ("Failed to create group.");
+                this.HideHUD ().ShowSimpleAlert ("Failed to create group.");
             }
         }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Agencies.iOS;
 using Agencies.iOS.Extensions;
 using Foundation;
+using NomadCode.UIExtensions;
 using UIKit;
 using Xamarin.Cognitive.Face.iOS;
 
@@ -410,7 +411,7 @@ namespace Agencies.Shared
 
                         using (var croppedImg = photo.Crop (face.FaceRectangle))
                         {
-                            SaveFaceImage (face, croppedImg);
+                            croppedImg.SaveAsJpeg (face.PhotoPath);
                         }
 
                         tcs.SetResult (true);
@@ -425,16 +426,6 @@ namespace Agencies.Shared
                 throw;
             }
         }
-
-
-        public void SaveFaceImage (Face face, UIImage photo)
-        {
-            using (var data = photo.AsJPEG ())
-            {
-                data.Save (face.PhotoPath, true);
-            }
-        }
-
 
 
         public Task DeleteFace (Person person, PersonGroup group, Face face)

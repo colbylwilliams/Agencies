@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
+using NomadCode.UIExtensions;
 using UIKit;
 
 namespace Agencies.iOS
@@ -115,14 +116,13 @@ namespace Agencies.iOS
                 {
                     cell.FaceIdLabel.Text = $"Face #{indexPath.Row + 1}";
                     cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
-                    cell.PersonImage.Layer.BorderWidth = 0;
+                    cell.PersonImage.RemoveBorder ();
                 }
             }
             else
             {
                 cell.PersonImage.Image = null;
-                cell.PersonImage.Layer.BorderColor = UIColor.Red.CGColor;
-                cell.PersonImage.Layer.BorderWidth = 2;
+                cell.PersonImage.AddBorder (UIColor.Red, 2);
             }
 
             if (cell.PersonImage.GestureRecognizers == null || cell.PersonImage.GestureRecognizers?.Length == 0)
@@ -158,7 +158,7 @@ namespace Agencies.iOS
                 }
                 catch (Exception)
                 {
-                    this.ShowSimpleAlert ("Failed to delete person.");
+                    this.HideHUD ().ShowSimpleAlert ("Failed to delete person.");
                 }
             }
         }
