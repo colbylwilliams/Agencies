@@ -3,7 +3,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public class BaseCollectionViewController : UICollectionViewController
+    public abstract class BaseCollectionViewController : UICollectionViewController
     {
         protected bool IsInitialLoad { get; private set; } = true;
 

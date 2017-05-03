@@ -9,18 +9,12 @@ using System.CodeDom.Compiler;
 
 namespace Agencies.iOS
 {
-	[Register ("IdentifyFaceViewController")]
-	partial class IdentifyFaceViewController
+	[Register ("GroupsTableViewController")]
+	partial class GroupsTableViewController
 	{
-		[Outlet]
-		UIKit.UIImageView SelectedFaceImageView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (SelectedFaceImageView != null) {
-				SelectedFaceImageView.Dispose ();
-				SelectedFaceImageView = null;
-			}
 		}
 	}
 }

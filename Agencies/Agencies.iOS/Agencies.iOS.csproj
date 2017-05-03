@@ -364,6 +364,12 @@
     <Compile Include="View\IdentifyFaceViewController.designer.cs">
       <DependentUpon>IdentifyFaceViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\GroupsTableViewController.cs" />
+    <Compile Include="View\GroupsTableViewController.designer.cs">
+      <DependentUpon>GroupsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\BaseTableViewController.cs" />
+    <Compile Include="View\IHandleChildSelection.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

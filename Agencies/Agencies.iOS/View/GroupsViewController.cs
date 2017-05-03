@@ -2,109 +2,24 @@
 using Foundation;
 using UIKit;
 using Agencies.Shared;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Agencies.iOS
 {
-    public partial class GroupsViewController : UITableViewController
+    public partial class GroupsViewController : UIViewController, IHandleChildSelection<PersonGroup>
     {
+        const string EmbedSegueId = "Embed";
         const string DetailSegueId = "GroupDetail";
 
-        List<PersonGroup> Groups;
+        PersonGroup selectedGroup;
 
         public GroupsViewController (IntPtr handle) : base (handle)
         {
         }
 
 
-        public override void ViewWillAppear (bool animated)
+        public void HandleChildSelection (PersonGroup selection)
         {
-            loadGroups ().Forget ();
-
-            base.ViewWillAppear (animated);
-        }
-
-
-        async Task loadGroups ()
-        {
-            try
-            {
-                this.ShowHUD ("Loading groups");
-
-                Groups = await FaceClient.Shared.GetGroups ();
-
-                TableView.ReloadData ();
-
-                this.HideHUD ();
-            }
-            catch (Exception)
-            {
-                this.ShowSimpleAlert ("Error loading groups.");
-            }
-        }
-
-
-        public override nint NumberOfSections (UITableView tableView) => 1;
-
-
-        public override nint RowsInSection (UITableView tableView, nint section) => Groups?.Count ?? 0;
-
-
-        public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
-        {
-            var cell = tableView.DequeueReusableCell ("Cell", indexPath);
-
-            cell.TextLabel.Text = Groups [indexPath.Row].Name;
-            cell.BackgroundColor = UIColor.Clear;
-
-            return cell;
-        }
-
-
-        public override bool CanEditRow (UITableView tableView, NSIndexPath indexPath)
-        {
-            return true;
-        }
-
-
-        public override void CommitEditingStyle (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
-        {
-            if (editingStyle == UITableViewCellEditingStyle.Delete)
-            {
-                tableView.BeginUpdates ();
-
-                var group = Groups [indexPath.Row];
-                Groups.Remove (group);
-                deleteGroup (group).Forget ();
-
-                tableView.DeleteRows (new NSIndexPath [] { indexPath }, UITableViewRowAnimation.Automatic);
-                tableView.EndUpdates ();
-            }
-        }
-
-
-        async Task deleteGroup (PersonGroup personGroup)
-        {
-            try
-            {
-                //no UI feedback here since this is done via swipe to delete
-
-                //await this.ShowHUD ()
-
-                await FaceClient.Shared.DeleteGroup (personGroup);
-
-                //TableView.ReloadData ();
-            }
-            catch (Exception)
-            {
-                this.ShowSimpleAlert ("Error deleting group.");
-            }
-        }
-
-
-        public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
-        {
+            selectedGroup = selection;
             PerformSegue (DetailSegueId, this);
         }
 
@@ -113,10 +28,14 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == DetailSegueId && TableView.IndexPathForSelectedRow != null)
+            if (segue.Identifier == EmbedSegueId && segue.DestinationViewController is GroupsTableViewController groupsTVC)
             {
-                var group = Groups [TableView.IndexPathForSelectedRow.Row];
-                (segue.DestinationViewController as GroupDetailViewController).Group = group;
+                groupsTVC.AllowDelete = true;
+            }
+            else if (segue.Identifier == DetailSegueId && selectedGroup != null && segue.DestinationViewController is GroupDetailViewController groupDetailVC)
+            {
+                groupDetailVC.Group = selectedGroup;
+                selectedGroup = null;
             }
         }
     }
