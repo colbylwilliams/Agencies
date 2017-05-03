@@ -41,7 +41,6 @@ namespace Agencies.iOS
 
             cell.FaceIdLabel.Text = $"Face #{indexPath.Row + 1}";
             cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
-            cell.PersonImage.UserInteractionEnabled = true;
             cell.PersonImage.Tag = indexPath.Row; //keep track of the face this imageview is for - used in longPressAction
 
             if (cell.PersonImage.GestureRecognizers == null || cell.PersonImage.GestureRecognizers?.Length == 0)

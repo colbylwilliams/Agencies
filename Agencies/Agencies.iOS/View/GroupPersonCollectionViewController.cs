@@ -106,7 +106,6 @@ namespace Agencies.iOS
             var person = Group.People [indexPath.Section];
 
             cell.PersonImage.Tag = indexPath.Section; //keep track of the person this imageview is for - used in longPressAction
-            cell.PersonImage.UserInteractionEnabled = true;
 
             if (person.Faces?.Count > 0)
             {
