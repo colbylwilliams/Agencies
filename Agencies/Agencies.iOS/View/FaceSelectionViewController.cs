@@ -13,11 +13,10 @@ namespace Agencies.iOS
             public const string Embed = "Embed";
         }
 
-        public PersonGroup Group { get; set; }
-        public Person Person { get; set; }
         public List<Face> DetectedFaces { get; set; }
         public UIImage SourceImage { get; set; }
-        public bool NeedsTraining { get; set; }
+        public string ReturnSegue { get; set; }
+        public Face SelectedFace { get; private set; }
 
         FaceSelectionCollectionViewController FaceSelectionCVC => ChildViewControllers [0] as FaceSelectionCollectionViewController;
 
@@ -32,11 +31,16 @@ namespace Agencies.iOS
 
             if (segue.Identifier == Segues.Embed && segue.DestinationViewController is FaceSelectionCollectionViewController faceSelectionCVC)
             {
-                faceSelectionCVC.Group = Group;
-                faceSelectionCVC.Person = Person;
                 faceSelectionCVC.DetectedFaces = DetectedFaces;
                 faceSelectionCVC.SourceImage = SourceImage;
             }
+        }
+
+
+        public void SelectFace (Face face)
+        {
+            SelectedFace = face;
+            PerformSegue (ReturnSegue, this);
         }
     }
 }

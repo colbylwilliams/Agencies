@@ -224,6 +224,60 @@
             </objects>
             <point key="canvasLocation" x="1910" y="1099"/>
         </scene>
+        <!--Face Results Table View Controller-->
+        <scene sceneID="qyA-b8-mop">
+            <objects>
+                <tableViewController storyboardIdentifier="FaceResultsTableViewController" id="MsZ-Re-E66" customClass="FaceResultsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="64" sectionHeaderHeight="28" sectionFooterHeight="28" id="ko7-7j-txQ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="BvV-DE-2La" customClass="FaceResultTableViewCell">
+                                <rect key="frame" x="0.0" y="28" width="375" height="64"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="BvV-DE-2La" id="rCM-ze-0F6">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="63.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gSK-rh-hLI">
+                                            <rect key="frame" x="8" y="7" width="48" height="48"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="48" id="H9Q-9i-tlM"/>
+                                                <constraint firstAttribute="height" constant="48" id="Vyo-Rx-atu"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Person Name : Confidence" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="faw-A9-0Z9">
+                                            <rect key="frame" x="64" y="21" width="303" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="faw-A9-0Z9" firstAttribute="trailing" secondItem="rCM-ze-0F6" secondAttribute="trailingMargin" id="4fn-Wt-cGv"/>
+                                        <constraint firstItem="gSK-rh-hLI" firstAttribute="leading" secondItem="rCM-ze-0F6" secondAttribute="leading" constant="8" id="MI7-5o-ASo"/>
+                                        <constraint firstItem="gSK-rh-hLI" firstAttribute="centerY" secondItem="rCM-ze-0F6" secondAttribute="centerY" id="TVY-qi-kMC"/>
+                                        <constraint firstItem="faw-A9-0Z9" firstAttribute="leading" secondItem="gSK-rh-hLI" secondAttribute="trailing" constant="8" id="aeS-XM-Fgs"/>
+                                        <constraint firstItem="faw-A9-0Z9" firstAttribute="centerY" secondItem="rCM-ze-0F6" secondAttribute="centerY" id="rA6-6x-hsr"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="FaceImageView" destination="gSK-rh-hLI" id="XMW-79-9Nh"/>
+                                    <outlet property="FaceResultLabel" destination="faw-A9-0Z9" id="TCy-ET-KN6"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="MsZ-Re-E66" id="dVm-Ss-oBI"/>
+                            <outlet property="delegate" destination="MsZ-Re-E66" id="QkL-iz-hFs"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OcJ-hO-cD0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3072.8000000000002" y="1519.7901049475263"/>
+        </scene>
         <!--Groups-->
         <scene sceneID="9GT-ew-9Ls">
             <objects>
@@ -645,8 +699,13 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Select Faces" id="WbR-hM-Avj"/>
+                    <connections>
+                        <segue destination="9L6-Rv-tsU" kind="unwind" identifier="PersonFaceSelected" unwindAction="UnwindToPersonDetail:" id="ZJC-xj-vmZ"/>
+                        <segue destination="9L6-Rv-tsU" kind="unwind" identifier="IdentifyFaceSelected" unwindAction="UnwindToIdentify:" id="Lw0-da-h8p"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T1q-oU-nho" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="9L6-Rv-tsU" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="4329" y="1099"/>
         </scene>
@@ -699,11 +758,11 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bpL-tZ-NSs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5094" y="1343"/>
+            <point key="canvasLocation" x="5094" y="1099"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="wUF-Dh-jQK"/>
         <segue reference="VFT-e9-2Y2"/>
-        <segue reference="Nva-pE-cbg"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -14,6 +14,7 @@ namespace Agencies.iOS
         {
             public const string Embed = "Embed";
             public const string SelectFaces = "SelectFaces";
+            public const string FaceSelected = "PersonFaceSelected";
         }
 
         public PersonGroup Group { get; set; }
@@ -23,6 +24,11 @@ namespace Agencies.iOS
         public bool NeedsTraining { get; set; }
 
         PersonFaceCollectionViewController PersonFaceCVC => ChildViewControllers [0] as PersonFaceCollectionViewController;
+
+        public PersonDetailViewController (IntPtr handle) : base (handle)
+        {
+        }
+
 
         public override void PrepareForSegue (UIStoryboardSegue segue, NSObject sender)
         {
@@ -35,17 +41,23 @@ namespace Agencies.iOS
             }
             else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionViewController faceSelectionController)
             {
-                faceSelectionController.Person = Person;
-                faceSelectionController.Group = Group;
+                faceSelectionController.ReturnSegue = Segues.FaceSelected;
                 faceSelectionController.DetectedFaces = DetectedFaces;
-                faceSelectionController.NeedsTraining = NeedsTraining;
                 faceSelectionController.SourceImage = SourceImage;
             }
         }
 
 
-        public PersonDetailViewController (IntPtr handle) : base (handle)
+        [Action ("UnwindToPersonDetail:")]
+        public async void UnwindToPersonDetail (UIStoryboardSegue segue)
         {
+            var faceSelection = segue.SourceViewController as FaceSelectionViewController;
+
+            if (faceSelection.SelectedFace != null)
+            {
+                await addFace (faceSelection.SelectedFace, SourceImage);
+                NeedsTraining = true;
+            }
         }
 
 
@@ -172,15 +184,7 @@ namespace Agencies.iOS
                 }
                 else if (DetectedFaces.Count == 1)
                 {
-                    this.ShowHUD ("Adding faces");
-
-                    await FaceClient.Shared.AddFaceForPerson (Person, Group, DetectedFaces [0], SourceImage);
-
-                    PersonFaceCVC.CollectionView.ReloadData ();
-
-                    NeedsTraining = true;
-
-                    this.ShowSimpleHUD ("Faces saved");
+                    await addFace (DetectedFaces [0], SourceImage);
                 }
                 else // > 1 face
                 {
@@ -192,6 +196,29 @@ namespace Agencies.iOS
             catch (Exception)
             {
                 this.HideHUD ().ShowSimpleAlert ("Face detection failed");
+            }
+        }
+
+
+        async Task addFace (Face face, UIImage image)
+        {
+            try
+            {
+                this.ShowHUD ("Adding face");
+
+                await FaceClient.Shared.AddFaceForPerson (Person, Group, face, image);
+
+                //var index = DetectedFaces.IndexOf (face);
+
+                this.ShowSimpleHUD ("Face added for this person");
+
+                PersonFaceCVC.CollectionView.ReloadData ();
+
+                NeedsTraining = true;
+            }
+            catch (Exception)
+            {
+                this.HideHUD ().ShowSimpleAlert ("Failed to add face.");
             }
         }
     }

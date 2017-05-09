@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
@@ -9,7 +10,15 @@ namespace Agencies.iOS
 {
     public partial class IdentifyFaceViewController : UIViewController
     {
-        const string EmbedSegueId = "Embed";
+        class Segues
+        {
+            public const string Embed = "Embed";
+            public const string SelectFaces = "SelectFaces";
+            public const string FaceSelected = "IdentifyFaceSelected";
+        }
+
+        public List<Face> DetectedFaces { get; set; }
+        public UIImage SourceImage { get; set; }
 
         GroupsTableViewController GroupsTableController => ChildViewControllers [0] as GroupsTableViewController;
 
@@ -22,10 +31,30 @@ namespace Agencies.iOS
         {
             base.PrepareForSegue (segue, sender);
 
-            if (segue.Identifier == EmbedSegueId && segue.DestinationViewController is GroupsTableViewController groupsTVC)
+            if (segue.Identifier == Segues.Embed && segue.DestinationViewController is GroupsTableViewController groupsTVC)
             {
                 groupsTVC.AutoSelect = true;
             }
+            else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionViewController faceSelectionController)
+            {
+                faceSelectionController.ReturnSegue = Segues.FaceSelected;
+                faceSelectionController.DetectedFaces = DetectedFaces;
+                faceSelectionController.SourceImage = SourceImage;
+            }
+        }
+
+
+        [Action ("UnwindToIdentify:")]
+        public void UnwindToIdentify (UIStoryboardSegue segue)
+        {
+            var faceSelection = segue.SourceViewController as FaceSelectionViewController;
+
+            if (faceSelection.SelectedFace != null)
+            {
+                UseFace (faceSelection.SelectedFace);
+            }
+
+            //await addFace (DetectedFaces [indexPath.Row], SourceImage);
         }
 
 
@@ -69,13 +98,48 @@ namespace Agencies.iOS
 
         async Task ChooseImage ()
         {
-            var image = await this.ShowImageSelectionDialog ();
-
-            if (image != null)
+            try
             {
-                SelectedFaceImageView.Image = image;
-                checkInputs ();
+                SourceImage = await this.ShowImageSelectionDialog ();
+
+                if (SourceImage != null)
+                {
+                    //make sure the image is in the .Up position
+                    SourceImage.FixOrientation ();
+
+                    this.ShowHUD ("Detecting faces");
+
+                    DetectedFaces = await FaceClient.Shared.DetectFacesInPhoto (SourceImage);
+
+                    if (DetectedFaces.Count == 0)
+                    {
+                        this.ShowSimpleHUD ("No faces detected");
+                    }
+                    else if (DetectedFaces.Count == 1)
+                    {
+                        UseFace (DetectedFaces [0]);
+                    }
+                    else // > 1 face
+                    {
+                        this.HideHUD ();
+
+                        PerformSegue (Segues.SelectFaces, this);
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                Log.Error (ex);
+                this.HideHUD ().ShowSimpleAlert ("Error detecting faces in the provided image");
+            }
+        }
+
+
+        void UseFace (Face face)
+        {
+            var croppedFaceImg = SourceImage.Crop (face.FaceRectangle);
+            SelectedFaceImageView.Image = croppedFaceImg;
+            checkInputs ();
         }
 
 

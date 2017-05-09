@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -10,12 +9,12 @@ namespace Agencies.iOS
 {
     public partial class FaceSelectionCollectionViewController : ThreeItemRowCollectionViewController
     {
-        public PersonGroup Group { get; set; }
-        public Person Person { get; set; }
         public List<Face> DetectedFaces { get; set; }
         public UIImage SourceImage { get; set; }
 
         List<UIImage> croppedImages;
+
+        FaceSelectionViewController FaceSelectionController => ParentViewController as FaceSelectionViewController;
 
         public FaceSelectionCollectionViewController (IntPtr handle) : base (handle)
         {
@@ -34,6 +33,8 @@ namespace Agencies.iOS
         {
             croppedImages.ForEach (i => i.Dispose ());
             croppedImages.Clear ();
+
+            SourceImage = null;
 
             base.ViewWillDisappear (animated);
         }
@@ -71,36 +72,11 @@ namespace Agencies.iOS
 
         public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
         {
-            var result = await this.ShowTwoOptionAlert ("Please choose", "Do you want to add this face?");
+            var result = await this.ShowTwoOptionAlert ("Please choose", "Do you want to use this face?");
 
             if (result)
             {
-                await addFace (DetectedFaces [indexPath.Row], SourceImage);
-            }
-        }
-
-
-        async Task addFace (Face face, UIImage image)
-        {
-            try
-            {
-                this.ShowHUD ("Adding face");
-
-                await FaceClient.Shared.AddFaceForPerson (Person, Group, face, image);
-
-                var index = DetectedFaces.IndexOf (face);
-                DetectedFaces.RemoveAt (index);
-                croppedImages.RemoveAt (index);
-
-                this.ShowSimpleHUD ("Face added for this person");
-
-                CollectionView.ReloadData ();
-
-                //NeedsTraining = true;
-            }
-            catch (Exception)
-            {
-                this.HideHUD ().ShowSimpleAlert ("Failed to add face.");
+                FaceSelectionController.SelectFace (DetectedFaces [indexPath.Row]);
             }
         }
     }

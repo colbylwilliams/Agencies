@@ -370,6 +370,14 @@
     </Compile>
     <Compile Include="View\BaseTableViewController.cs" />
     <Compile Include="View\BaseViewController.cs" />
+    <Compile Include="View\FaceResultsTableViewController.cs" />
+    <Compile Include="View\FaceResultsTableViewController.designer.cs">
+      <DependentUpon>FaceResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\FaceResultTableViewCell.cs" />
+    <Compile Include="View\FaceResultTableViewCell.designer.cs">
+      <DependentUpon>FaceResultTableViewCell.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
