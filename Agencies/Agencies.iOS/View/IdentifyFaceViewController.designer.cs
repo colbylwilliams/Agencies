@@ -13,13 +13,24 @@ namespace Agencies.iOS
 	partial class IdentifyFaceViewController
 	{
 		[Outlet]
+		UIKit.UIButton GoButton { get; set; }
+
+		[Outlet]
 		UIKit.UIImageView SelectedFaceImageView { get; set; }
+
+		[Action ("ImageTapped:")]
+		partial void ImageTapped (UIKit.UITapGestureRecognizer sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (SelectedFaceImageView != null) {
 				SelectedFaceImageView.Dispose ();
 				SelectedFaceImageView = null;
+			}
+
+			if (GoButton != null) {
+				GoButton.Dispose ();
+				GoButton = null;
 			}
 		}
 	}

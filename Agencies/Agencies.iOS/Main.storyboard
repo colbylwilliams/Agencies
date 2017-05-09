@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="nsN-ss-f8A">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="nsN-ss-f8A">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
@@ -147,7 +147,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose a preconfigured Group containing people and faces to identify against" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6an-kH-xx7">
-                                <rect key="frame" x="42" y="255" width="317" height="61"/>
+                                <rect key="frame" x="42" y="235" width="317" height="61"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -159,24 +159,32 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2)" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="olc-Hf-UW7">
-                                <rect key="frame" x="16" y="272.5" width="20" height="26.5"/>
+                                <rect key="frame" x="16" y="252.5" width="20" height="26.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="N5k-kZ-sKv">
-                                <rect key="frame" x="137" y="139" width="100" height="100"/>
+                                <rect key="frame" x="147" y="139" width="80" height="80"/>
+                                <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="100" id="2Da-2y-ZIc"/>
-                                    <constraint firstAttribute="height" constant="100" id="iPY-LP-uQ1"/>
+                                    <constraint firstAttribute="width" constant="80" id="2Da-2y-ZIc"/>
+                                    <constraint firstAttribute="height" constant="80" id="iPY-LP-uQ1"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="fjR-5F-7iy" appends="YES" id="Goe-wo-2I9"/>
+                                </connections>
                             </imageView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yiy-3F-Au4">
-                                <rect key="frame" x="42" y="328" width="291" height="282"/>
+                                <rect key="frame" x="42" y="308" width="291" height="248"/>
                                 <connections>
                                     <segue destination="rhL-Bb-j0D" kind="embed" identifier="Embed" id="VFT-e9-2Y2"/>
                                 </connections>
                             </containerView>
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RHm-HD-QnF">
+                                <rect key="frame" x="172" y="572" width="30" height="30"/>
+                                <state key="normal" title="Go!"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -186,27 +194,35 @@
                             <constraint firstItem="6an-kH-xx7" firstAttribute="trailing" secondItem="3FJ-vm-EYf" secondAttribute="trailingMargin" id="BHJ-Nj-MU7"/>
                             <constraint firstItem="yiy-3F-Au4" firstAttribute="centerX" secondItem="3FJ-vm-EYf" secondAttribute="centerX" id="EB8-xx-124"/>
                             <constraint firstItem="qF1-J8-5bl" firstAttribute="centerY" secondItem="2mP-Ps-eEW" secondAttribute="centerY" id="FEg-DS-lIf"/>
+                            <constraint firstItem="jTO-dw-hQF" firstAttribute="top" secondItem="RHm-HD-QnF" secondAttribute="bottom" constant="16" id="KRY-Ee-wGb"/>
                             <constraint firstItem="olc-Hf-UW7" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" id="Nai-oF-9tW"/>
                             <constraint firstItem="yiy-3F-Au4" firstAttribute="top" secondItem="6an-kH-xx7" secondAttribute="bottom" constant="12" id="Szb-C6-oVI"/>
+                            <constraint firstItem="RHm-HD-QnF" firstAttribute="top" secondItem="yiy-3F-Au4" secondAttribute="bottom" constant="16" id="UGh-MQ-4cr"/>
+                            <constraint firstItem="RHm-HD-QnF" firstAttribute="centerX" secondItem="3FJ-vm-EYf" secondAttribute="centerX" id="UlE-cg-jYD"/>
                             <constraint firstItem="2mP-Ps-eEW" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" id="aYF-Eb-x6U"/>
                             <constraint firstAttribute="trailing" secondItem="qF1-J8-5bl" secondAttribute="trailing" constant="8" id="hCN-vK-vk7"/>
                             <constraint firstItem="yiy-3F-Au4" firstAttribute="leading" secondItem="6an-kH-xx7" secondAttribute="leading" id="iQK-Gs-76O"/>
                             <constraint firstItem="6an-kH-xx7" firstAttribute="top" secondItem="N5k-kZ-sKv" secondAttribute="bottom" constant="16" id="mzG-e7-Ql4"/>
                             <constraint firstItem="N5k-kZ-sKv" firstAttribute="top" secondItem="qF1-J8-5bl" secondAttribute="bottom" constant="22" id="q2g-oR-7Jd"/>
                             <constraint firstItem="qF1-J8-5bl" firstAttribute="top" secondItem="bbb-qp-KKi" secondAttribute="bottom" constant="12" id="r8A-VP-Tcs"/>
-                            <constraint firstItem="jTO-dw-hQF" firstAttribute="top" secondItem="yiy-3F-Au4" secondAttribute="bottom" constant="8" id="wQe-nu-71K"/>
                             <constraint firstItem="6an-kH-xx7" firstAttribute="leading" secondItem="3FJ-vm-EYf" secondAttribute="leadingMargin" constant="26" id="xJU-bb-bIv"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Identify" id="WsD-cs-3Z1"/>
                     <connections>
+                        <outlet property="GoButton" destination="RHm-HD-QnF" id="5mL-lI-fDT"/>
                         <outlet property="SelectedFaceImageView" destination="N5k-kZ-sKv" id="IG1-zp-vbj"/>
                         <segue destination="qGN-bK-n3O" kind="show" identifier="SelectFaces" id="Nva-pE-cbg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rYW-z1-vGi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="fjR-5F-7iy">
+                    <connections>
+                        <action selector="ImageTapped:" destination="pQf-SW-6Sb" id="xDf-a8-X24"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1910" y="1343"/>
+            <point key="canvasLocation" x="1910" y="1099"/>
         </scene>
         <!--Groups-->
         <scene sceneID="9GT-ew-9Ls">
@@ -252,7 +268,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="GroupsTableViewController" id="rhL-Bb-j0D" customClass="GroupsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="u0W-XH-bCc">
-                        <rect key="frame" x="0.0" y="0.0" width="291" height="282"/>
+                        <rect key="frame" x="0.0" y="0.0" width="291" height="248"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -282,7 +298,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9FH-mv-HOu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2726" y="881"/>
+            <point key="canvasLocation" x="2726" y="748"/>
         </scene>
         <!--Group Person Collection View Controller-->
         <scene sceneID="dLx-TW-tZr">
@@ -632,7 +648,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T1q-oU-nho" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4329" y="1343"/>
+            <point key="canvasLocation" x="4329" y="1099"/>
         </scene>
         <!--Face Selection Collection View Controller-->
         <scene sceneID="g5D-5h-V7S">
@@ -687,7 +703,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Nva-pE-cbg"/>
         <segue reference="VFT-e9-2Y2"/>
+        <segue reference="Nva-pE-cbg"/>
     </inferredMetricsTieBreakers>
 </document>
