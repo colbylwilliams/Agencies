@@ -34,7 +34,7 @@ namespace Agencies.iOS
             }
             else
             {
-                TableView.ReloadData ();
+                ReloadData ();
             }
         }
 
@@ -47,22 +47,28 @@ namespace Agencies.iOS
 
                 Groups = await FaceClient.Shared.GetGroups ();
 
-                TableView.ReloadData ();
-
-                if (AutoSelect)
-                {
-                    if (Groups.Count == 1)
-                    {
-                        TableView.SelectRow (TableView.IndexPathsForVisibleRows [0], true, UITableViewScrollPosition.Top);
-                        SelectedPersonGroup = Groups [TableView.IndexPathForSelectedRow.Row];
-                    }
-                }
+                ReloadData ();
 
                 this.HideHUD ();
             }
             catch (Exception)
             {
                 this.HideHUD ().ShowSimpleAlert ("Error loading groups.");
+            }
+        }
+
+
+        void ReloadData ()
+        {
+            TableView.ReloadData ();
+
+            if (AutoSelect)
+            {
+                if (Groups.Count == 1)
+                {
+                    TableView.SelectRow (TableView.IndexPathsForVisibleRows [0], true, UITableViewScrollPosition.Top);
+                    SelectedPersonGroup = Groups [TableView.IndexPathForSelectedRow.Row];
+                }
             }
         }
 
