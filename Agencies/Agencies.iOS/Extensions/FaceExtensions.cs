@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Agencies.Shared;
+using UIKit;
 using Xamarin.Cognitive.Face.iOS;
 
 namespace Agencies.iOS.Extensions
@@ -77,6 +78,12 @@ namespace Agencies.iOS.Extensions
         {
             var filePath = Path.Combine (docsDir, face.FileName);
             face.PhotoPath = filePath;
+        }
+
+
+        public static UIImage GetImage (this Face face)
+        {
+            return UIImage.FromFile (face.PhotoPath);
         }
 
 

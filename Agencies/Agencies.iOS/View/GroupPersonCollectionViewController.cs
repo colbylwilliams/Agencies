@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Agencies.iOS.Extensions;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -79,10 +80,10 @@ namespace Agencies.iOS
         {
             var person = Group.People [indexPath.Section];
 
-			var headerView = (PersonGroupHeader)collectionView.DequeueReusableSupplementaryView (elementKind, HeaderId, indexPath);
+            var headerView = (PersonGroupHeader)collectionView.DequeueReusableSupplementaryView (elementKind, HeaderId, indexPath);
             headerView.PersonGroupNameLabel.Text = person.Name;
 
-			return headerView;
+            return headerView;
         }
 
 
@@ -114,7 +115,7 @@ namespace Agencies.iOS
                 if (face != null)
                 {
                     cell.FaceIdLabel.Text = $"Face #{indexPath.Row + 1}";
-                    cell.PersonImage.Image = UIImage.FromFile (face.PhotoPath);
+                    cell.PersonImage.Image = face.GetImage ();
                     cell.PersonImage.RemoveBorder ();
                 }
             }
