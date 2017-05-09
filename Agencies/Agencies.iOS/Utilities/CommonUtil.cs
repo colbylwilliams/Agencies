@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Foundation;
 using MBProgressHUD;
+using NomadCode.UIExtensions;
 using UIKit;
 
 namespace Agencies.iOS
@@ -64,6 +66,22 @@ namespace Agencies.iOS
             }
 
             return null;
+        }
+
+
+        public async static Task<UIImage> ShowImageSelectionDialog (this UIViewController vc)
+        {
+            var result = await vc.ShowActionSheet ("Select Image", "How would you like to choose an image?", "Select from album", "Take a photo");
+
+            switch (result)
+            {
+                case "Select from album":
+                    return await vc.ShowPhotoPicker ();
+                case "Take a photo":
+                    return await vc.ShowCameraPicker ();
+                default:
+                    return null;
+            }
         }
     }
 }

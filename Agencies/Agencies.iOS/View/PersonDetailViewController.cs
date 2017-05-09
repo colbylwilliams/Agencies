@@ -147,20 +147,7 @@ namespace Agencies.iOS
 
             if (Person != null) //just to make sure we succeeded in the case we created a new person above
             {
-                var result = await this.ShowActionSheet ("Select Image", "How would you like to choose an image?", "Select from album", "Take a photo");
-                UIImage image = null;
-
-                switch (result)
-                {
-                    case "Select from album":
-                        image = await this.ShowPhotoPicker ();
-                        break;
-                    case "Take a photo":
-                        image = await this.ShowCameraPicker ();
-                        break;
-                    default:
-                        return;
-                }
+                var image = await this.ShowImageSelectionDialog ();
 
                 if (image != null)
                 {
