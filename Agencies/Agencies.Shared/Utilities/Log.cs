@@ -1,7 +1,7 @@
 ﻿#if DEBUG
-//using System;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System;
 #endif
 
 namespace Agencies
@@ -50,5 +50,10 @@ namespace Agencies
 #else
         public static void Error (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
 #endif
+
+        public static void Error (Exception error, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            Error (error.Message, memberName, sourceFilePath, sourceLineNumber);
+        }
     }
 }
