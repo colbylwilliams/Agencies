@@ -5,21 +5,40 @@ using Agencies.Shared;
 
 namespace Agencies.iOS
 {
-    public partial class GroupsViewController : UIViewController, IHandleChildSelection<PersonGroup>
+    public partial class GroupsViewController : UIViewController
     {
         const string EmbedSegueId = "Embed";
         const string DetailSegueId = "GroupDetail";
 
         PersonGroup selectedGroup;
 
+        GroupsTableViewController GroupsTableController => ChildViewControllers [0] as GroupsTableViewController;
+
         public GroupsViewController (IntPtr handle) : base (handle)
         {
         }
 
 
-        public void HandleChildSelection (PersonGroup selection)
+        public override void ViewWillAppear (bool animated)
+        {
+            base.ViewWillAppear (animated);
+
+            GroupsTableController.GroupSelectionChanged += OnGroupSelectionChanged;
+        }
+
+
+        public override void ViewWillDisappear (bool animated)
+        {
+            GroupsTableController.GroupSelectionChanged -= OnGroupSelectionChanged;
+
+            base.ViewWillDisappear (animated);
+        }
+
+
+        void OnGroupSelectionChanged (object sender, PersonGroup selection)
         {
             selectedGroup = selection;
+
             PerformSegue (DetailSegueId, this);
         }
 

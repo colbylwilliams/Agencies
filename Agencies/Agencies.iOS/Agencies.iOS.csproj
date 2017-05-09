@@ -369,7 +369,7 @@
       <DependentUpon>GroupsTableViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="View\BaseTableViewController.cs" />
-    <Compile Include="View\IHandleChildSelection.cs" />
+    <Compile Include="View\BaseViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
