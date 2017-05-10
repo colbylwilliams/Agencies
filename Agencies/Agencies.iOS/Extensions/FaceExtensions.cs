@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Agencies.Shared;
+using NomadCode.UIExtensions;
 using UIKit;
 using Xamarin.Cognitive.Face.iOS;
 
@@ -78,6 +79,22 @@ namespace Agencies.iOS.Extensions
         {
             var filePath = Path.Combine (docsDir, face.FileName);
             face.PhotoPath = filePath;
+        }
+
+
+        public static void SavePhotoFromCropped (this Face face, UIImage croppedImage)
+        {
+            face.UpdatePhotoPath ();
+            croppedImage.SaveAsJpeg (face.PhotoPath);
+        }
+
+
+        public static void SavePhotoFromSource(this Face face, UIImage sourceImage)
+        {
+            using (var croppedFaceImg = sourceImage.Crop (face.FaceRectangle))
+            {
+                face.SavePhotoFromCropped (croppedFaceImg);
+            }
         }
 
 
