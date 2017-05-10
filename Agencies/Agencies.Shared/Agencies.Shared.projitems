@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\FaceModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Face.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\IdentificationResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
