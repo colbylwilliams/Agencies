@@ -42,6 +42,7 @@ namespace Agencies.iOS
             }
             else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionViewController faceSelectionController)
             {
+                faceSelectionController.PopoverPresentationController.Delegate = this;
                 faceSelectionController.ReturnSegue = Segues.FaceSelected;
                 faceSelectionController.DetectedFaces = DetectedFaces;
                 faceSelectionController.SourceImage = SourceImage;
@@ -201,14 +202,15 @@ namespace Agencies.iOS
         {
             UINavigationController navController = new UINavigationController (controller.PresentedViewController);
 
-            var doneButton = new UIBarButtonItem ("Done", UIBarButtonItemStyle.Done, DoneAction);
+            var text = navController.TopViewController is FaceResultsTableViewController ? "Done" : "Cancel";
+            var doneButton = new UIBarButtonItem (text, UIBarButtonItemStyle.Done, DoneTapped);
             navController.TopViewController.NavigationItem.RightBarButtonItem = doneButton;
 
 			return navController;
         }
 
 
-		public void DoneAction (object sender, EventArgs e)
+		public void DoneTapped (object sender, EventArgs e)
 		{
 			DismissViewController (true, null);
 		}

@@ -221,7 +221,9 @@
                     <connections>
                         <outlet property="GoButton" destination="RHm-HD-QnF" id="5mL-lI-fDT"/>
                         <outlet property="SelectedFaceImageView" destination="N5k-kZ-sKv" id="IG1-zp-vbj"/>
-                        <segue destination="qGN-bK-n3O" kind="show" identifier="SelectFaces" id="Nva-pE-cbg"/>
+                        <segue destination="qGN-bK-n3O" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorView="N5k-kZ-sKv" id="Nva-pE-cbg">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
                         <segue destination="MsZ-Re-E66" kind="popoverPresentation" identifier="ShowResults" popoverAnchorView="RHm-HD-QnF" id="nUT-UA-lNb">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
@@ -608,7 +610,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="PersonName" destination="ZdG-8H-WI3" id="YxG-PB-gZU"/>
-                        <segue destination="qGN-bK-n3O" kind="show" identifier="SelectFaces" id="wUF-Dh-jQK"/>
+                        <segue destination="qGN-bK-n3O" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorBarButtonItem="22D-vB-ZWq" id="wUF-Dh-jQK">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRG-fG-ddh" userLabel="First Responder" sceneMemberID="firstResponder"/>

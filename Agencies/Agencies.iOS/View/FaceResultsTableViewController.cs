@@ -34,11 +34,5 @@ namespace Agencies.iOS
 
             return cell;
         }
-
-
-        //partial void DoneAction (NSObject sender)
-        //{
-        //    this.DismissViewController (true, null);
-        //}
     }
 }
