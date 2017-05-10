@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Agencies.iOS.Extensions;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -8,17 +9,21 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class IdentifyFaceViewController : UIViewController
+    public partial class IdentifyFaceViewController : UIViewController, IUIPopoverPresentationControllerDelegate
     {
         class Segues
         {
             public const string Embed = "Embed";
             public const string SelectFaces = "SelectFaces";
             public const string FaceSelected = "IdentifyFaceSelected";
+            public const string ShowResults = "ShowResults";
         }
 
         public List<Face> DetectedFaces { get; set; }
         public UIImage SourceImage { get; set; }
+
+        List<IdentificationResult> Results;
+        Face chosenFace;
 
         GroupsTableViewController GroupsTableController => ChildViewControllers [0] as GroupsTableViewController;
 
@@ -41,6 +46,11 @@ namespace Agencies.iOS
                 faceSelectionController.DetectedFaces = DetectedFaces;
                 faceSelectionController.SourceImage = SourceImage;
             }
+            else if (segue.Identifier == Segues.ShowResults && segue.DestinationViewController is FaceResultsTableViewController resultsTVC)
+            {
+                resultsTVC.PopoverPresentationController.Delegate = this;
+                resultsTVC.Results = Results;
+            }
         }
 
 
@@ -53,8 +63,6 @@ namespace Agencies.iOS
             {
                 UseFace (faceSelection.SelectedFace);
             }
-
-            //await addFace (DetectedFaces [indexPath.Row], SourceImage);
         }
 
 
@@ -118,6 +126,7 @@ namespace Agencies.iOS
                     else if (DetectedFaces.Count == 1)
                     {
                         UseFace (DetectedFaces [0]);
+                        this.HideHUD ();
                     }
                     else // > 1 face
                     {
@@ -137,7 +146,9 @@ namespace Agencies.iOS
 
         void UseFace (Face face)
         {
+            chosenFace = face;
             var croppedFaceImg = SourceImage.Crop (face.FaceRectangle);
+            face.SavePhotoFromCropped (croppedFaceImg);
             SelectedFaceImageView.Image = croppedFaceImg;
             checkInputs ();
         }
@@ -145,20 +156,61 @@ namespace Agencies.iOS
 
         void checkInputs ()
         {
-            if (SelectedFaceImageView.Image != null && GroupsTableController.SelectedPersonGroup != null)
-            {
-                GoButton.Enabled = true;
-            }
-            else
-            {
-                GoButton.Enabled = false;
-            }
+            GoButton.Enabled = chosenFace != null && 
+                SelectedFaceImageView.Image != null && 
+                GroupsTableController.SelectedPersonGroup != null;
         }
 
 
-        void IdentifyAction (object sender, EventArgs e)
+        async void IdentifyAction (object sender, EventArgs e)
         {
+            try
+            {
+                var group = GroupsTableController.SelectedPersonGroup;
 
+                this.ShowHUD ("Identifying faces");
+
+                Results = await FaceClient.Shared.Identify (group, chosenFace);
+
+                if (Results.Count == 0)
+                {
+                    this.ShowSimpleHUD ("Not able to identify this face against the selected group");
+                }
+
+                this.HideHUD ();
+
+                PerformSegue (Segues.ShowResults, this);
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex);
+                this.HideHUD ().ShowSimpleAlert ("Error identifying face");
+            }
         }
+
+
+        [Export ("adaptivePresentationStyleForPresentationController:")]
+        public UIModalPresentationStyle GetAdaptivePresentationStyle (UIPresentationController forPresentationController)
+        {
+            return UIModalPresentationStyle.FullScreen;
+        }
+
+
+        [Export ("presentationController:viewControllerForAdaptivePresentationStyle:")]
+        public UIViewController GetViewControllerForAdaptivePresentation (UIPresentationController controller, UIModalPresentationStyle style)
+        {
+            UINavigationController navController = new UINavigationController (controller.PresentedViewController);
+
+            var doneButton = new UIBarButtonItem ("Done", UIBarButtonItemStyle.Done, DoneAction);
+            navController.TopViewController.NavigationItem.RightBarButtonItem = doneButton;
+
+			return navController;
+        }
+
+
+		public void DoneAction (object sender, EventArgs e)
+		{
+			DismissViewController (true, null);
+		}
     }
 }

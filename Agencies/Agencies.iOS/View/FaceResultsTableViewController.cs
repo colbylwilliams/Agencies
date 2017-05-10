@@ -9,7 +9,7 @@ namespace Agencies.iOS
 {
     public partial class FaceResultsTableViewController : BaseTableViewController
     {
-        List<Face> Faces { get; set; }
+        public List<IdentificationResult> Results { get; set; }
 
         public FaceResultsTableViewController (IntPtr handle) : base (handle)
         {
@@ -19,19 +19,26 @@ namespace Agencies.iOS
         public override nint NumberOfSections (UITableView tableView) => 1;
 
 
-        public override nint RowsInSection (UITableView tableView, nint section) => Faces?.Count ?? 0;
+        public override nint RowsInSection (UITableView tableView, nint section) => Results?.Count ?? 0;
 
 
         public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
         {
             var cell = tableView.DequeueReusableCell ("Cell", indexPath) as FaceResultTableViewCell;
 
-            var face = Faces [indexPath.Row];
+            var result = Results [indexPath.Row];
 
-            cell.ResultImage.Image = face.GetImage ();
-            cell.ResultLabel.Text = "";
+            cell.ResultImage.Image = result.Face?.GetImage ();
+            cell.NameLabel.Text = result.Person?.Name;
+            cell.ConfidenceLabel.Text = $"Confidence: {result.Confidence.ToString ()}";
 
             return cell;
         }
+
+
+        //partial void DoneAction (NSObject sender)
+        //{
+        //    this.DismissViewController (true, null);
+        //}
     }
 }

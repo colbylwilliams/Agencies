@@ -20,11 +20,11 @@ namespace Agencies.Shared
         {
             //TODO: possibly allow the user to switch region API is being called: 
 
-//			West US -westus.api.cognitive.microsoft.com
-//East US 2 - eastus2.api.cognitive.microsoft.com
-//West Central US - westcentralus.api.cognitive.microsoft.com
-//West Europe -westeurope.api.cognitive.microsoft.com
-//Southeast Asia -southeastasia.api.cognitive.microsoft.com
+            //			West US -westus.api.cognitive.microsoft.com
+            //East US 2 - eastus2.api.cognitive.microsoft.com
+            //West Central US - westcentralus.api.cognitive.microsoft.com
+            //West Europe -westeurope.api.cognitive.microsoft.com
+            //Southeast Asia -southeastasia.api.cognitive.microsoft.com
         }
 
 
@@ -186,10 +186,15 @@ namespace Agencies.Shared
         #region Person
 
 
-        public Task<List<Person>> GetPeopleForGroup (PersonGroup group)
+        public Task<List<Person>> GetPeopleForGroup (PersonGroup group, bool forceRefresh = false)
         {
             try
             {
+                if (group.People?.Count > 0 && !forceRefresh)
+                {
+                    return Task.FromResult (group.People);
+                }
+
                 var tcs = new TaskCompletionSource<List<Person>> ();
 
                 Client.ListPersonsWithPersonGroupId (group.Id, (mpoPeople, error) =>
@@ -307,13 +312,53 @@ namespace Agencies.Shared
         }
 
 
+        public Task<Person> GetPerson (PersonGroup group, string personId)
+        {
+            try
+            {
+                //if people are already loaded for this group try to find it there...
+                if (group.People?.Count > 0)
+                {
+                    var person = group.People.FirstOrDefault (p => p.Id == personId);
+
+                    if (person != null)
+                    {
+                        return Task.FromResult (person);
+                    }
+                }
+
+                var tcs = new TaskCompletionSource<Person> ();
+
+                Client.GetPersonWithPersonGroupId (group.Id, personId, (mpoPerson, error) =>
+                {
+                    tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+
+                    var person = mpoPerson.ToPerson ();
+
+                    //add them to the group?
+                    group.People.Add (person);
+
+                    tcs.SetResult (person);
+                }).Resume ();
+
+                return tcs.Task;
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
         #endregion
 
 
         #region Face
 
 
-        public Task<List<Face>> GetFacesForPerson (Person person, PersonGroup group)
+        public async Task<List<Face>> GetFacesForPerson (Person person, PersonGroup group)
         {
             try
             {
@@ -321,30 +366,43 @@ namespace Agencies.Shared
 
                 if (person.FaceIds?.Count > 0)
                 {
-                    var tcs = new TaskCompletionSource<List<Face>> ();
-
                     foreach (var faceId in person.FaceIds)
                     {
-                        Client.GetPersonFaceWithPersonGroupId (group.Id, person.Id, faceId, (mpoFace, error) =>
-                        {
-                            tcs.FailTaskIfErrored (error.ToException ());
-                            if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+                        var face = await GetFaceForPerson (person, group, faceId);
 
-                            var face = mpoFace.ToFace ();
-
-                            person.Faces.Add (face);
-
-                            if (person.Faces.Count == person.FaceIds.Count)
-                            {
-                                tcs.SetResult (person.Faces);
-                            }
-                        }).Resume ();
+                        person.Faces.Add (face);
                     }
 
-                    return tcs.Task;
+                    return person.Faces;
                 }
 
-                return Task.FromResult (default (List<Face>));
+                return default (List<Face>);
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
+        public Task<Face> GetFaceForPerson (Person person, PersonGroup group, string persistedFaceId)
+        {
+            try
+            {
+                var tcs = new TaskCompletionSource<Face> ();
+
+                Client.GetPersonFaceWithPersonGroupId (group.Id, person.Id, persistedFaceId, (mpoFace, error) =>
+                {
+                    tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+
+                    var face = mpoFace.ToFace ();
+
+                    tcs.SetResult (face);
+                }).Resume ();
+
+                return tcs.Task;
             }
             catch (Exception ex)
             {
@@ -409,10 +467,7 @@ namespace Agencies.Shared
 
                         person.Faces.Add (face);
 
-                        using (var croppedImg = photo.Crop (face.FaceRectangle))
-                        {
-                            croppedImg.SaveAsJpeg (face.PhotoPath);
-                        }
+                        face.SavePhotoFromSource (photo);
 
                         tcs.SetResult (true);
                     }).Resume ();
@@ -445,6 +500,69 @@ namespace Agencies.Shared
                     }
 
                     tcs.SetResult (true);
+                }).Resume ();
+
+                return tcs.Task;
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
+        public async Task<List<IdentificationResult>> Identify (PersonGroup group, Face face, int maxNumberOfCandidates = 1)
+        {
+            try
+            {
+                //ensure people are loaded for this group
+                await GetPeopleForGroup (group);
+
+                return await IdentifyInternal (group, new Face [] { face }, maxNumberOfCandidates);
+            }
+            catch (Exception ex)
+            {
+                Log.Error (ex.Message);
+                throw;
+            }
+        }
+
+
+        Task<List<IdentificationResult>> IdentifyInternal (PersonGroup group, Face [] detectedFaces, int maxNumberOfCandidates = 1)
+        {
+            try
+            {
+                var results = new List<IdentificationResult> ();
+                var tcs = new TaskCompletionSource<List<IdentificationResult>> ();
+
+                var detectedFaceIds = detectedFaces.Select (f => f.Id).ToArray ();
+
+                Client.IdentifyWithPersonGroupId (group.Id, detectedFaceIds, maxNumberOfCandidates, async (identifyResults, error) =>
+                {
+                    tcs.FailTaskIfErrored (error.ToException ());
+                    if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+
+                    foreach (MPOIdentifyResult result in identifyResults)
+                    {
+                        var face = detectedFaces.FirstOrDefault (f => f.Id == result.FaceId);
+
+                        foreach (MPOCandidate candidate in result.Candidates)
+                        {
+                            var person = await GetPerson (group, candidate.PersonId);
+
+                            var identifyResult = new IdentificationResult
+                            {
+                                Person = person,
+                                Face = face,
+                                Confidence = candidate.Confidence
+                            };
+
+                            results.Add (identifyResult);
+                        }
+                    }
+
+                    tcs.SetResult (results);
                 }).Resume ();
 
                 return tcs.Task;

@@ -16,7 +16,10 @@ namespace Agencies.iOS
 		UIKit.UIImageView FaceImageView { get; set; }
 
 		[Outlet]
-		UIKit.UILabel FaceResultLabel { get; set; }
+		UIKit.UILabel FaceResultLabel1 { get; set; }
+
+		[Outlet]
+		UIKit.UILabel FaceResultLabel2 { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -25,9 +28,14 @@ namespace Agencies.iOS
 				FaceImageView = null;
 			}
 
-			if (FaceResultLabel != null) {
-				FaceResultLabel.Dispose ();
-				FaceResultLabel = null;
+			if (FaceResultLabel1 != null) {
+				FaceResultLabel1.Dispose ();
+				FaceResultLabel1 = null;
+			}
+
+			if (FaceResultLabel2 != null) {
+				FaceResultLabel2.Dispose ();
+				FaceResultLabel2 = null;
 			}
 		}
 	}
