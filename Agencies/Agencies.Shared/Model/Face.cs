@@ -17,5 +17,33 @@ namespace Agencies.Shared
         }
 
         public RectangleF FaceRectangle { get; set; }
+
+        public FaceAttributes Attributes { get; set; }
+
+        public bool HasFacialHair
+        {
+            get
+            {
+                return Attributes?.FacialHair?.Mustache + Attributes?.FacialHair?.Beard + Attributes?.FacialHair?.Sideburns > 0;
+            }
+        }
+
+        public bool HasMakeup
+        {
+            get
+            {
+                return (Attributes?.Makeup?.EyeMakeup ?? false) || (Attributes?.Makeup?.LipMakeup ?? false);
+            }
+        }
+
+        public bool IsOccluded
+        {
+            get
+            {
+                return (Attributes?.Occlusion?.EyeOccluded ?? false) ||
+                    (Attributes?.Occlusion?.ForeheadOccluded ?? false) ||
+                    (Attributes?.Occlusion?.MouthOccluded ?? false);
+            }
+        }
     }
 }
