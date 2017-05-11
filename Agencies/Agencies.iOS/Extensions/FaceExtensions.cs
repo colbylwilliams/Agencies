@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Agencies.Shared;
+using Foundation;
 using NomadCode.UIExtensions;
 using UIKit;
 using Xamarin.Cognitive.Face.iOS;
@@ -16,6 +17,18 @@ namespace Agencies.iOS.Extensions
         static FaceExtensions ()
         {
             docsDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+        }
+
+
+        public static float AsFloatSafe (this NSNumber number, float defaultValue = 0)
+        {
+            return number?.FloatValue ?? defaultValue;
+        }
+
+
+        public static bool AsBoolSafe (this NSNumber number, bool defaultValue = false)
+        {
+            return number?.BoolValue ?? defaultValue;
         }
 
 
@@ -44,15 +57,16 @@ namespace Agencies.iOS.Extensions
 
         public static Face ToFace (this MPOFace mpoFace)
         {
-            var rect = new RectangleF (mpoFace.FaceRectangle.Left.FloatValue,
-                                       mpoFace.FaceRectangle.Top.FloatValue,
-                                       mpoFace.FaceRectangle.Width.FloatValue,
-                                       mpoFace.FaceRectangle.Height.FloatValue);
+            var rect = new RectangleF (mpoFace.FaceRectangle.Left,
+                                       mpoFace.FaceRectangle.Top,
+                                       mpoFace.FaceRectangle.Width,
+                                       mpoFace.FaceRectangle.Height);
 
             var face = new Face
             {
                 Id = mpoFace.FaceId,
-                FaceRectangle = rect
+                FaceRectangle = rect,
+                Attributes = mpoFace.Attributes?.ToFaceAttributes ()
             };
 
             face.UpdatePhotoPath ();
@@ -75,6 +89,140 @@ namespace Agencies.iOS.Extensions
         }
 
 
+        public static FaceAttributes ToFaceAttributes (this MPOFaceAttributes attrs)
+        {
+            return new FaceAttributes
+            {
+                Age = attrs.Age.AsFloatSafe (),
+                Smile = attrs.Smile.AsFloatSafe (),
+                Gender = attrs.Gender,
+                Glasses = attrs.Glasses,
+                HeadPose = attrs.HeadPose.ToFaceHeadPose (),
+                Emotion = attrs.Emotion.ToFaceEmotion (),
+                Hair = attrs.Hair.ToHair (),
+                Makeup = attrs.Makeup.ToMakeup (),
+                Occlusion = attrs.Occlusion.ToOcclusion (),
+                Accessories = attrs.Accessories.ToAccessories (),
+                Blur = attrs.Blur.ToBlur (),
+                Exposure = attrs.Exposure.ToExposure (),
+                Noise = attrs.Noise.ToNoise ()
+            };
+        }
+
+
+        public static FacialHair ToFacialHair (this MPOFacialHair mpoFacialHair)
+        {
+            return new FacialHair
+            {
+                Mustache = mpoFacialHair.Mustache.AsFloatSafe (),
+                Beard = mpoFacialHair.Beard.AsFloatSafe (),
+                Sideburns = mpoFacialHair.Sideburns.AsFloatSafe ()
+            };
+        }
+
+
+        public static FaceHeadPose ToFaceHeadPose (this MPOFaceHeadPose mpoHeadPose)
+        {
+            return new FaceHeadPose
+            {
+                Roll = mpoHeadPose.Roll.AsFloatSafe (),
+                Yaw = mpoHeadPose.Yaw.AsFloatSafe (),
+                Pitch = mpoHeadPose.Pitch.AsFloatSafe ()
+            };
+        }
+
+
+        public static FaceEmotion ToFaceEmotion (this MPOFaceEmotion mpoEmotion)
+        {
+            return new FaceEmotion
+            {
+                Anger = mpoEmotion.Anger.AsFloatSafe (),
+                Contempt = mpoEmotion.Contempt.AsFloatSafe (),
+                Disgust = mpoEmotion.Disgust.AsFloatSafe (),
+                Fear = mpoEmotion.Fear.AsFloatSafe (),
+                Happiness = mpoEmotion.Happiness.AsFloatSafe (),
+                Neutral = mpoEmotion.Neutral.AsFloatSafe (),
+                Sadness = mpoEmotion.Sadness.AsFloatSafe (),
+                Surprise = mpoEmotion.Surprise.AsFloatSafe (),
+                MostEmotionValue = mpoEmotion.MostEmotionValue.AsFloatSafe (),
+                MostEmotion = mpoEmotion.MostEmotion
+            };
+        }
+
+
+        public static Hair ToHair (this MPOHair mpoHair)
+        {
+            return new Hair
+            {
+                Bald = mpoHair.Bald.AsFloatSafe (),
+                Invisible = mpoHair.Invisible.AsFloatSafe (),
+                //HairColor = mpoHair.HairColor,
+                HairString = mpoHair.Hair
+            };
+        }
+
+
+        public static Makeup ToMakeup (this MPOMakeup mpoMakeup)
+        {
+            return new Makeup
+            {
+                EyeMakeup = mpoMakeup.EyeMakeup.AsBoolSafe (),
+                LipMakeup = mpoMakeup.LipMakeup.AsBoolSafe ()
+            };
+        }
+
+
+        public static Occlusion ToOcclusion (this MPOOcclusion mpoOcclusion)
+        {
+            return new Occlusion
+            {
+                ForeheadOccluded = mpoOcclusion.ForeheadOccluded.AsBoolSafe (),
+                EyeOccluded = mpoOcclusion.EyeOccluded.AsBoolSafe (),
+                MouthOccluded = mpoOcclusion.MouthOccluded.AsBoolSafe ()
+            };
+        }
+
+
+        public static Accessories ToAccessories (this MPOAccessories mpoAccessories)
+        {
+            return new Accessories
+            {
+                AccessoriesString = mpoAccessories.AccessoriesString,
+                //LipMakeup = mpoAccessories.LipMakeup
+            };
+        }
+
+
+        public static Blur ToBlur (this MPOBlur mpoBlur)
+        {
+            return new Blur
+            {
+                BlurLevel = mpoBlur.BlurLevel,
+                Value = mpoBlur.Value.AsFloatSafe ()
+            };
+        }
+
+
+        public static Exposure ToExposure (this MPOExposure mpoExposure)
+        {
+            return new Exposure
+            {
+                ExposureLevel = mpoExposure.ExposureLevel,
+                Value = mpoExposure.Value.AsFloatSafe ()
+            };
+        }
+
+
+        public static Noise ToNoise (this MPONoise mpoNoise)
+        {
+            return new Noise
+            {
+                NoiseLevel = mpoNoise.NoiseLevel,
+                Value = mpoNoise.Value.AsFloatSafe ()
+            };
+        }
+
+
         public static void UpdatePhotoPath (this Face face)
         {
             var filePath = Path.Combine (docsDir, face.FileName);
@@ -89,7 +237,7 @@ namespace Agencies.iOS.Extensions
         }
 
 
-        public static void SavePhotoFromSource(this Face face, UIImage sourceImage)
+        public static void SavePhotoFromSource (this Face face, UIImage sourceImage)
         {
             using (var croppedFaceImg = sourceImage.Crop (face.FaceRectangle))
             {

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Agencies.iOS;
 using Agencies.iOS.Extensions;
-using Foundation;
-using NomadCode.UIExtensions;
 using UIKit;
 using Xamarin.Cognitive.Face.iOS;
 
@@ -58,7 +56,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -93,7 +91,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -120,7 +118,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -149,7 +147,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -174,7 +172,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -216,7 +214,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -250,7 +248,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -277,7 +275,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -306,7 +304,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -346,7 +344,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -380,7 +378,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -406,13 +404,19 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
 
 
-        public Task<List<Face>> DetectFacesInPhoto (UIImage photo, float quality = .8f)
+        public Task<List<Face>> DetectFacesInPhoto (UIImage photo, params MPOFaceAttributeType [] attributes)
+        {
+            return DetectFacesInPhoto (photo, .8f, attributes);
+        }
+
+
+        public Task<List<Face>> DetectFacesInPhoto (UIImage photo, float quality = .8f, params MPOFaceAttributeType [] attributes)
         {
             try
             {
@@ -421,7 +425,7 @@ namespace Agencies.Shared
 
                 using (var jpgData = photo.AsJPEG (quality))
                 {
-                    Client.DetectWithData (jpgData, true, true, new NSObject [0], (detectedFaces, error) =>
+                    Client.DetectWithData (jpgData, true, true, attributes, (detectedFaces, error) =>
                     {
                         tcs.FailTaskIfErrored (error.ToException ());
                         if (tcs.IsNullFinishCanceledOrFaulted ()) return;
@@ -430,6 +434,8 @@ namespace Agencies.Shared
                         {
                             var face = detectedFace.ToFace ();
                             faces.Add (face);
+
+                            face.SavePhotoFromSource (photo);
                         }
 
                         tcs.SetResult (faces);
@@ -440,7 +446,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -477,7 +483,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -506,7 +512,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -523,7 +529,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
@@ -569,7 +575,7 @@ namespace Agencies.Shared
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error (ex);
                 throw;
             }
         }
