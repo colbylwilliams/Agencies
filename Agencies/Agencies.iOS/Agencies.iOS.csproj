@@ -390,6 +390,10 @@
     <Compile Include="View\DetectionResultsTableViewCell.designer.cs">
       <DependentUpon>DetectionResultsTableViewCell.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\VerificationViewController.cs" />
+    <Compile Include="View\VerificationViewController.designer.cs">
+      <DependentUpon>VerificationViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
