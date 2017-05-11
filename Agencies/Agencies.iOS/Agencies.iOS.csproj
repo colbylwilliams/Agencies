@@ -378,6 +378,18 @@
     <Compile Include="View\FaceResultTableViewCell.designer.cs">
       <DependentUpon>FaceResultTableViewCell.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\DetectionViewController.cs" />
+    <Compile Include="View\DetectionViewController.designer.cs">
+      <DependentUpon>DetectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\DetectionResultsTableViewController.cs" />
+    <Compile Include="View\DetectionResultsTableViewController.designer.cs">
+      <DependentUpon>DetectionResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\DetectionResultsTableViewCell.cs" />
+    <Compile Include="View\DetectionResultsTableViewCell.designer.cs">
+      <DependentUpon>DetectionResultsTableViewCell.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
