@@ -94,7 +94,7 @@ namespace Agencies.iOS.Extensions
             return new FaceAttributes
             {
                 Age = attrs.Age.AsFloatSafe (),
-                Smile = attrs.Smile.AsFloatSafe (),
+                SmileIntensity = attrs.Smile.AsFloatSafe (),
                 Gender = attrs.Gender,
                 Glasses = attrs.Glasses,
                 HeadPose = attrs.HeadPose.ToFaceHeadPose (),
@@ -126,8 +126,9 @@ namespace Agencies.iOS.Extensions
             return new FaceHeadPose
             {
                 Roll = mpoHeadPose.Roll.AsFloatSafe (),
-                Yaw = mpoHeadPose.Yaw.AsFloatSafe (),
-                Pitch = mpoHeadPose.Pitch.AsFloatSafe ()
+                Yaw = mpoHeadPose.Yaw.AsFloatSafe ()
+                //HeadPose's pitch value is a reserved field and will always return 0.
+                //Pitch = mpoHeadPose.Pitch.AsFloatSafe ()
             };
         }
 

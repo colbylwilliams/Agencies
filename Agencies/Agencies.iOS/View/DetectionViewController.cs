@@ -92,8 +92,10 @@ namespace Agencies.iOS
                                                                             MPOFaceAttributeType.Makeup,
                                                                             MPOFaceAttributeType.Emotion,
                                                                             MPOFaceAttributeType.Occlusion,
-                                                                            MPOFaceAttributeType.Exposure,
                                                                             MPOFaceAttributeType.Smile,
+                                                                            MPOFaceAttributeType.Exposure,
+                                                                            MPOFaceAttributeType.Noise,
+                                                                            MPOFaceAttributeType.Blur,
                                                                             MPOFaceAttributeType.Glasses,
                                                                             MPOFaceAttributeType.HeadPose,
                                                                             MPOFaceAttributeType.Accessories);
