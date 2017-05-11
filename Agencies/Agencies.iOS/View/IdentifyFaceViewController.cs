@@ -80,14 +80,14 @@ namespace Agencies.iOS
             base.ViewWillAppear (animated);
 
             GroupsTableController.GroupSelectionChanged += OnGroupSelectionChanged;
-            GoButton.TouchUpInside += IdentifyAction;
+            GoButton.TouchUpInside += Identify;
         }
 
 
         public override void ViewWillDisappear (bool animated)
         {
             GroupsTableController.GroupSelectionChanged -= OnGroupSelectionChanged;
-            GoButton.TouchUpInside -= IdentifyAction;
+            GoButton.TouchUpInside -= Identify;
 
             base.ViewWillDisappear (animated);
         }
@@ -163,7 +163,7 @@ namespace Agencies.iOS
         }
 
 
-        async void IdentifyAction (object sender, EventArgs e)
+        async void Identify (object sender, EventArgs e)
         {
             try
             {
