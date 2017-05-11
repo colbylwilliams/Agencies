@@ -1,9 +1,14 @@
 ﻿namespace Agencies.Shared
 {
-    public class Noise
+    public class Noise : Attribute
     {
         public string NoiseLevel { get; set; }
 
         public float Value { get; set; }
+
+        public override string ToString ()
+        {
+            return $"Noise Level: {NoiseLevel} ({Value})";
+        }
     }
 }

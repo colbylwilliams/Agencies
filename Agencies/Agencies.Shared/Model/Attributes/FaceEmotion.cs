@@ -1,6 +1,6 @@
 ﻿namespace Agencies.Shared
 {
-    public class FaceEmotion
+    public class FaceEmotion : Attribute
     {
         public float Anger { get; set; }
 
@@ -21,5 +21,10 @@
         public float MostEmotionValue { get; set; }
 
         public string MostEmotion { get; set; }
+
+        public override string ToString ()
+        {
+            return $"Emotion: {MostEmotion} ({MostEmotionValue})";
+        }
     }
 }

@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Blur.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Exposure.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Noise.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Attribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Constants\" />

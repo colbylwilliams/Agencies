@@ -1,6 +1,6 @@
 ﻿namespace Agencies.Shared
 {
-    public class Hair
+    public class Hair : Attribute
     {
         public float Bald { get; set; }
 
@@ -9,5 +9,10 @@
         //public Dictionary<string, float> HairColor { get; set; }
 
         public string HairString { get; set; }
+
+        public override string ToString ()
+        {
+            return $"Hair: {HairString}";
+        }
     }
 }

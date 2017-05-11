@@ -4,7 +4,7 @@
     {
         public float Age { get; set; }
 
-        public float Smile { get; set; }
+        public float SmileIntensity { get; set; }
 
         public string Gender { get; set; }
 

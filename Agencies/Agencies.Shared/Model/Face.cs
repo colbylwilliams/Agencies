@@ -6,7 +6,9 @@ namespace Agencies.Shared
     {
         public const string PhotoPathTemplate = "face-{0}.jpg";
 
+
         public string PhotoPath { get; set; }
+
 
         public string FileName
         {
@@ -16,9 +18,12 @@ namespace Agencies.Shared
             }
         }
 
+
         public RectangleF FaceRectangle { get; set; }
 
+
         public FaceAttributes Attributes { get; set; }
+
 
         public bool HasFacialHair
         {
@@ -28,6 +33,7 @@ namespace Agencies.Shared
             }
         }
 
+
         public bool HasMakeup
         {
             get
@@ -35,6 +41,7 @@ namespace Agencies.Shared
                 return (Attributes?.Makeup?.EyeMakeup ?? false) || (Attributes?.Makeup?.LipMakeup ?? false);
             }
         }
+
 
         public bool IsOccluded
         {
