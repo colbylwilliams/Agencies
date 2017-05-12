@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Exposure.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Noise.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Attributes\Attribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\VerificationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
