@@ -817,7 +817,7 @@
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
                                                 <connections>
-                                                    <segue destination="bKW-Fl-ZqX" kind="show" id="bpX-df-ysP"/>
+                                                    <action selector="VerificationAction:" destination="eHV-er-9oz" eventType="touchUpInside" id="NZl-h3-Nyg"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I2P-du-IBf">
@@ -918,6 +918,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Face Demo" id="SQI-7J-Wce"/>
+                    <connections>
+                        <segue destination="bKW-Fl-ZqX" kind="show" identifier="Verification" id="nmb-Mt-hXc"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X0y-Tv-dSL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
