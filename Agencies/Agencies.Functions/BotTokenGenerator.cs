@@ -5,34 +5,38 @@ using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Extensions.BotFramework;
+//using Microsoft.Azure.WebJobs.Extensions.BotFramework;
 
 using Microsoft.Bot.Connector.DirectLine;
 
 namespace Agencies.Functions
 {
-	public static class BotTokenGenerator
-	{
-		[FunctionName ("GetBotToken")]
-		public static async Task<HttpResponseMessage> GetBotToken (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/bot/{conversationId=}")]HttpRequestMessage req,
-			/*[Bot] IDirectLineClient client*/Binder binder, string conversationId, TraceWriter log)
-		{
-			// Attempt to workaround https://github.com/Microsoft/BotBuilder-WebJobs-BotExtension/issues/5
-			var client = await binder.BindAsync<IDirectLineClient>(new BotAttribute());
+    public static class BotTokenGenerator
+    {
+        // [FunctionName("GetBotToken")]
+        // public static async Task<HttpResponseMessage> GetBotToken(
+        //    [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tokens/bot/{conversationId=}")]HttpRequestMessage req,
+        //    [Bot] IDirectLineClient client, string conversationId, TraceWriter log)
 
-			if (!string.IsNullOrEmpty (conversationId))
-			{
-				var conversation = await client.Conversations.ReconnectToConversationAsync (conversationId);
+        // https://github.com/Azure/azure-webjobs-sdk-script/issues/1507
+        // This bug incorrectly sets the bot client's binding direction to 'out'
+        // as a workaround we're explicitly providing the function.json which means
+        // we can't us attribute-binding at all in this funciton.
+        public static async Task<HttpResponseMessage> GetBotToken (HttpRequestMessage req, IDirectLineClient client, string conversationId, TraceWriter log)
+        {
+            if (!string.IsNullOrEmpty(conversationId))
+            {
+                var conversation = await client.Conversations.ReconnectToConversationAsync(conversationId);
 
-				if (conversation != null)
-				{
-					return req.CreateResponse (HttpStatusCode.OK, conversation);
-				}
-			}
+                if (conversation != null)
+                {
+                    return req.CreateResponse(HttpStatusCode.OK, conversation);
+                }
+            }
 
-			return req.CreateResponse (HttpStatusCode.OK, await client.Tokens.GenerateTokenForNewConversationAsync ());
-		}
-	}
+            return req.CreateResponse(HttpStatusCode.OK, await client.Tokens.GenerateTokenForNewConversationAsync());
+        }
+    }
 }

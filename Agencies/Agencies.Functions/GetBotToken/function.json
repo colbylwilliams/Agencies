@@ -1,0 +1,30 @@
+﻿{
+  "bindings": [
+    {
+      "type": "httpTrigger",
+      "route": "tokens/bot/{conversationId=}",
+      "methods": [
+        "get"
+      ],
+      "authLevel": "anonymous",
+      "direction": "in",
+      "name": "req"
+    },
+    {
+      "type": "bot",
+      "direction": "in",
+      "name": "client",
+      "secret": "AzureWebJobsBotFrameworkDirectLineSecret",
+      "endpoint": "http://directline.botframework.com",
+      "botId": "DigitalAgencies"
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ],
+  "disabled": false,
+  "scriptFile": "...\\Agencies.Functions.dll",
+  "entryPoint": "Agencies.Functions.BotTokenGenerator.GetBotToken"
+}
