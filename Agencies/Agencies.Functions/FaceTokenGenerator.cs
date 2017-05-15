@@ -46,7 +46,17 @@ namespace Agencies.Functions
 					{
 						log.Info ($"          claim: {claim.Type} = {claim.Value}");
 					}
+
+					using (var client = new HttpClient ())
+					{
+						client.DefaultRequestHeaders.Add ("x-zumo-auth", identity.FindFirst ("stable_sid")?.Value);
+
+						var me = client.GetStringAsync ("https://digital-agencies-functions.azurewebsites.net/.auth/me").Result;
+
+						log.Info ($"me: {me}");
+					}
 				}
+
 
 				//if (principal.Identity is ClaimsIdentity identity)
 				//{
