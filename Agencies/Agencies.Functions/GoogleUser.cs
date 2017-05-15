@@ -8,9 +8,21 @@ using Newtonsoft.Json;
 
 namespace Agencies.Functions
 {
-	public class GoogleClaim : Claim
+	public class GoogleClaim
 	{
-		public GoogleClaim (string type, string value) : base (type, value) { }
+		[JsonProperty ("typ")]
+		public string Type { get; set; }
+
+		[JsonProperty ("val")]
+		public string Value { get; set; }
+
+		public GoogleClaim () { }
+
+		public GoogleClaim (string type, string value)
+		{
+			Type = type;
+			Value = value;
+		}
 	}
 
 
@@ -82,7 +94,7 @@ namespace Agencies.Functions
 
 		public override string ToString ()
 		{
-			return string.Format ("[GoogleUser:\n\tProvider={0},\n\tAccessToken={1},\n\tRefreshToken={2},\n\tAccessTokenExpiration={3},\n\tIdToken={4},\n\tProviderName={5},\n\tUserClaims={6},\n\tUserId={7},\n\tNameIdentifier={8},\n\tEmailAddress={9},\n\tEmailVerified={10},\n\tAtHash={11},\n\tIssuer={12},\n\tIssuedAt={13},\n\tExpires={14},\n\tName={15},\n\tPicture={16},\n\tGivenName={17},\n\tSurname={18},\n\tLocale={19}]", Provider, AccessToken, RefreshToken, AccessTokenExpiration, IdToken, ProviderName, UserClaims, UserId, NameIdentifier, EmailAddress, EmailVerified, AtHash, Issuer, IssuedAt, Expires, Name, Picture, GivenName, Surname, Locale);
+			return string.Format ("[GoogleUser:\n\tProvider={0},\n\tAccessToken={1},\n\tRefreshToken={2},\n\tAccessTokenExpiration={3},\n\tIdToken={4},\n\tProviderName={5},\n\tUserClaims={6},\n\tUserId={7},\n\tNameIdentifier={8},\n\tEmailAddress={9},\n\tEmailVerified={10},\n\tAtHash={11},\n\tIssuer={12},\n\tIssuedAt={13},\n\tExpires={14},\n\tName={15},\n\tPicture={16},\n\tGivenName={17},\n\tSurname={18},\n\tLocale={19}]", Provider ?? string.Empty, AccessToken ?? string.Empty, RefreshToken ?? string.Empty, AccessTokenExpiration, IdToken ?? string.Empty, ProviderName ?? string.Empty, UserClaims, UserId ?? string.Empty, NameIdentifier ?? string.Empty, EmailAddress ?? string.Empty, EmailVerified, AtHash ?? string.Empty, Issuer ?? string.Empty, IssuedAt ?? string.Empty, Expires ?? string.Empty, Name ?? string.Empty, Picture ?? string.Empty, GivenName ?? string.Empty, Surname ?? string.Empty, Locale);
 		}
 	}
 }
