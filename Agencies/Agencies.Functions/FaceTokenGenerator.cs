@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using System.Security.Principal;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Agencies.Functions
 {
@@ -56,6 +57,10 @@ namespace Agencies.Functions
 						var me = client.GetStringAsync ("https://digital-agencies-functions.azurewebsites.net/.auth/me").Result;
 
 						log.Info ($"me: {me}");
+
+						var googleUser = JsonConvert.DeserializeObject<GoogleUser> (me);
+
+						log.Info ($"googleUser {googleUser}");
 					}
 				}
 
