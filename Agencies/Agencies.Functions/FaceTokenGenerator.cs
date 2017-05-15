@@ -58,7 +58,7 @@ namespace Agencies.Functions
 
 						log.Info ($"me: {me}");
 
-						var googleUser = JsonConvert.DeserializeObject<GoogleUser> (me);
+						var googleUser = JsonConvert.DeserializeObject<GoogleUser> (me.Trim (new Char [] { '[', ']' }));
 
 						log.Info ($"googleUser {googleUser}");
 					}

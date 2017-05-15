@@ -8,6 +8,12 @@ using Newtonsoft.Json;
 
 namespace Agencies.Functions
 {
+	public class GoogleClaim : Claim
+	{
+		public GoogleClaim (string type, string value) : base (type, value) { }
+	}
+
+
 	public class GoogleUser
 	{
 		[JsonIgnore]
@@ -29,7 +35,7 @@ namespace Agencies.Functions
 		public string ProviderName { get; set; }
 
 		[JsonProperty ("user_claims", NullValueHandling = NullValueHandling.Ignore)]
-		public IEnumerable<Claim> UserClaims { get; set; }
+		public IEnumerable<GoogleClaim> UserClaims { get; set; }
 
 		[JsonProperty ("user_id")]
 		public string UserId { get; set; }
