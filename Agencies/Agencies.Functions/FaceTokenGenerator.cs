@@ -8,6 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using System.Security.Principal;
+using System.Linq;
 
 namespace Agencies.Functions
 {
@@ -50,7 +51,7 @@ namespace Agencies.Functions
 
 					using (var client = new HttpClient ())
 					{
-						client.DefaultRequestHeaders.Add ("x-zumo-auth", identity.FindFirst ("stable_sid")?.Value.Replace ("sid:", string.Empty));
+						client.DefaultRequestHeaders.Add ("x-zumo-auth", req.Headers.GetValues ("x-zumo-auth").First ());
 
 						var me = client.GetStringAsync ("https://digital-agencies-functions.azurewebsites.net/.auth/me").Result;
 
