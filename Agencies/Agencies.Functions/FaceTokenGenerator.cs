@@ -67,6 +67,15 @@ namespace Agencies.Functions
 				//}
 			}
 
+			log.Info ($"current:");
+
+			foreach (var claim in ClaimsPrincipal.Current.Claims)
+			{
+				log.Info ($"          claim: {claim.Type} = {claim.Value}");
+			}
+
+
+
 			if (string.IsNullOrEmpty (faceApiSubscription))
 			{
 				return req.CreateErrorResponse (HttpStatusCode.NotFound, "Unable to find Face token on server");
