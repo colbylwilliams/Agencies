@@ -15,6 +15,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.UIExtensions", ".
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.ClientAuth", "..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.shproj", "{D55B8837-D117-48BE-AB87-B16CC6A86C42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NomadCode.Auth", "..\NomadCode\NomadCode.Auth\NomadCode.Auth.csproj", "{3972CE21-6C85-4373-9DDC-BF910A84E420}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
@@ -44,6 +46,16 @@ Global
 		{BEE3F51C-329D-4119-921E-BA9B35E85750}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{BEE3F51C-329D-4119-921E-BA9B35E85750}.MobileCenter|iPhone.ActiveCfg = MobileCenter|Any CPU
 		{BEE3F51C-329D-4119-921E-BA9B35E85750}.MobileCenter|iPhone.Build.0 = MobileCenter|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Release|iPhone.Build.0 = Release|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.MobileCenter|iPhone.ActiveCfg = Release|Any CPU
+		{3972CE21-6C85-4373-9DDC-BF910A84E420}.MobileCenter|iPhone.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -56,9 +68,6 @@ Global
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
 		$3.scope = text/x-csharp
-		$3.SpacingAfterMethodDeclarationName = True
-		$3.SpaceAfterMethodCallName = True
-		$3.SpaceBeforeOpenSquareBracket = True
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{07555EA6-44F7-4889-974F-8191391705EB} = {704ED759-2625-4F2E-8E83-05A118EA802A}

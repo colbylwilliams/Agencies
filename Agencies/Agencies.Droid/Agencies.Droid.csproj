@@ -219,6 +219,12 @@
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.csproj">
+      <Project>{3972CE21-6C85-4373-9DDC-BF910A84E420}</Project>
+      <Name>NomadCode.Auth</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
   <Import Project="..\Agencies.Domain\Agencies.Domain.projitems" Label="Shared" Condition="Exists('..\Agencies.Domain\Agencies.Domain.projitems')" />
