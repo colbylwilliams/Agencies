@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +24,8 @@ namespace Agencies.Functions
 		static string _botDirectLineSecret;
 		static string BotDirectLineSecret => _botDirectLineSecret ?? (_botDirectLineSecret = Environment.GetEnvironmentVariable ("MS_BotDirectLineSecret"));
 
-		public static async Task<object> Run ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "bot/messages", WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
+		[FunctionName ("BotMessageHandler")]
+		public static async Task<object> BotMessageHandler ([HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "bot/messages", WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
 		{
 			// Initialize the azure bot
 			using (BotService.Initialize ())
@@ -33,7 +36,7 @@ namespace Agencies.Functions
 
 				// authenticate incoming request and add activity.ServiceUrl to MicrosoftAppCredentials.TrustedHostNames
 				// if request is authenticated
-				if (!await BotService.Authenticator.TryAuthenticateAsync (req, new [] { activity }, CancellationToken.None))
+				if (!await BotService.Authenticator.TryAuthenticateAsync (req, new[] { activity }, CancellationToken.None))
 				{
 					return BotAuthenticator.GenerateUnauthorizedResponse (req);
 				}
@@ -49,7 +52,14 @@ namespace Agencies.Functions
 
 						await activity.ClientForReply ().Conversations.ReplyToActivityAsync (typing);
 
-						await Conversation.SendAsync (activity, () => new FaqDialog ());
+						if (SimpleQnAMakerDialog.IsQuestion (activity.Text))
+						{
+							await Conversation.SendAsync (activity, () => new SimpleQnAMakerDialog ());
+						}
+						else
+						{
+							await Conversation.SendAsync (activity, () => new FaqDialog ());
+						}
 					}
 					else
 					{

@@ -16,11 +16,21 @@ namespace Agencies.Functions
 	[Serializable]
 	public class SimpleQnAMakerDialog : QnAMakerDialog
 	{
-		//Parameters to QnAMakerService are:
-		//Compulsory: subscriptionKey, knowledgebaseId, 
-		//Optional: defaultMessage, scoreThreshold[Range 0.0 – 1.0]
+		public static bool IsQuestion (string message)
+		{
+			//List of common question words
+			List<string> questionWords = new List<string> { "who", "what", "why", "how", "when" };
+
+			//Question word present in the message
+			Regex questionPattern = new Regex (@"\b(" + string.Join ("|", questionWords.Select (Regex.Escape).ToArray ()) + @"\b)", RegexOptions.IgnoreCase);
+
+			//Return true if a question word present, or the message ends with "?"
+			return (questionPattern.IsMatch (message) || message.EndsWith ("?", StringComparison.OrdinalIgnoreCase));
+		}
+
 		public SimpleQnAMakerDialog () : base (new QnAMakerService (new QnAMakerAttribute (Utils.GetAppSetting ("QnASubscriptionKey"), Utils.GetAppSetting ("QnAKnowledgebaseId"), "No good match in FAQ.", 0.5)))
 		{
+
 		}
 	}
 
@@ -46,18 +56,13 @@ namespace Agencies.Functions
 			return Task.CompletedTask;
 		}
 
+
 		public async Task MessageReceivedAsync (IDialogContext context, IAwaitable<IMessageActivity> argument)
 		{
 			var message = await argument as Activity;
 
 			//Call the QnAMaker Dialog if the message is a question.
-			if (IsQuestion (message.Text))
-			{
-				await context.Forward (new SimpleQnAMakerDialog (), AfterQnA, message, CancellationToken.None);
-
-				context.Wait (MessageReceivedAsync);
-			}
-			else if (options.Any (o => o.Equals (message.Text, StringComparison.Ordinal)))
+			if (options.Any (o => o.Equals (message.Text, StringComparison.Ordinal)))
 			{
 				await DisplaySelectedCard (context, message.Text);
 			}
@@ -72,27 +77,6 @@ namespace Agencies.Functions
 					3,
 					PromptStyle.PerLine);
 			}
-		}
-
-		//Callback, after the QnAMaker Dialog returns a result.
-		public Task AfterQnA (IDialogContext context, IAwaitable<object> argument)
-		{
-			context.Wait (MessageReceivedAsync);
-
-			return Task.CompletedTask;
-		}
-
-		//Simple check if the message is a potential question.
-		bool IsQuestion (string message)
-		{
-			//List of common question words
-			List<string> questionWords = new List<string> { "who", "what", "why", "how", "when" };
-
-			//Question word present in the message
-			Regex questionPattern = new Regex (@"\b(" + string.Join ("|", questionWords.Select (Regex.Escape).ToArray ()) + @"\b)", RegexOptions.IgnoreCase);
-
-			//Return true if a question word present, or the message ends with "?"
-			return (questionPattern.IsMatch (message) || message.EndsWith ("?", StringComparison.OrdinalIgnoreCase));
 		}
 
 
@@ -117,11 +101,12 @@ namespace Agencies.Functions
 			var message = context.MakeMessage ();
 
 			var attachment = GetSelectedCard (selectedCard);
+
 			message.Attachments.Add (attachment);
 
 			await context.PostAsync (message);
 
-			context.Wait (this.MessageReceivedAsync);
+			context.Wait (MessageReceivedAsync);
 		}
 
 
