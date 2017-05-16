@@ -20,7 +20,4 @@
     <None Update="host.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.csproj" />
-  </ItemGroup>
 </Project>
