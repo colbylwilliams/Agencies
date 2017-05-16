@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 
-namespace Agencies.Functions
+namespace NomadCode.Auth
 {
 	public static class SecurityExtensions
 	{
-		// https://github.com/Azure/azure-mobile-apps-net-server/wiki/Understanding-User-Ids
-		public static string UniqueIdentifier (this IPrincipal user)
+        const string zumoAuthHeaderKey = "x-zumo-auth";
+        const string JwtRegisteredClaimNamesIss = "iss";
+
+        // https://github.com/Azure/azure-mobile-apps-net-server/wiki/Understanding-User-Ids
+        public static string UniqueIdentifier (this IPrincipal user)
 		{
 			if (user is ClaimsPrincipal principal)
 			{
@@ -38,7 +43,7 @@ namespace Agencies.Functions
 				else if (string.Compare (ver, "4", StringComparison.OrdinalIgnoreCase) == 0)
 				{
 					// the NameIdentifier claim is stable.
-					stableSid = identity.FindFirst (ClaimTypes.NameIdentifier).Value;
+					stableSid = identity.FindFirst (ClaimTypes.NameIdentifier)?.Value;
 				}
 
 				var provider = identity.FindFirst ("http://schemas.microsoft.com/identity/claims/identityprovider")?.Value;
@@ -53,5 +58,21 @@ namespace Agencies.Functions
 
 			return null;
 		}
-	}
+
+
+        public static string UriFromIssuerClaim(this ClaimsIdentity identity)
+        {
+            return identity?.FindFirst(JwtRegisteredClaimNamesIss)?.Value;
+        }
+
+
+        public static void ConfigureClientForUserDetails (this HttpClient client, ClaimsIdentity identity, HttpRequestMessage req)
+        {
+            var zumoAuthHeader = req.Headers.GetValues(zumoAuthHeaderKey).FirstOrDefault();
+
+            client.DefaultRequestHeaders.Add(zumoAuthHeaderKey, zumoAuthHeader);
+
+            client.BaseAddress = new Uri(identity.UriFromIssuerClaim());
+        }
+    }
 }

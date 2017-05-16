@@ -17,10 +17,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <!-- <Content Include="GetBotToken\json1.json" CopyToOutputDirectory="Always" /> -->
-<!--    <Content Include="GetBotToken\function.json" CopyToOutputDirectory="Always" />-->
-  </ItemGroup>
-  <ItemGroup>
     <None Update="host.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
