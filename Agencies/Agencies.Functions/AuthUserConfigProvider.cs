@@ -21,9 +21,9 @@ namespace Agencies.Functions
 		[FunctionName ("GetUserConfig")]
 		public static async Task<HttpResponseMessage> GetUserConfig ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "user/config")]HttpRequestMessage req, TraceWriter log)
 		{
-			if (Thread.CurrentPrincipal is ClaimsPrincipal principal)
+			if (Thread.CurrentPrincipal.Identity.IsAuthenticated && Thread.CurrentPrincipal is ClaimsPrincipal principal)
 			{
-				log.Info ($"principal:");
+				log.Info ("User is authenticated");
 
 				if (principal.Identity is ClaimsIdentity identity)
 				{
@@ -52,6 +52,8 @@ namespace Agencies.Functions
 					}
 				}
 			}
+
+			log.Info ("User is not authenticated");
 
 			return req.CreateResponse (System.Net.HttpStatusCode.Unauthorized);
 		}
