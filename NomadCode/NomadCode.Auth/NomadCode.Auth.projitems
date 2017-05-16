@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{741E4283-9650-434A-A936-69A89E6F7383}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>NomadCode.Auth</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AzureAppServiceUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GoogleUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserClaim.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuthUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AuthUserConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SecurityExtensions.cs" />
+  </ItemGroup>
+</Project>

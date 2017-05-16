@@ -399,12 +399,7 @@
     <BundleResource Include="Settings.bundle\Root.plist" />
     <BundleResource Include="GoogleService-Info.plist" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.csproj">
-      <Project>{3972CE21-6C85-4373-9DDC-BF910A84E420}</Project>
-      <Name>NomadCode.Auth</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
