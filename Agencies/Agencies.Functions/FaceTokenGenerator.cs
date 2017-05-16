@@ -13,7 +13,7 @@ namespace Agencies.Functions
 	public static class FaceTokenGenerator
 	{
 		static string _faceApiSubscription;
-		static string faceApiSubscription => _faceApiSubscription ?? (_faceApiSubscription = Environment.GetEnvironmentVariable ("MS_FaceApiSubscriptionKey"));
+		static string FaceApiSubscription => _faceApiSubscription ?? (_faceApiSubscription = Environment.GetEnvironmentVariable ("MS_FaceApiSubscriptionKey"));
 
 		[Authorize]
 		[FunctionName ("GetFaceToken")]
@@ -26,12 +26,12 @@ namespace Agencies.Functions
 				return req.CreateResponse (HttpStatusCode.Unauthorized);
 			}
 
-			if (string.IsNullOrEmpty (faceApiSubscription))
+			if (string.IsNullOrEmpty (FaceApiSubscription))
 			{
 				return req.CreateErrorResponse (HttpStatusCode.NotFound, "Unable to find Face token on server");
 			}
 
-			return req.CreateResponse (HttpStatusCode.OK, faceApiSubscription);
+			return req.CreateResponse (HttpStatusCode.OK, FaceApiSubscription);
 		}
 	}
 }

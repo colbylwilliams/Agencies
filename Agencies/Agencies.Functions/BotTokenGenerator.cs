@@ -14,7 +14,7 @@ namespace Agencies.Functions
 	public static class BotTokenGenerator
 	{
 		static string _botDirectLineSecret;
-		static string botDirectLineSecret => _botDirectLineSecret ?? (_botDirectLineSecret = Environment.GetEnvironmentVariable ("MS_BotDirectLineSecret"));
+		static string BotDirectLineSecret => _botDirectLineSecret ?? (_botDirectLineSecret = Environment.GetEnvironmentVariable ("MS_BotDirectLineSecret"));
 
 		// [FunctionName("GetBotToken")]
 		// public static async Task<HttpResponseMessage> GetBotToken(
@@ -28,7 +28,7 @@ namespace Agencies.Functions
 		[FunctionName ("GetBotToken")]
 		public static async Task<HttpResponseMessage> GetBotToken ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/bot/{conversationId=}")]HttpRequestMessage req, /*IDirectLineClient client,*/ string conversationId, TraceWriter log)
 		{
-			var client = new DirectLineClient (botDirectLineSecret);
+			var client = new DirectLineClient (BotDirectLineSecret);
 
 			if (!string.IsNullOrEmpty (conversationId))
 			{

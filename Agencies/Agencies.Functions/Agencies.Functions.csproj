@@ -20,4 +20,5 @@
     <None Update="host.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="local.settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <Import Project="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems" Label="Shared" />
 </Project>

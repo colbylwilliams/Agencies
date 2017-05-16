@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.26510.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agencies.Functions", "Agencies.Functions\Agencies.Functions.csproj", "{EB474C13-0539-46BB-97CB-CB5251BFF6EC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NomadCode.Auth", "..\NomadCode\NomadCode.Auth\NomadCode.Auth.shproj", "{741E4283-9650-434A-A936-69A89E6F7383}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems*{741e4283-9650-434a-a936-69a89e6f7383}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
