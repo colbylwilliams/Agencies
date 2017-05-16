@@ -10,6 +10,8 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="1.0.0-beta1" />
     <PackageReference Include="Microsoft.Azure.WebJobs.ServiceBus" Version="2.1.0-beta1" />
     <PackageReference Include="Microsoft.Bot.Connector.DirectLine" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.Azure" Version="3.2.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.CognitiveServices" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.0-alpha4" />
   </ItemGroup>
