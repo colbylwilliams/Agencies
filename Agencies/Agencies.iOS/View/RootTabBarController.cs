@@ -11,6 +11,7 @@ using NomadCode.ClientAuth;
 using SettingsStudio;
 
 using Agencies.Shared;
+using NomadCode.Auth;
 
 namespace Agencies.iOS
 {
@@ -20,12 +21,12 @@ namespace Agencies.iOS
         bool initialLoginAttempt = true;
 
 
-        public RootTabBarController(IntPtr handle) : base(handle) { }
+        public RootTabBarController (IntPtr handle) : base (handle) { }
 
 
-        public override void ViewDidLoad()
+        public override void ViewDidLoad ()
         {
-            base.ViewDidLoad();
+            base.ViewDidLoad ();
 
             ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
@@ -47,97 +48,102 @@ namespace Agencies.iOS
         }
 
 
-        public override void ViewDidAppear(bool animated)
+        public override void ViewDidAppear (bool animated)
         {
-            base.ViewDidAppear(animated);
+            base.ViewDidAppear (animated);
 
-            Task.Run(async () => await loginAsync());
+            authenticate ();
         }
 
 
-        void handleAzureAuthChanged(object s, bool e)
+        void handleAzureAuthChanged (object s, bool e)
         {
-            Log.Debug($"Authenticated: {e}");
+            Log.Debug ($"Authenticated: {e}");
         }
 
 
-        void handleClientAuthChanged(object s, ClientAuthDetails e)
+        void handleClientAuthChanged (object s, ClientAuthDetails e)
         {
-            Log.Debug($"Authenticated: {e}");
+            Log.Debug ($"Authenticated: {e}");
         }
 
 
-        async Task loginAsync()
+        void authenticate ()
         {
-            try
+            Task.Run (async () =>
             {
-                //BotClient.Shared.ResetCurrentUser();
-                //ClientAuthManager.Shared.LogoutAuthProviders();
+                //BotClient.Shared.ResetCurrentUser ();
+                //ClientAuthManager.Shared.LogoutAuthProviders ();
+                //throw new Exception ("stop and re-comment out lines");
 
-                var details = ClientAuthManager.Shared.ClientAuthDetails;
-
-                // try authenticating with an existing token
-                if (AgenciesClient.Shared.AuthUser == null && details != null)
+                try
                 {
-                    var user = await AgenciesClient.Shared.GetAuthUserConfigAsync() ?? await AgenciesClient.Shared.GetAuthUserConfigAsync(details?.Token, details?.AuthCode);
+                    var details = ClientAuthManager.Shared.ClientAuthDetails;
 
-                    if (user != null)
+                    // try authenticating with an existing token
+                    if (AgenciesClient.Shared.AuthUser == null && details != null)
                     {
-                        BotClient.Shared.CurrentUserId = user.Id;
+                        var user = await AgenciesClient.Shared.GetAuthUserConfigAsync () ?? await AgenciesClient.Shared.GetAuthUserConfigAsync (details?.Token, details?.AuthCode);
 
-                        BotClient.Shared.CurrentUserName = details.Username;
-                        BotClient.Shared.CurrentUserEmail = details.Email;
-                        BotClient.Shared.SetAvatarUrl(user.Id, details.AvatarUrl);
+                        if (user != null)
+                        {
+                            BotClient.Shared.CurrentUserId = user.Id;
 
-                        await BotClient.Shared.ConnectSocketAsync(conversationId => AgenciesClient.Shared.GetConversationAsync(conversationId));
+                            BotClient.Shared.CurrentUserName = details.Username;
+                            BotClient.Shared.CurrentUserEmail = details.Email;
+                            BotClient.Shared.SetAvatarUrl (user.Id, details.AvatarUrl);
 
-                        FaceClient.Shared.SubscriptionKey = await AgenciesClient.Shared.GetFaceApiTokenAsync();
+                            await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversationAsync (conversationId));
+
+                            FaceClient.Shared.SubscriptionKey = await AgenciesClient.Shared.GetFaceApiTokenAsync ();
+                        }
+                        else
+                        {
+                            logout ();
+                        }
                     }
-                    else
+                    else // otherwise prompt the user to login
                     {
-                        logoutAsync();
+                        BeginInvokeOnMainThread (() => presentAuthController ());
                     }
                 }
-                else // otherwise prompt the user to login
+                catch (Exception ex)
                 {
-                    BeginInvokeOnMainThread(() => presentAuthController());
+                    Log.Error (ex.Message);
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message);
-                throw;
-            }
+            });
         }
 
 
-        void presentAuthController()
+        void presentAuthController ()
         {
-            var authViewController = new AuthViewController();
+            var authViewController = new AuthViewController ();
 
             if (authViewController != null)
             {
-                var authNavController = new UINavigationController(authViewController);
+                var authNavController = new UINavigationController (authViewController);
 
                 if (authNavController != null)
                 {
-                    PresentViewController(authNavController, true, null);
+                    PresentViewController (authNavController, true, null);
                 }
             }
         }
 
-        async Task logoutAsync()
+
+        void logout ()
         {
             try
             {
-                SignIn.SharedInstance.SignOutUser();
-                BotClient.Shared.Reset();
+                SignIn.SharedInstance.SignOutUser ();
+                BotClient.Shared.Reset ();
 
-                await loginAsync();
+                authenticate ();
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                Log.Error (ex.Message);
                 throw;
             }
         }
