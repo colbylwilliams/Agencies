@@ -5,7 +5,6 @@ using UIKit;
 
 using Google.SignIn;
 
-using NomadCode.Azure;
 using NomadCode.BotFramework;
 using NomadCode.ClientAuth;
 
@@ -15,19 +14,19 @@ using Agencies.Shared;
 
 namespace Agencies.iOS
 {
+
     public partial class RootTabBarController : UITabBarController
     {
         bool initialLoginAttempt = true;
 
 
-        public RootTabBarController (IntPtr handle) : base (handle) { }
+        public RootTabBarController(IntPtr handle) : base(handle) { }
 
 
-        public override void ViewDidLoad ()
+        public override void ViewDidLoad()
         {
-            base.ViewDidLoad ();
+            base.ViewDidLoad();
 
-            AzureClient.Shared.AthorizationChanged += handleAzureAuthChanged;
             ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
             SelectedIndex = Settings.SelectedTabIndex;
@@ -39,7 +38,7 @@ namespace Agencies.iOS
 
                 if (sender != null)
 #else
-				if (sender is UITabBarController tabController)
+                if (sender is UITabBarController tabController)
 #endif
                 {
                     Settings.SelectedTabIndex = (int)tabController.SelectedIndex;
@@ -48,123 +47,97 @@ namespace Agencies.iOS
         }
 
 
-        public override void ViewDidAppear (bool animated)
+        public override void ViewDidAppear(bool animated)
         {
-            base.ViewDidAppear (animated);
+            base.ViewDidAppear(animated);
 
-            Task.Run (async () => await loginAsync ());
+            Task.Run(async () => await loginAsync());
         }
 
 
-        void handleAzureAuthChanged (object s, bool e)
+        void handleAzureAuthChanged(object s, bool e)
         {
-            Log.Debug ($"Authenticated: {e}");
+            Log.Debug($"Authenticated: {e}");
         }
 
 
-        void handleClientAuthChanged (object s, ClientAuthDetails e)
+        void handleClientAuthChanged(object s, ClientAuthDetails e)
         {
-            Log.Debug ($"Authenticated: {e}");
+            Log.Debug($"Authenticated: {e}");
         }
 
 
-        async Task loginAsync ()
+        async Task loginAsync()
         {
             try
             {
-                if (!AzureClient.Shared.Initialized)
-                {
-                    await Bootstrap.InitializeDataStoreAsync ();
+                //BotClient.Shared.ResetCurrentUser();
+                //ClientAuthManager.Shared.LogoutAuthProviders();
 
-                    //await AzureClient.Shared.LogoutAsync ();
-                    //BotClient.Shared.ResetCurrentUser ();
-                    //ClientAuthManager.Shared.LogoutAuthProviders ();
-                }
+                var details = ClientAuthManager.Shared.ClientAuthDetails;
 
                 // try authenticating with an existing token
-                if (!AzureClient.Shared.Authenticated)
+                if (AgenciesClient.Shared.AuthUser == null && details != null)
                 {
-                    if (initialLoginAttempt)
+                    var user = await AgenciesClient.Shared.GetAuthUserConfigAsync() ?? await AgenciesClient.Shared.GetAuthUserConfigAsync(details?.Token, details?.AuthCode);
+
+                    if (user != null)
                     {
-                        initialLoginAttempt = false;
+                        BotClient.Shared.CurrentUserId = user.Id;
 
-                        await AzureClient.Shared.AuthenticateAsync ();
+                        BotClient.Shared.CurrentUserName = details.Username;
+                        BotClient.Shared.CurrentUserEmail = details.Email;
+                        BotClient.Shared.SetAvatarUrl(user.Id, details.AvatarUrl);
+
+                        await BotClient.Shared.ConnectSocketAsync(conversationId => AgenciesClient.Shared.GetConversationAsync(conversationId));
+
+                        FaceClient.Shared.SubscriptionKey = await AgenciesClient.Shared.GetFaceApiTokenAsync();
                     }
-                    else // see if we have what we need in the ClientAuthManager
+                    else
                     {
-                        var details = ClientAuthManager.Shared.ClientAuthDetails;
-
-                        var auth = await AzureClient.Shared.AuthenticateAsync (details?.Token, details?.AuthCode);
-
-                        if (auth.Authenticated)
-                        {
-                            BotClient.Shared.CurrentUserId = auth.Sid;
-
-                            if (details != null)
-                            {
-                                BotClient.Shared.CurrentUserName = details.Username;
-                                BotClient.Shared.CurrentUserEmail = details.Email;
-                                BotClient.Shared.SetAvatarUrl (auth.Sid, details.AvatarUrl);
-                            }
-                        }
+                        logoutAsync();
                     }
-                }
-
-                // if that worked, initialize the bot
-                if (AzureClient.Shared.Authenticated)
-                {
-                    if (!BotClient.Shared.Initialized)
-                    {
-                        await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
-                    }
-
-                    var faceApiKey = await AgenciesClient.Shared.GetFaceApiSubscription ();
-
-                    FaceClient.Shared.SubscriptionKey = faceApiKey;
-
-                    Log.Debug ($"Face API Key: {faceApiKey}");
                 }
                 else // otherwise prompt the user to login
                 {
-                    BeginInvokeOnMainThread (() =>
-                    {
-                        var authViewController = new AuthViewController ();
-
-                        if (authViewController != null)
-                        {
-                            var authNavController = new UINavigationController (authViewController);
-
-                            if (authNavController != null)
-                            {
-                                PresentViewController (authNavController, true, null);
-                            }
-                        }
-                    });
+                    BeginInvokeOnMainThread(() => presentAuthController());
                 }
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error(ex.Message);
                 throw;
             }
         }
 
 
-        async Task logoutAsync ()
+        void presentAuthController()
+        {
+            var authViewController = new AuthViewController();
+
+            if (authViewController != null)
+            {
+                var authNavController = new UINavigationController(authViewController);
+
+                if (authNavController != null)
+                {
+                    PresentViewController(authNavController, true, null);
+                }
+            }
+        }
+
+        async Task logoutAsync()
         {
             try
             {
-                SignIn.SharedInstance.SignOutUser ();
+                SignIn.SharedInstance.SignOutUser();
+                BotClient.Shared.Reset();
 
-                await AzureClient.Shared.LogoutAsync ();
-
-                BotClient.Shared.Reset ();
-
-                await loginAsync ();
+                await loginAsync();
             }
             catch (Exception ex)
             {
-                Log.Error (ex.Message);
+                Log.Error(ex.Message);
                 throw;
             }
         }

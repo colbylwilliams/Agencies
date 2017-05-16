@@ -5,8 +5,6 @@ using Android.App;
 
 using Android.OS;
 
-using NomadCode.Azure;
-
 using NomadCode.ClientAuth;
 
 using Agencies.Shared;
@@ -15,99 +13,81 @@ using BotClient = NomadCode.BotFramework.BotClient;
 
 namespace Agencies.Droid
 {
-    [Activity (Label = "Agencies", MainLauncher = true, Icon = "@mipmap/icon")]
+    [Activity(Label = "Agencies", MainLauncher = true, Icon = "@mipmap/icon")]
     public class MainActivity : Activity
     {
 
         bool initialLoginAttempt = true;
 
-        protected override void OnCreate (Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate (savedInstanceState);
+            base.OnCreate(savedInstanceState);
 
             // Set our view from the "main" layout resource
-            SetContentView (Resource.Layout.Main);
+            SetContentView(Resource.Layout.Main);
 
             //IFaceServiceClient client = new FaceServiceRestClient (Keys.CognitiveServices.FaceApi.SubscriptionKey);
         }
 
-        protected override void OnResume ()
+        protected override void OnResume()
         {
-            base.OnResume ();
+            base.OnResume();
 
-            authenticate ();
+            Task.Run(() => loginAsync());
         }
 
 
-        void authenticate ()
+        async Task loginAsync()
         {
-            Task.Run (async () =>
+            try
             {
-                try
+                //BotClient.Shared.ResetCurrentUser();
+                //ClientAuthManager.Shared.LogoutAuthProviders();
+
+                var details = ClientAuthManager.Shared.ClientAuthDetails;
+
+                // try authenticating with an existing token
+                if (AgenciesClient.Shared.AuthUser == null && details != null)
                 {
-                    if (!AzureClient.Shared.Initialized) await Bootstrap.InitializeDataStoreAsync ();
+                    var user = await AgenciesClient.Shared.GetAuthUserConfigAsync() ?? await AgenciesClient.Shared.GetAuthUserConfigAsync(details?.Token, details?.AuthCode);
 
-                    // try authenticating with an existing token
-                    if (!AzureClient.Shared.Authenticated)
+                    if (user != null)
                     {
-                        if (initialLoginAttempt)
-                        {
-                            initialLoginAttempt = false;
+                        BotClient.Shared.CurrentUserId = user.Id;
 
-                            await AzureClient.Shared.AuthenticateAsync ();
-                        }
-                        else // see if we have what we need in the ClientAuthManager
-                        {
-                            var details = ClientAuthManager.Shared.ClientAuthDetails;
+                        BotClient.Shared.CurrentUserName = details.Username;
+                        BotClient.Shared.CurrentUserEmail = details.Email;
+                        BotClient.Shared.SetAvatarUrl(user.Id, details.AvatarUrl);
 
-                            var auth = await AzureClient.Shared.AuthenticateAsync (details?.Token, details?.AuthCode);
+                        await BotClient.Shared.ConnectSocketAsync(conversationId => AgenciesClient.Shared.GetConversationAsync(conversationId));
 
-                            if (auth.Authenticated)
-                            {
-                                BotClient.Shared.CurrentUserId = auth.Sid;
-
-                                if (details != null)
-                                {
-                                    BotClient.Shared.CurrentUserName = details.Username;
-                                    BotClient.Shared.CurrentUserEmail = details.Email;
-                                    BotClient.Shared.SetAvatarUrl (auth.Sid, details.AvatarUrl);
-                                }
-                            }
-                        }
+                        FaceClient.Shared.SubscriptionKey = await AgenciesClient.Shared.GetFaceApiTokenAsync();
                     }
-
-                    // if that worked, initialize the bot
-                    if (AzureClient.Shared.Authenticated)
+                    else
                     {
-                        if (!BotClient.Shared.Initialized)
-                        {
-                            await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversation (conversationId));
-                        }
-
-                        var faceApiKey = await AgenciesClient.Shared.GetFaceApiSubscription ();
-
-                        Log.Debug ($"Face API Key: {faceApiKey}");
-                    }
-                    else // otherwise prompt the user to login
-                    {
-                        // otherwise prompt the user to login
-                        RunOnUiThread (() =>
-                        {
-                            ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
-
-                            ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
-                            ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
-
-                            StartActivity (typeof (AuthActivity));
-                        });
+                        //logoutAsync();
+                        BotClient.Shared.ResetCurrentUser();
+                        ClientAuthManager.Shared.LogoutAuthProviders();
                     }
                 }
-                catch (Exception ex)
+                else // otherwise prompt the user to login
                 {
-                    Log.Error (ex.Message);
-                    throw;
+                    RunOnUiThread(() =>
+                    {
+                        ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
+
+                        ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
+                        ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
+
+                        StartActivity(typeof(AuthActivity));
+                    });
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
         }
     }
 }

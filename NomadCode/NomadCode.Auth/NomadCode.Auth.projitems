@@ -15,5 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)AuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AuthUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SecurityExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keychain.cs" />
   </ItemGroup>
 </Project>
