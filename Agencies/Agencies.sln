@@ -58,6 +58,10 @@ Global
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
 		$3.scope = text/x-csharp
+		$3.SpacingAfterMethodDeclarationName = True
+		$3.SpaceAfterMethodCallName = True
+		$0.DotNetNamingPolicy = $4
+		$4.DirectoryNamespaceAssociation = PrefixedHierarchical
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{07555EA6-44F7-4889-974F-8191391705EB} = {704ED759-2625-4F2E-8E83-05A118EA802A}
