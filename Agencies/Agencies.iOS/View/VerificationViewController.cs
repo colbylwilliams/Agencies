@@ -17,10 +17,10 @@ namespace Agencies.iOS
 
         public VerificationType VerificationType { get; set; }
 
-        UIImage SourceImage1;
-        UIImage SourceImage2;
-        List<Face> verifyFaces;
-        List<Face> targetFaces;
+        //UIImage SourceImage1;
+        //UIImage SourceImage2;
+        //List<Face> verifyFaces;
+        //List<Face> targetFaces;
 
         FaceSelectionCollectionViewController Face1SelectionController => ChildViewControllers[0] as FaceSelectionCollectionViewController;
         FaceSelectionCollectionViewController Face2SelectionController => ChildViewControllers[1] as FaceSelectionCollectionViewController;
@@ -60,7 +60,7 @@ namespace Agencies.iOS
 
         void checkInputs()
         {
-            VerifyButton.Enabled = SourceImage1 != null && SourceImage2 != null;
+            VerifyButton.Enabled = Face1SelectionController.HasSelection && Face2SelectionController.HasSelection;
         }
 
 
@@ -85,7 +85,7 @@ namespace Agencies.iOS
                     }
                     else
                     {
-                        //selectionController.
+                        selectionController.SetDetectedFaces(image, detectedFaces);
 
                         this.HideHUD();
                     }
