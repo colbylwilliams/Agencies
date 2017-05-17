@@ -13,6 +13,8 @@ namespace Agencies.iOS
 
 		public PersonFaceCollectionViewController (IntPtr handle) : base (handle)
 		{
+			//make our cells longer than they are wide - to account for the text we'll be adding
+			HeightMultiplier = 4d / 3d;
 		}
 
 
