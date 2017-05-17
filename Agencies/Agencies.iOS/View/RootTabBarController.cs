@@ -72,9 +72,9 @@ namespace Agencies.iOS
         {
             Task.Run (async () =>
             {
-                //BotClient.Shared.ResetCurrentUser();
-                //ClientAuthManager.Shared.LogoutAuthProviders();
-                //throw new Exception("stop and re-comment out lines");
+                //BotClient.Shared.ResetCurrentUser ();
+                //ClientAuthManager.Shared.LogoutAuthProviders ();
+                //throw new Exception ("stop and re-comment out lines");
 
                 try
                 {
