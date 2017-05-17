@@ -369,6 +369,7 @@
     <Compile Include="View\VerificationViewController.designer.cs">
       <DependentUpon>VerificationViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\PopoverPresentationViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

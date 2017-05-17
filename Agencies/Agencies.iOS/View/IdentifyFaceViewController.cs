@@ -9,7 +9,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class IdentifyFaceViewController : UIViewController, IUIPopoverPresentationControllerDelegate
+	public partial class IdentifyFaceViewController : PopoverPresentationViewController
 	{
 		class Segues
 		{
@@ -190,29 +190,9 @@ namespace Agencies.iOS
 		}
 
 
-		[Export ("adaptivePresentationStyleForPresentationController:")]
-		public UIModalPresentationStyle GetAdaptivePresentationStyle (UIPresentationController forPresentationController)
+		protected override string GetPopoverCloseText (UIViewController presentedViewController)
 		{
-			return UIModalPresentationStyle.FullScreen;
-		}
-
-
-		[Export ("presentationController:viewControllerForAdaptivePresentationStyle:")]
-		public UIViewController GetViewControllerForAdaptivePresentation (UIPresentationController controller, UIModalPresentationStyle style)
-		{
-			UINavigationController navController = new UINavigationController (controller.PresentedViewController);
-
-			var text = navController.TopViewController is FaceResultsTableViewController ? "Done" : "Cancel";
-			var doneButton = new UIBarButtonItem (text, UIBarButtonItemStyle.Done, DoneTapped);
-			navController.TopViewController.NavigationItem.RightBarButtonItem = doneButton;
-
-			return navController;
-		}
-
-
-		public void DoneTapped (object sender, EventArgs e)
-		{
-			DismissViewController (true, null);
+			return presentedViewController is FaceResultsTableViewController ? "Done" : "Cancel";
 		}
 	}
 }

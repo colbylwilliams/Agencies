@@ -8,7 +8,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class PersonDetailViewController : UIViewController, IUIPopoverPresentationControllerDelegate
+	public partial class PersonDetailViewController : PopoverPresentationViewController
 	{
 		class Segues
 		{
@@ -221,31 +221,6 @@ namespace Agencies.iOS
 			{
 				this.HideHUD ().ShowSimpleAlert ("Failed to add face.");
 			}
-		}
-
-
-		[Export ("adaptivePresentationStyleForPresentationController:")]
-		public UIModalPresentationStyle GetAdaptivePresentationStyle (UIPresentationController forPresentationController)
-		{
-			return UIModalPresentationStyle.FullScreen;
-		}
-
-
-		[Export ("presentationController:viewControllerForAdaptivePresentationStyle:")]
-		public UIViewController GetViewControllerForAdaptivePresentation (UIPresentationController controller, UIModalPresentationStyle style)
-		{
-			UINavigationController navController = new UINavigationController (controller.PresentedViewController);
-
-			var doneButton = new UIBarButtonItem ("Cancel", UIBarButtonItemStyle.Done, DoneTapped);
-			navController.TopViewController.NavigationItem.RightBarButtonItem = doneButton;
-
-			return navController;
-		}
-
-
-		public void DoneTapped (object sender, EventArgs e)
-		{
-			DismissViewController (true, null);
 		}
 	}
 }
