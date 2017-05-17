@@ -664,7 +664,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="82e-d2-zh6" customClass="GroupPersonCVC">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupPersonCVC" id="82e-d2-zh6" customClass="GroupPersonCVC">
                                 <rect key="frame" x="0.0" y="50" width="144" height="168"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -1043,7 +1043,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jeg-2f-iTn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3080.8000000000002" y="1617.8410794602701"/>
+            <point key="canvasLocation" x="3081" y="1648"/>
         </scene>
         <!--Root Tab Bar Controller-->
         <scene sceneID="xiT-WM-Bkg">
@@ -1181,7 +1181,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="Txc-hK-wbP" customClass="GroupPersonCVC">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupPersonCVC" id="Txc-hK-wbP" customClass="GroupPersonCVC">
                                 <rect key="frame" x="0.0" y="0.0" width="144" height="168"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -1279,12 +1279,12 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bpL-tZ-NSs" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="jRt-61-2Us" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3876" y="1567"/>
+            <point key="canvasLocation" x="3876" y="1413"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="sQy-YA-AHr"/>
+        <segue reference="MHv-PU-Kcc"/>
         <segue reference="VFT-e9-2Y2"/>
-        <segue reference="nWV-Zf-9tZ"/>
     </inferredMetricsTieBreakers>
 </document>
