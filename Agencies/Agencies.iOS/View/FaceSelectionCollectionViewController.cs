@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -15,20 +14,11 @@ namespace Agencies.iOS
 		public string ReturnSegue { get; set; }
 		public Face SelectedFace { get; private set; }
 
+		public event EventHandler FaceSelectionChanged;
+
 		List<UIImage> croppedImages;
 
-		public bool HasSelection
-		{
-			get
-			{
-				if (SourceImage != null && DetectedFaces?.Count > 0)
-				{
-					return CollectionView.GetIndexPathsForSelectedItems ().FirstOrDefault () != null;
-				}
-
-				return false;
-			}
-		}
+		public bool HasSelection => SelectedFace != null;
 
 
 		public FaceSelectionCollectionViewController (IntPtr handle) : base (handle)
@@ -81,6 +71,7 @@ namespace Agencies.iOS
 
 			SourceImage = sourceImage;
 			DetectedFaces = detectedFaces;
+			SelectedFace = null;
 
 			cropImages ();
 
@@ -134,6 +125,10 @@ namespace Agencies.iOS
 					PerformSegue (ReturnSegue, this);
 				}
 			}
+			else
+			{
+				FaceSelectionChanged?.Invoke (this, EventArgs.Empty);
+			}
 		}
 
 
@@ -143,6 +138,8 @@ namespace Agencies.iOS
 
 			var cell = collectionView.CellForItem (indexPath);
 			cell.Highlighted = false;
+
+			FaceSelectionChanged?.Invoke (this, EventArgs.Empty);
 		}
 	}
 }
