@@ -8,137 +8,145 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class FaceSelectionCollectionViewController : ThreeItemRowCollectionViewController
-    {
-        public List<Face> DetectedFaces { get; set; }
-        public UIImage SourceImage { get; set; }
+	public partial class FaceSelectionCollectionViewController : ItemsPerRowCollectionViewController
+	{
+		public List<Face> DetectedFaces { get; set; }
+		public UIImage SourceImage { get; set; }
+		public string ReturnSegue { get; set; }
+		public Face SelectedFace { get; private set; }
 
-        List<UIImage> croppedImages;
+		List<UIImage> croppedImages;
 
-        FaceSelectionViewController FaceSelectionController => ParentViewController as FaceSelectionViewController;
+		//FaceSelectionViewController FaceSelectionController => ParentViewController as FaceSelectionViewController;
 
-        public bool HasSelection
-        {
-            get
-            {
-                if (SourceImage != null && DetectedFaces?.Count > 0)
-                {
-                    return CollectionView.GetIndexPathsForSelectedItems ().FirstOrDefault () != null;
-                }
+		public bool HasSelection
+		{
+			get
+			{
+				if (SourceImage != null && DetectedFaces?.Count > 0)
+				{
+					return CollectionView.GetIndexPathsForSelectedItems ().FirstOrDefault () != null;
+				}
 
-                return false;
-            }
-        }
-
-
-        public FaceSelectionCollectionViewController (IntPtr handle) : base (handle)
-        {
-        }
+				return false;
+			}
+		}
 
 
-        public override void ViewWillAppear (bool animated)
-        {
-            base.ViewWillAppear (animated);
-
-            if (SourceImage != null)
-            {
-                cropImages ();
-            }
-        }
+		public FaceSelectionCollectionViewController (IntPtr handle) : base (handle)
+		{
+		}
 
 
-        public override void ViewWillDisappear (bool animated)
-        {
-            cleanup ();
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
 
-            base.ViewWillDisappear (animated);
-        }
-
-
-        void cleanup (bool disposeCurrentImage = false)
-        {
-            if (croppedImages != null)
-            {
-                croppedImages.ForEach (i => i.Dispose ());
-                croppedImages.Clear ();
-            }
-
-            if (SourceImage != null)
-            {
-                if (disposeCurrentImage)
-                {
-                    SourceImage.Dispose ();
-                }
-
-                SourceImage = null;
-            }
-        }
+			if (SourceImage != null)
+			{
+				cropImages ();
+			}
+		}
 
 
-        public void SetDetectedFaces (UIImage sourceImage, List<Face> detectedFaces)
-        {
-            cleanup (true);
+		public override void ViewWillDisappear (bool animated)
+		{
+			cleanup ();
 
-            SourceImage = sourceImage;
-            DetectedFaces = detectedFaces;
-
-            cropImages ();
-
-            CollectionView.ReloadData ();
-        }
+			base.ViewWillDisappear (animated);
+		}
 
 
-        void cropImages ()
-        {
-            croppedImages = new List<UIImage> ();
+		void cleanup (bool disposeCurrentImage = false)
+		{
+			if (croppedImages != null)
+			{
+				croppedImages.ForEach (i => i.Dispose ());
+				croppedImages.Clear ();
+			}
 
-            foreach (var face in DetectedFaces)
-            {
-                croppedImages.Add (SourceImage.Crop (face.FaceRectangle));
-            }
-        }
+			if (SourceImage != null)
+			{
+				if (disposeCurrentImage)
+				{
+					SourceImage.Dispose ();
+				}
 
-
-        public override nint NumberOfSections (UICollectionView collectionView) => 1;
-
-
-        public override nint GetItemsCount (UICollectionView collectionView, nint section) => DetectedFaces?.Count ?? 0;
-
-
-        public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)
-        {
-            var cell = collectionView.Dequeue<FaceCVC> (indexPath) as FaceCVC;
-
-            var detectedFace = DetectedFaces[indexPath.Row];
-            var image = croppedImages[indexPath.Row];
-
-            cell.SetFaceImage (detectedFace, image);
-
-            return cell;
-        }
+				SourceImage = null;
+			}
+		}
 
 
-        public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
-        {
-            var cell = collectionView.CellForItem (indexPath);
-            cell.Highlighted = true;
+		public void SetDetectedFaces (UIImage sourceImage, List<Face> detectedFaces)
+		{
+			cleanup (true);
 
-            if (FaceSelectionController != null)
-            {
-                var result = await this.ShowTwoOptionAlert ("Please choose", "Do you want to use this face?");
+			SourceImage = sourceImage;
+			DetectedFaces = detectedFaces;
 
-                if (result)
-                {
-                    FaceSelectionController.SelectFace (DetectedFaces[indexPath.Row]);
-                }
-            }
-        }
+			cropImages ();
+
+			CollectionView.ReloadData ();
+		}
 
 
-        public override void ItemDeselected (UICollectionView collectionView, NSIndexPath indexPath)
-        {
-            var cell = collectionView.CellForItem (indexPath);
-            cell.Highlighted = false;
-        }
-    }
+		void cropImages ()
+		{
+			croppedImages = new List<UIImage> ();
+
+			foreach (var face in DetectedFaces)
+			{
+				croppedImages.Add (SourceImage.Crop (face.FaceRectangle));
+			}
+		}
+
+
+		public override nint NumberOfSections (UICollectionView collectionView) => 1;
+
+
+		public override nint GetItemsCount (UICollectionView collectionView, nint section) => DetectedFaces?.Count ?? 0;
+
+
+		public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)
+		{
+			var cell = collectionView.Dequeue<FaceCVC> (indexPath) as FaceCVC;
+
+			var detectedFace = DetectedFaces [indexPath.Row];
+			var image = croppedImages [indexPath.Row];
+
+			cell.SetFaceImage (detectedFace, image);
+
+			return cell;
+		}
+
+
+		public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
+		{
+			SelectedFace = DetectedFaces [indexPath.Row];
+
+			var cell = collectionView.CellForItem (indexPath);
+			cell.Highlighted = true;
+
+			if (ReturnSegue != null)
+			{
+				var result = await this.ShowTwoOptionAlert ("Please choose", "Do you want to use this face?");
+
+				if (result)
+				{
+					PerformSegue (ReturnSegue, this);
+
+					//FaceSelectionController.SelectFace (DetectedFaces[indexPath.Row]);
+				}
+			}
+		}
+
+
+		public override void ItemDeselected (UICollectionView collectionView, NSIndexPath indexPath)
+		{
+			SelectedFace = null;
+
+			var cell = collectionView.CellForItem (indexPath);
+			cell.Highlighted = false;
+		}
+	}
 }

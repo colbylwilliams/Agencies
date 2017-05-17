@@ -321,10 +321,6 @@
     </Compile>
     <Compile Include="FaceClient.cs" />
     <Compile Include="Extensions\FaceExtensions.cs" />
-    <Compile Include="View\FaceSelectionViewController.cs" />
-    <Compile Include="View\FaceSelectionViewController.designer.cs">
-      <DependentUpon>FaceSelectionViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\FaceSelectionCollectionViewController.cs" />
     <Compile Include="View\FaceSelectionCollectionViewController.designer.cs">
       <DependentUpon>FaceSelectionCollectionViewController.cs</DependentUpon>

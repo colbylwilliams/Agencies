@@ -227,10 +227,10 @@
                     <connections>
                         <outlet property="GoButton" destination="RHm-HD-QnF" id="5mL-lI-fDT"/>
                         <outlet property="SelectedFaceImageView" destination="N5k-kZ-sKv" id="IG1-zp-vbj"/>
-                        <segue destination="qGN-bK-n3O" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorView="N5k-kZ-sKv" id="Nva-pE-cbg">
+                        <segue destination="MsZ-Re-E66" kind="popoverPresentation" identifier="ShowResults" popoverAnchorView="RHm-HD-QnF" id="nUT-UA-lNb">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
-                        <segue destination="MsZ-Re-E66" kind="popoverPresentation" identifier="ShowResults" popoverAnchorView="RHm-HD-QnF" id="nUT-UA-lNb">
+                        <segue destination="zcA-Ql-fJb" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorView="N5k-kZ-sKv" id="WsW-G6-y3j">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                     </connections>
@@ -1157,7 +1157,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="PersonName" destination="ZdG-8H-WI3" id="YxG-PB-gZU"/>
-                        <segue destination="qGN-bK-n3O" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorBarButtonItem="22D-vB-ZWq" id="wUF-Dh-jQK">
+                        <segue destination="zcA-Ql-fJb" kind="popoverPresentation" identifier="SelectFaces" popoverAnchorBarButtonItem="22D-vB-ZWq" id="nWV-Zf-9tZ">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                     </connections>
@@ -1226,69 +1226,11 @@
             </objects>
             <point key="canvasLocation" x="4642" y="115"/>
         </scene>
-        <!--Select Faces-->
-        <scene sceneID="Aug-Qu-QOT">
-            <objects>
-                <viewController storyboardIdentifier="FaceSelectionViewController" id="qGN-bK-n3O" customClass="FaceSelectionViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="iyz-7L-7FH"/>
-                        <viewControllerLayoutGuide type="bottom" id="UvH-di-Z4K"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="lwH-8Y-O23">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iSR-kq-8X1">
-                                <rect key="frame" x="16" y="68" width="343" height="37"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select faces to add" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hK9-ep-0Og">
-                                        <rect key="frame" x="8" y="8" width="147.5" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="hK9-ep-0Og" secondAttribute="bottom" constant="8" id="I1U-iT-HYJ"/>
-                                    <constraint firstItem="hK9-ep-0Og" firstAttribute="top" secondItem="iSR-kq-8X1" secondAttribute="top" constant="8" id="U0x-GG-M2A"/>
-                                    <constraint firstItem="hK9-ep-0Og" firstAttribute="leading" secondItem="iSR-kq-8X1" secondAttribute="leading" constant="8" id="txz-w1-9Mx"/>
-                                </constraints>
-                            </view>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aro-s2-1QV">
-                                <rect key="frame" x="16" y="113" width="343" height="554"/>
-                                <connections>
-                                    <segue destination="zcA-Ql-fJb" kind="embed" identifier="Embed" id="aAz-z1-y0f"/>
-                                </connections>
-                            </containerView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="iSR-kq-8X1" firstAttribute="top" secondItem="lwH-8Y-O23" secondAttribute="topMargin" constant="68" id="0b4-hf-Tsc"/>
-                            <constraint firstItem="iSR-kq-8X1" firstAttribute="leading" secondItem="lwH-8Y-O23" secondAttribute="leadingMargin" id="SXP-aa-xL8"/>
-                            <constraint firstItem="aro-s2-1QV" firstAttribute="top" secondItem="iSR-kq-8X1" secondAttribute="bottom" constant="8" id="Trd-bJ-NVT"/>
-                            <constraint firstItem="aro-s2-1QV" firstAttribute="leading" secondItem="lwH-8Y-O23" secondAttribute="leadingMargin" id="UyE-5e-Ndi"/>
-                            <constraint firstItem="aro-s2-1QV" firstAttribute="trailing" secondItem="lwH-8Y-O23" secondAttribute="trailingMargin" id="Vgc-wc-NaI"/>
-                            <constraint firstItem="iSR-kq-8X1" firstAttribute="trailing" secondItem="lwH-8Y-O23" secondAttribute="trailingMargin" id="qEH-Q0-At5"/>
-                            <constraint firstItem="UvH-di-Z4K" firstAttribute="top" secondItem="aro-s2-1QV" secondAttribute="bottom" id="wfx-Ns-hQe"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" title="Select Faces" id="WbR-hM-Avj"/>
-                    <connections>
-                        <segue destination="9L6-Rv-tsU" kind="unwind" identifier="PersonFaceSelected" unwindAction="UnwindToPersonDetail:" id="ZJC-xj-vmZ"/>
-                        <segue destination="9L6-Rv-tsU" kind="unwind" identifier="IdentifyFaceSelected" unwindAction="UnwindToIdentify:" id="Lw0-da-h8p"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="T1q-oU-nho" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="9L6-Rv-tsU" userLabel="Exit" sceneMemberID="exit"/>
-            </objects>
-            <point key="canvasLocation" x="3876" y="852"/>
-        </scene>
         <!--Face Selection Collection View Controller-->
         <scene sceneID="g5D-5h-V7S">
             <objects>
                 <collectionViewController storyboardIdentifier="FaceSelectionCollectionViewController" id="zcA-Ql-fJb" customClass="FaceSelectionCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="0IF-ro-SHx">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="0IF-ro-SHx">
                         <rect key="frame" x="0.0" y="0.0" width="235" height="232"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1329,16 +1271,20 @@
                             <outlet property="delegate" destination="zcA-Ql-fJb" id="AmD-be-dfJ"/>
                         </connections>
                     </collectionView>
+                    <connections>
+                        <segue destination="jRt-61-2Us" kind="unwind" identifier="PersonFaceSelected" unwindAction="UnwindToPersonDetail:" id="ipz-37-5VO"/>
+                        <segue destination="jRt-61-2Us" kind="unwind" identifier="IdentifyFaceSelected" unwindAction="UnwindToIdentify:" id="S0U-fP-RgO"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bpL-tZ-NSs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="jRt-61-2Us" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3876" y="1567"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="AFa-sP-yU1"/>
         <segue reference="sQy-YA-AHr"/>
         <segue reference="VFT-e9-2Y2"/>
-        <segue reference="wUF-Dh-jQK"/>
+        <segue reference="nWV-Zf-9tZ"/>
     </inferredMetricsTieBreakers>
 </document>
