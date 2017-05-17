@@ -15,7 +15,7 @@ namespace Agencies.iOS
         [Export ("collectionView:layout:sizeForItemAtIndexPath:")]
         public CGSize GetSizeForItem (UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
         {
-            return new CGSize (CollectionView.Frame.Width / 3 - 10, (CollectionView.Frame.Width / 3 - 10) * 4 / 3);
+            return new CGSize (CollectionView.Frame.Width / 3 - 10, (CollectionView.Frame.Width / 3 - 10));
         }
 
 
