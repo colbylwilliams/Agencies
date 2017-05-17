@@ -207,6 +207,7 @@
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
+  <Import Project="..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions\NomadCode.UIExtensions.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.Auth\NomadCode.Auth.projitems')" />
   <Import Project="..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems" Label="Shared" Condition="Exists('..\..\NomadCode\NomadCode.ClientAuth\NomadCode.ClientAuth\NomadCode.ClientAuth.projitems')" />
   <Import Project="..\Agencies.Shared\Agencies.Shared.projitems" Label="Shared" Condition="Exists('..\Agencies.Shared\Agencies.Shared.projitems')" />
