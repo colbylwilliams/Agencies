@@ -16,53 +16,71 @@ namespace Agencies.iOS
 
         FaceSelectionViewController FaceSelectionController => ParentViewController as FaceSelectionViewController;
 
-        public FaceSelectionCollectionViewController (IntPtr handle) : base (handle)
+        public FaceSelectionCollectionViewController(IntPtr handle) : base(handle)
         {
         }
 
 
-        public override void ViewWillAppear (bool animated)
+        public override void ViewWillAppear(bool animated)
         {
-            base.ViewWillAppear (animated);
+            base.ViewWillAppear(animated);
 
-            cropImages ();
-        }
-
-
-        public override void ViewWillDisappear (bool animated)
-        {
-            croppedImages.ForEach (i => i.Dispose ());
-            croppedImages.Clear ();
-
-            SourceImage = null;
-
-            base.ViewWillDisappear (animated);
-        }
-
-
-        void cropImages ()
-        {
-            croppedImages = new List<UIImage> ();
-
-            foreach (var face in DetectedFaces)
+            if (SourceImage != null)
             {
-                croppedImages.Add (SourceImage.Crop (face.FaceRectangle));
+                cropImages();
             }
         }
 
 
-        public override nint NumberOfSections (UICollectionView collectionView) => 1;
-
-
-        public override nint GetItemsCount (UICollectionView collectionView, nint section) => DetectedFaces.Count;
-
-
-        public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)
+        public override void ViewWillDisappear(bool animated)
         {
-            var cell = collectionView.DequeueReusableCell ("Cell", indexPath) as FaceCVC;
+            cleanup();
 
-            var detectedFace = DetectedFaces [indexPath.Row];
-            var image = croppedImages [indexPath.Row];
+            base.ViewWillDisappear(animated);
+        }
+
+        void cleanup()
+        {
+            croppedImages.ForEach(i => i.Dispose());
+            croppedImages.Clear();
+
+            SourceImage = null;
+        }
+
+        public void SetDetectedFaces(UIImage sourceImage, List<Face> detectedFaces)
+        {
+            SourceImage = sourceImage;
+            DetectedFaces = detectedFaces;
+
+            cropImages();
+
+            CollectionView.ReloadData();
+        }
+
+
+        void cropImages()
+        {
+            croppedImages = new List<UIImage>();
+
+            foreach (var face in DetectedFaces)
+            {
+                croppedImages.Add(SourceImage.Crop(face.FaceRectangle));
+            }
+        }
+
+
+        public override nint NumberOfSections(UICollectionView collectionView) => 1;
+
+
+        public override nint GetItemsCount(UICollectionView collectionView, nint section) => DetectedFaces.Count;
+
+
+        public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
+        {
+            var cell = collectionView.DequeueReusableCell("Cell", indexPath) as FaceCVC;
+
+            var detectedFace = DetectedFaces[indexPath.Row];
+            var image = croppedImages[indexPath.Row];
 
             cell.FaceImage.Image = image;
 
@@ -70,13 +88,19 @@ namespace Agencies.iOS
         }
 
 
-        public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
+        public async override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
-            var result = await this.ShowTwoOptionAlert ("Please choose", "Do you want to use this face?");
+            var result = await this.ShowTwoOptionAlert("Please choose", "Do you want to use this face?");
 
-            if (result)
+            if (result && FaceSelectionController != null)
             {
-                FaceSelectionController.SelectFace (DetectedFaces [indexPath.Row]);
+                FaceSelectionController.SelectFace(DetectedFaces[indexPath.Row]);
+            }
+            else
+            {
+                //draw a selection border
+                var cell = collectionView.CellForItem(indexPath);
+                cell.Highlighted = true;
             }
         }
     }

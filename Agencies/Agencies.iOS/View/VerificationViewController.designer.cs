@@ -12,9 +12,21 @@ namespace Agencies.iOS
 	[Register ("VerificationViewController")]
 	partial class VerificationViewController
 	{
+		[Outlet]
+		UIKit.UIButton VerifyButton { get; set; }
+
+		[Action ("ChooseImage1Action:")]
+		partial void ChooseImage1Action (Foundation.NSObject sender);
+
+		[Action ("ChooseImage2Action:")]
+		partial void ChooseImage2Action (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (VerifyButton != null) {
+				VerifyButton.Dispose ();
+				VerifyButton = null;
+			}
 		}
 	}
 }
