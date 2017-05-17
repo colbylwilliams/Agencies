@@ -17,8 +17,6 @@ namespace Agencies.iOS
 
 		List<UIImage> croppedImages;
 
-		//FaceSelectionViewController FaceSelectionController => ParentViewController as FaceSelectionViewController;
-
 		public bool HasSelection
 		{
 			get
@@ -134,8 +132,6 @@ namespace Agencies.iOS
 				if (result)
 				{
 					PerformSegue (ReturnSegue, this);
-
-					//FaceSelectionController.SelectFace (DetectedFaces[indexPath.Row]);
 				}
 			}
 		}
