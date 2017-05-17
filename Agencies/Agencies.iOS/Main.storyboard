@@ -1065,11 +1065,11 @@
             </objects>
             <point key="canvasLocation" x="136.80000000000001" y="-647.22638680659679"/>
         </scene>
-        <!--Face Navigation Controller-->
+        <!--Face-->
         <scene sceneID="HTa-qN-FEo">
             <objects>
                 <navigationController storyboardIdentifier="FaceNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="pfo-6y-A0L" customClass="FaceNavigationController" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" systemItem="contacts" id="KtO-6b-a5e"/>
+                    <tabBarItem key="tabBarItem" title="Face" id="KtO-6b-a5e"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="pHt-ne-oW0">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
