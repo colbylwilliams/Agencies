@@ -1288,36 +1288,35 @@
         <scene sceneID="g5D-5h-V7S">
             <objects>
                 <collectionViewController storyboardIdentifier="FaceSelectionCollectionViewController" id="zcA-Ql-fJb" customClass="FaceSelectionCollectionViewController" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="0IF-ro-SHx">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="0IF-ro-SHx">
                         <rect key="frame" x="0.0" y="0.0" width="235" height="232"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TzM-4A-TfM">
-                            <size key="itemSize" width="144" height="143"/>
+                            <size key="itemSize" width="144" height="144"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="K4d-AO-VND" customClass="FaceCVC">
-                                <rect key="frame" x="45.5" y="0.0" width="144" height="143"/>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FaceCVC" id="K4d-AO-VND" customClass="FaceCVC">
+                                <rect key="frame" x="45.5" y="0.0" width="144" height="144"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="144" height="143"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="144" height="144"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2ZA-pl-auc">
-                                            <rect key="frame" x="10" y="10" width="124" height="124"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" secondItem="2ZA-pl-auc" secondAttribute="height" multiplier="1:1" id="Hij-rz-vhE"/>
-                                            </constraints>
+                                            <rect key="frame" x="2" y="2" width="140" height="140"/>
                                         </imageView>
                                     </subviews>
                                 </view>
                                 <constraints>
-                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="width" secondItem="2ZA-pl-auc" secondAttribute="height" multiplier="1:1" id="MVU-A2-bmc"/>
-                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="top" secondItem="K4d-AO-VND" secondAttribute="top" constant="10" id="bCz-Rj-MY0"/>
-                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="leading" secondItem="K4d-AO-VND" secondAttribute="leading" constant="10" id="dkY-JC-jiN"/>
+                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="centerY" secondItem="K4d-AO-VND" secondAttribute="centerY" id="FHG-vX-yV7"/>
+                                    <constraint firstAttribute="bottom" secondItem="2ZA-pl-auc" secondAttribute="bottom" constant="2" id="HxW-N8-z8d"/>
+                                    <constraint firstAttribute="trailing" secondItem="2ZA-pl-auc" secondAttribute="trailing" constant="2" id="IXq-8P-H9B"/>
+                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="top" secondItem="K4d-AO-VND" secondAttribute="top" constant="2" id="bCz-Rj-MY0"/>
+                                    <constraint firstItem="2ZA-pl-auc" firstAttribute="leading" secondItem="K4d-AO-VND" secondAttribute="leading" constant="2" id="dkY-JC-jiN"/>
                                     <constraint firstItem="2ZA-pl-auc" firstAttribute="centerX" secondItem="K4d-AO-VND" secondAttribute="centerX" id="ieA-kj-nnm"/>
                                 </constraints>
                                 <connections>
