@@ -72,16 +72,16 @@ namespace Agencies.iOS
         {
             Task.Run (async () =>
             {
-                //BotClient.Shared.ResetCurrentUser ();
-                //ClientAuthManager.Shared.LogoutAuthProviders ();
-                //throw new Exception ("stop and re-comment out lines");
+               //BotClient.Shared.ResetCurrentUser();
+               //ClientAuthManager.Shared.LogoutAuthProviders();
+               //throw new Exception("stop and re-comment out lines");
 
-                try
+               try
                 {
                     var details = ClientAuthManager.Shared.ClientAuthDetails;
 
-                    // try authenticating with an existing token
-                    if (AgenciesClient.Shared.AuthUser == null && details != null)
+                   // try authenticating with an existing token
+                   if (AgenciesClient.Shared.AuthUser == null && details != null)
                     {
                         var user = await AgenciesClient.Shared.GetAuthUserConfigAsync () ?? await AgenciesClient.Shared.GetAuthUserConfigAsync (details?.Token, details?.AuthCode);
 
@@ -103,8 +103,11 @@ namespace Agencies.iOS
                         }
                     }
                     else // otherwise prompt the user to login
-                    {
-                        BeginInvokeOnMainThread (() => presentAuthController ());
+                   {
+                        if (AgenciesClient.Shared.AuthUser == null)
+                        {
+                            BeginInvokeOnMainThread (() => presentAuthController ());
+                        }
                     }
                 }
                 catch (Exception ex)
