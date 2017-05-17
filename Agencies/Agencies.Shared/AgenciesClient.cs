@@ -62,7 +62,7 @@ namespace Agencies.Shared
 
             try
             {
-                var faceApiToken = await httpClient.GetStringAsync ("api/tokens/face");
+                var faceApiToken = (await httpClient.GetStringAsync ("api/tokens/face"))?.Trim ('"');
 
                 Log.Debug ($"Token: {faceApiToken}");
 
