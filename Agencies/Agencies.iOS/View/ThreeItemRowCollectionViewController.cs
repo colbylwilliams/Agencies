@@ -5,9 +5,11 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public class ThreeItemRowCollectionViewController : BaseCollectionViewController, IUICollectionViewDelegateFlowLayout
+    public class ItemsPerRowCollectionViewController : BaseCollectionViewController, IUICollectionViewDelegateFlowLayout
     {
-        public ThreeItemRowCollectionViewController (IntPtr handle) : base (handle)
+        protected int CellsAcross { get; set; } = 3;
+
+        public ItemsPerRowCollectionViewController (IntPtr handle) : base (handle)
         {
         }
 
@@ -15,7 +17,7 @@ namespace Agencies.iOS
         [Export ("collectionView:layout:sizeForItemAtIndexPath:")]
         public CGSize GetSizeForItem (UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
         {
-            return new CGSize (CollectionView.Frame.Width / 3 - 10, (CollectionView.Frame.Width / 3 - 10));
+            return new CGSize (CollectionView.Frame.Width / CellsAcross - 10, (CollectionView.Frame.Width / CellsAcross - 10));
         }
 
 

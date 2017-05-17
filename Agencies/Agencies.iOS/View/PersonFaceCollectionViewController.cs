@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class PersonFaceCollectionViewController : ThreeItemRowCollectionViewController
+    public partial class PersonFaceCollectionViewController : ItemsPerRowCollectionViewController
     {
         public PersonGroup Group { get; set; }
         public Person Person { get; set; }

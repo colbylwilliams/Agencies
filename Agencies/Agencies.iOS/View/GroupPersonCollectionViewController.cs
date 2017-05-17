@@ -8,7 +8,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public partial class GroupPersonCollectionViewController : ThreeItemRowCollectionViewController
+    public partial class GroupPersonCollectionViewController : ItemsPerRowCollectionViewController
     {
         const string HeaderId = "Header";
 
