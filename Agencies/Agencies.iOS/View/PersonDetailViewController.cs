@@ -15,13 +15,14 @@ namespace Agencies.iOS
 			public const string Embed = "Embed";
 			public const string SelectFaces = "SelectFaces";
 			public const string FaceSelected = "PersonFaceSelected";
+			public const string VerifyPerson = "VerifyPerson";
 		}
 
-		public PersonGroup Group { get; set; }
-		public Person Person { get; set; }
+		public PersonGroup Group => FaceState.Current.CurrentGroup;
+		public Person Person => FaceState.Current.CurrentPerson;
+
 		public List<Face> DetectedFaces { get; set; }
 		public UIImage SourceImage { get; set; }
-		public bool NeedsTraining { get; set; }
 
 		PersonFaceCollectionViewController PersonFaceCVC => ChildViewControllers [0] as PersonFaceCollectionViewController;
 
@@ -34,12 +35,7 @@ namespace Agencies.iOS
 		{
 			base.PrepareForSegue (segue, sender);
 
-			if (segue.Identifier == Segues.Embed && segue.DestinationViewController is PersonFaceCollectionViewController personFaceCVC)
-			{
-				personFaceCVC.Person = Person;
-				personFaceCVC.Group = Group;
-			}
-			else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionCollectionViewController faceSelectionController)
+			if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionCollectionViewController faceSelectionController)
 			{
 				faceSelectionController.PopoverPresentationController.Delegate = this;
 				faceSelectionController.ReturnSegue = Segues.FaceSelected;
@@ -57,7 +53,7 @@ namespace Agencies.iOS
 			if (faceSelection.SelectedFace != null)
 			{
 				await addFace (faceSelection.SelectedFace, SourceImage);
-				NeedsTraining = true;
+				FaceState.Current.NeedsTraining = true;
 			}
 		}
 
@@ -98,9 +94,8 @@ namespace Agencies.iOS
 			{
 				this.ShowHUD ("Creating person");
 
-				Person = await FaceClient.Shared.CreatePerson (PersonName.Text, Group);
+				FaceState.Current.CurrentPerson = await FaceClient.Shared.CreatePerson (PersonName.Text, Group);
 
-				PersonFaceCVC.Person = Person;
 				PersonFaceCVC.CollectionView.ReloadData ();
 
 				this.ShowSimpleHUD ("Person created");
@@ -215,12 +210,22 @@ namespace Agencies.iOS
 
 				PersonFaceCVC.CollectionView.ReloadData ();
 
-				NeedsTraining = true;
+				FaceState.Current.NeedsTraining = true;
 			}
 			catch (Exception)
 			{
 				this.HideHUD ().ShowSimpleAlert ("Failed to add face.");
 			}
+		}
+
+
+		partial void VerifyAction (NSObject sender)
+		{
+			FaceState.Current.Verification.Person = Person;
+			FaceState.Current.Verification.Group = Group;
+			FaceState.Current.Verification.Type = VerificationType.FaceAndPerson;
+
+			PerformSegue (Segues.VerifyPerson, this);
 		}
 	}
 }

@@ -11,11 +11,7 @@ namespace Agencies.iOS
 	{
 		const string HeaderId = "Header";
 
-		public PersonGroup Group { get; set; }
-
-		public Person SelectedPerson { get; private set; }
-
-		bool isForVerification;
+		public PersonGroup Group => FaceState.Current.CurrentGroup;
 
 		public GroupPersonCollectionViewController (IntPtr handle) : base (handle)
 		{
@@ -144,9 +140,9 @@ namespace Agencies.iOS
 
 		public async override void ItemSelected (UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			SelectedPerson = Group.People [indexPath.Section];
+			FaceState.Current.CurrentPerson = Group.People [indexPath.Section];
 
-			if (!isForVerification)
+			if (!FaceState.Current.Verification.NeedsPerson)
 			{
 				ParentViewController.PerformSegue (GroupDetailViewController.Segues.PersonDetail, this);
 			}
@@ -157,14 +153,20 @@ namespace Agencies.iOS
 				switch (choice)
 				{
 					case "Use for verification":
-						//            UIViewController* verificationController = nil;
-						//            for (UIViewController* controller in self.navigationController.viewControllers) {
-						//                if ([controller isKindOfClass:[MPOVerificationViewController class]]) {
-						//                    verificationController = controller;
-						//                    [(MPOVerificationViewController *)controller didSelectPerson: (GroupPerson*)self.group.people[_selectedPersonIndex] inGroup:self.group];
-						//                }
-						//            }
-						//            [self.navigationController popToViewController:verificationController animated:YES];
+						var face = FaceState.Current.CurrentPerson.Faces [indexPath.Row];
+						FaceState.Current.Verification.Face = face;
+						FaceState.Current.Verification.Person = FaceState.Current.CurrentPerson;
+						FaceState.Current.Verification.Group = Group;
+
+						foreach (var controller in NavigationController.ViewControllers)
+						{
+							if (controller is VerificationViewController)
+							{
+								NavigationController.PopToViewController (controller, true);
+								break;
+							}
+						}
+
 						break;
 					case "Edit":
 						ParentViewController.PerformSegue (GroupDetailViewController.Segues.PersonDetail, this);

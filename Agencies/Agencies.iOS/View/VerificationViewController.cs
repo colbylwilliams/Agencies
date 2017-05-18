@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Agencies.iOS.Extensions;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -12,10 +13,8 @@ namespace Agencies.iOS
 	{
 		class Segues
 		{
-			public const string Embed = "Embed";
+			public const string SelectPerson = "SelectPerson";
 		}
-
-		public VerificationType VerificationType { get; set; }
 
 		FaceSelectionCollectionViewController Face1SelectionController => ChildViewControllers [0] as FaceSelectionCollectionViewController;
 		FaceSelectionCollectionViewController Face2SelectionController => ChildViewControllers [1] as FaceSelectionCollectionViewController;
@@ -25,21 +24,49 @@ namespace Agencies.iOS
 		}
 
 
+		public override void ViewDidLoad ()
+		{
+			base.ViewDidLoad ();
+
+			if (FaceState.Current.Verification.Type == VerificationType.FaceAndPerson)
+			{
+				ChooseButton2.SetTitle ("Choose Person", UIControlState.Normal);
+				PersonView.Hidden = false;
+				PersonNameLabel.Text = string.Empty;
+
+				//kill the 2nd CVC too
+				Face2SelectionController.RemoveFromParentViewController ();
+			}
+		}
+
+
 		public override void ViewWillAppear (bool animated)
 		{
 			base.ViewWillAppear (animated);
 
 			VerifyButton.TouchUpInside += Verify;
+			ChooseButton2.TouchUpInside += ChooseButton2Tapped;
 			Face1SelectionController.FaceSelectionChanged += FaceSelectionChanged;
-			Face2SelectionController.FaceSelectionChanged += FaceSelectionChanged;
+			if (ChildViewControllers.Length > 1) Face2SelectionController.FaceSelectionChanged += FaceSelectionChanged;
+
+			if (FaceState.Current.Verification.Type == VerificationType.FaceAndPerson &&
+				FaceState.Current.Verification.Person != null)
+			{
+				FaceState.Current.Verification.NeedsPerson = false;
+
+				PersonNameLabel.Text = FaceState.Current.Verification.Person.Name;
+				PersonImageView.Image = (FaceState.Current.Verification.Face ??
+										 FaceState.Current.Verification.Person.Faces.FirstOrDefault ())?.GetImage ();
+			}
 		}
 
 
 		public override void ViewWillDisappear (bool animated)
 		{
 			VerifyButton.TouchUpInside -= Verify;
+			ChooseButton2.TouchUpInside -= ChooseButton2Tapped;
 			Face1SelectionController.FaceSelectionChanged -= FaceSelectionChanged;
-			Face2SelectionController.FaceSelectionChanged -= FaceSelectionChanged;
+			if (ChildViewControllers.Length > 1) Face2SelectionController.FaceSelectionChanged -= FaceSelectionChanged;
 
 			base.ViewWillDisappear (animated);
 		}
@@ -51,9 +78,21 @@ namespace Agencies.iOS
 		}
 
 
-		partial void ChooseImage2Action (NSObject sender)
+		void ChooseButton2Tapped (object sender, EventArgs e)
 		{
-			ChooseImage (Face2SelectionController).Forget ();
+			switch (FaceState.Current.Verification.Type)
+			{
+				case VerificationType.FaceAndFace:
+
+					ChooseImage (Face2SelectionController).Forget ();
+					break;
+				case VerificationType.FaceAndPerson:
+
+					FaceState.Current.Verification.NeedsPerson = true;
+
+					PerformSegue (Segues.SelectPerson, this);
+					break;
+			}
 		}
 
 
@@ -65,7 +104,17 @@ namespace Agencies.iOS
 
 		void checkInputs ()
 		{
-			VerifyButton.Enabled = Face1SelectionController.HasSelection && Face2SelectionController.HasSelection;
+			switch (FaceState.Current.Verification.Type)
+			{
+				case VerificationType.FaceAndFace:
+					VerifyButton.Enabled = Face1SelectionController.HasSelection && Face2SelectionController.HasSelection;
+					break;
+				case VerificationType.FaceAndPerson:
+					VerifyButton.Enabled = Face1SelectionController.HasSelection &&
+						FaceState.Current.Verification.Person != null &&
+						FaceState.Current.Verification.Group != null;
+					break;
+			}
 		}
 
 
@@ -114,13 +163,16 @@ namespace Agencies.iOS
 				string successMsg = "These two faces are from the same person.  The confidence is {0}";
 				string failMsg = "These two faces are not from the same person.";
 
-				switch (VerificationType)
+				switch (FaceState.Current.Verification.Type)
 				{
 					case VerificationType.FaceAndFace:
 						result = await FaceClient.Shared.Verify (Face1SelectionController.SelectedFace, Face2SelectionController.SelectedFace);
 						break;
 					case VerificationType.FaceAndPerson:
-						result = await FaceClient.Shared.Verify (Face1SelectionController.SelectedFace, Face2SelectionController.SelectedFace);
+						successMsg = $"This face looks like {FaceState.Current.Verification.Person.Name}.  ";
+						successMsg += "The confidence is {0}";
+						failMsg = $"This face does not look like {FaceState.Current.Verification.Person.Name}.";
+						result = await FaceClient.Shared.Verify (Face1SelectionController.SelectedFace, FaceState.Current.Verification.Person, FaceState.Current.Verification.Group);
 						break;
 				}
 

@@ -8,8 +8,8 @@ namespace Agencies.iOS
 {
 	public partial class PersonFaceCollectionViewController : ItemsPerRowCollectionViewController
 	{
-		public PersonGroup Group { get; set; }
-		public Person Person { get; set; }
+		public PersonGroup Group => FaceState.Current.CurrentGroup;
+		public Person Person => FaceState.Current.CurrentPerson;
 
 		public PersonFaceCollectionViewController (IntPtr handle) : base (handle)
 		{
