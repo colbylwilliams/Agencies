@@ -585,7 +585,6 @@ namespace Agencies.Shared
 		{
 			try
 			{
-				var results = new List<IdentificationResult> ();
 				var tcs = new TaskCompletionSource<VerifyResult> ();
 
 				Client.VerifyWithFirstFaceId (face1.Id, face2.Id, (verifyResult, error) =>
@@ -612,6 +611,36 @@ namespace Agencies.Shared
 		}
 
 
-		#endregion
+		public Task<VerifyResult> Verify (Face face, Person person, PersonGroup personGroup)
+		{
+			try
+			{
+				var tcs = new TaskCompletionSource<VerifyResult> ();
+
+				Client.VerifyWithFaceId (face.Id, person.Id, personGroup.Id, (verifyResult, error) =>
+				{
+					tcs.FailTaskIfErrored (error.ToException ());
+					if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+
+					var result = new VerifyResult
+					{
+						IsIdentical = verifyResult.IsIdentical,
+						Confidence = verifyResult.Confidence
+					};
+
+					tcs.SetResult (result);
+				}).Resume ();
+
+				return tcs.Task;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex);
+				throw;
+			}
+
+
+			#endregion
+		}
 	}
 }
