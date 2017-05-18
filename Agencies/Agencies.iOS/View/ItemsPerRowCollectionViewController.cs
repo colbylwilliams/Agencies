@@ -23,8 +23,8 @@ namespace Agencies.iOS
 		[Export ("collectionView:layout:sizeForItemAtIndexPath:")]
 		public CGSize GetSizeForItem (UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
 		{
-			return new CGSize (CollectionView.Frame.Width / CellsAcross - ItemSpacing - MarginWidth,
-							   (CollectionView.Frame.Width / CellsAcross - ItemSpacing - MarginWidth) * HeightMultiplier);
+			return new CGSize ((CollectionView.Frame.Width - MarginWidth) / CellsAcross - ItemSpacing,
+							   ((CollectionView.Frame.Width - MarginWidth) / CellsAcross - ItemSpacing) * HeightMultiplier);
 		}
 
 
