@@ -370,6 +370,7 @@
       <DependentUpon>VerificationViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="View\PopoverPresentationViewController.cs" />
+    <Compile Include="FaceState.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
