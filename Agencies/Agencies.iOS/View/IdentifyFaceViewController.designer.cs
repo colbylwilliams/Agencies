@@ -15,19 +15,11 @@ namespace Agencies.iOS
 		[Outlet]
 		UIKit.UIButton GoButton { get; set; }
 
-		[Outlet]
-		UIKit.UIImageView SelectedFaceImageView { get; set; }
-
-		[Action ("ImageTapped:")]
-		partial void ImageTapped (UIKit.UITapGestureRecognizer sender);
+		[Action ("ChooseImageAction:")]
+		partial void ChooseImageAction (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (SelectedFaceImageView != null) {
-				SelectedFaceImageView.Dispose ();
-				SelectedFaceImageView = null;
-			}
-
 			if (GoButton != null) {
 				GoButton.Dispose ();
 				GoButton = null;

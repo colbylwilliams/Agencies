@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Agencies.iOS.Extensions;
 using Agencies.Shared;
 using Foundation;
 using NomadCode.UIExtensions;
@@ -14,18 +13,14 @@ namespace Agencies.iOS
 		class Segues
 		{
 			public const string Embed = "Embed";
-			public const string SelectFaces = "SelectFaces";
-			public const string FaceSelected = "IdentifyFaceSelected";
 			public const string ShowResults = "ShowResults";
 		}
 
-		public List<Face> DetectedFaces { get; set; }
-		public UIImage SourceImage { get; set; }
 
 		List<IdentificationResult> Results;
-		Face chosenFace;
 
-		GroupsTableViewController GroupsTableController => ChildViewControllers [0] as GroupsTableViewController;
+		FaceSelectionCollectionViewController FaceSelectionController => ChildViewControllers [0] as FaceSelectionCollectionViewController;
+		GroupsTableViewController GroupsTableController => ChildViewControllers [1] as GroupsTableViewController;
 
 		public IdentifyFaceViewController (IntPtr handle) : base (handle)
 		{
@@ -40,13 +35,6 @@ namespace Agencies.iOS
 			{
 				groupsTVC.AutoSelect = true;
 			}
-			else if (segue.Identifier == Segues.SelectFaces && segue.DestinationViewController is FaceSelectionCollectionViewController faceSelectionController)
-			{
-				faceSelectionController.PopoverPresentationController.Delegate = this;
-				faceSelectionController.ReturnSegue = Segues.FaceSelected;
-				faceSelectionController.DetectedFaces = DetectedFaces;
-				faceSelectionController.SourceImage = SourceImage;
-			}
 			else if (segue.Identifier == Segues.ShowResults && segue.DestinationViewController is FaceResultsTableViewController resultsTVC)
 			{
 				resultsTVC.PopoverPresentationController.Delegate = this;
@@ -55,30 +43,11 @@ namespace Agencies.iOS
 		}
 
 
-		[Action ("UnwindToIdentify:")]
-		public void UnwindToIdentify (UIStoryboardSegue segue)
-		{
-			var faceSelection = segue.SourceViewController as FaceSelectionCollectionViewController;
-
-			if (faceSelection.SelectedFace != null)
-			{
-				UseFace (faceSelection.SelectedFace);
-			}
-		}
-
-
-		public override void ViewDidLoad ()
-		{
-			base.ViewDidLoad ();
-
-			SelectedFaceImageView.AddBorder (UIColor.Red, 2);
-		}
-
-
 		public override void ViewWillAppear (bool animated)
 		{
 			base.ViewWillAppear (animated);
 
+			FaceSelectionController.FaceSelectionChanged += OnFaceSelectionChanged;
 			GroupsTableController.GroupSelectionChanged += OnGroupSelectionChanged;
 			GoButton.TouchUpInside += Identify;
 		}
@@ -86,10 +55,17 @@ namespace Agencies.iOS
 
 		public override void ViewWillDisappear (bool animated)
 		{
+			FaceSelectionController.FaceSelectionChanged -= OnFaceSelectionChanged;
 			GroupsTableController.GroupSelectionChanged -= OnGroupSelectionChanged;
 			GoButton.TouchUpInside -= Identify;
 
 			base.ViewWillDisappear (animated);
+		}
+
+
+		void OnFaceSelectionChanged (object sender, EventArgs e)
+		{
+			checkInputs ();
 		}
 
 
@@ -99,7 +75,7 @@ namespace Agencies.iOS
 		}
 
 
-		partial void ImageTapped (UITapGestureRecognizer sender)
+		partial void ChooseImageAction (NSObject sender)
 		{
 			ChooseImage ().Forget ();
 		}
@@ -109,31 +85,26 @@ namespace Agencies.iOS
 		{
 			try
 			{
-				SourceImage = await this.ShowImageSelectionDialog ();
+				var sourceImage = await this.ShowImageSelectionDialog ();
 
-				if (SourceImage != null)
+				if (sourceImage != null)
 				{
 					//make sure the image is in the .Up position
-					SourceImage.FixOrientation ();
+					sourceImage.FixOrientation ();
 
 					this.ShowHUD ("Detecting faces");
 
-					DetectedFaces = await FaceClient.Shared.DetectFacesInPhoto (SourceImage);
+					var detectedFaces = await FaceClient.Shared.DetectFacesInPhoto (sourceImage);
 
-					if (DetectedFaces.Count == 0)
+					if (detectedFaces.Count == 0)
 					{
 						this.ShowSimpleHUD ("No faces detected");
 					}
-					else if (DetectedFaces.Count == 1)
-					{
-						UseFace (DetectedFaces [0]);
-						this.HideHUD ();
-					}
-					else // > 1 face
+					else
 					{
 						this.HideHUD ();
 
-						PerformSegue (Segues.SelectFaces, this);
+						FaceSelectionController.SetDetectedFaces (sourceImage, detectedFaces);
 					}
 				}
 			}
@@ -145,20 +116,9 @@ namespace Agencies.iOS
 		}
 
 
-		void UseFace (Face face)
-		{
-			chosenFace = face;
-			var croppedFaceImg = SourceImage.Crop (face.FaceRectangle);
-			face.SavePhotoFromCropped (croppedFaceImg);
-			SelectedFaceImageView.Image = croppedFaceImg;
-			checkInputs ();
-		}
-
-
 		void checkInputs ()
 		{
-			GoButton.Enabled = chosenFace != null &&
-				SelectedFaceImageView.Image != null &&
+			GoButton.Enabled = FaceSelectionController.SelectedFace != null &&
 				GroupsTableController.SelectedPersonGroup != null;
 		}
 
@@ -171,16 +131,18 @@ namespace Agencies.iOS
 
 				this.ShowHUD ("Identifying faces");
 
-				Results = await FaceClient.Shared.Identify (group, chosenFace);
+				Results = await FaceClient.Shared.Identify (group, FaceSelectionController.SelectedFace);
 
 				if (Results.Count == 0)
 				{
 					this.ShowSimpleHUD ("Not able to identify this face against the selected group");
 				}
+				else
+				{
+					this.HideHUD ();
 
-				this.HideHUD ();
-
-				PerformSegue (Segues.ShowResults, this);
+					PerformSegue (Segues.ShowResults, this);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -192,7 +154,7 @@ namespace Agencies.iOS
 
 		protected override string GetPopoverCloseText (UIViewController presentedViewController)
 		{
-			return presentedViewController is FaceResultsTableViewController ? "Done" : "Cancel";
+			return "Done";
 		}
 	}
 }
