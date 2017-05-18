@@ -158,14 +158,7 @@ namespace Agencies.iOS
 						FaceState.Current.Verification.Person = FaceState.Current.CurrentPerson;
 						FaceState.Current.Verification.Group = Group;
 
-						foreach (var controller in NavigationController.ViewControllers)
-						{
-							if (controller is VerificationViewController)
-							{
-								NavigationController.PopToViewController (controller, true);
-								break;
-							}
-						}
+						this.PopTo<VerificationViewController> ();
 
 						break;
 					case "Edit":
