@@ -1292,10 +1292,10 @@
             </objects>
             <point key="canvasLocation" x="4814" y="1574"/>
         </scene>
-        <!--Face Selection Collection View Controller-->
+        <!--Select Face-->
         <scene sceneID="g5D-5h-V7S">
             <objects>
-                <collectionViewController storyboardIdentifier="FaceSelectionCollectionViewController" id="zcA-Ql-fJb" customClass="FaceSelectionCollectionViewController" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="FaceSelectionCollectionViewController" title="Select Face" id="zcA-Ql-fJb" customClass="FaceSelectionCollectionViewController" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="0IF-ro-SHx">
                         <rect key="frame" x="0.0" y="0.0" width="259" height="278.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
