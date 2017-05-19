@@ -1,10 +1,11 @@
-﻿using System;
-namespace Agencies.Shared.Model
+﻿namespace Agencies.Shared
 {
 	public class SimilarFaceResult
 	{
-		public SimilarFaceResult ()
-		{
-		}
+		public Face Face { get; set; }
+
+		public string FaceId { get; set; }
+
+		public float Confidence { get; set; }
 	}
 }
