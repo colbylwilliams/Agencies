@@ -5,7 +5,7 @@ using Agencies.Shared;
 
 namespace Agencies.iOS
 {
-	public partial class GroupsViewController : UIViewController
+	public partial class GroupsViewController : BaseViewController
 	{
 		class Segues
 		{

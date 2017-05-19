@@ -9,17 +9,17 @@ using System.CodeDom.Compiler;
 
 namespace Agencies.iOS
 {
-	[Register ("FaceResultTableViewCell")]
-	partial class FaceResultTableViewCell
+	[Register ("IdentifyResultTableViewCell")]
+	partial class IdentifyResultTableViewCell
 	{
+		[Outlet]
+		UIKit.UILabel ConfidenceLabel { get; set; }
+
 		[Outlet]
 		UIKit.UIImageView FaceImageView { get; set; }
 
 		[Outlet]
-		UIKit.UILabel FaceResultLabel1 { get; set; }
-
-		[Outlet]
-		UIKit.UILabel FaceResultLabel2 { get; set; }
+		UIKit.UILabel PersonNameLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -28,14 +28,14 @@ namespace Agencies.iOS
 				FaceImageView = null;
 			}
 
-			if (FaceResultLabel1 != null) {
-				FaceResultLabel1.Dispose ();
-				FaceResultLabel1 = null;
+			if (PersonNameLabel != null) {
+				PersonNameLabel.Dispose ();
+				PersonNameLabel = null;
 			}
 
-			if (FaceResultLabel2 != null) {
-				FaceResultLabel2.Dispose ();
-				FaceResultLabel2 = null;
+			if (ConfidenceLabel != null) {
+				ConfidenceLabel.Dispose ();
+				ConfidenceLabel = null;
 			}
 		}
 	}

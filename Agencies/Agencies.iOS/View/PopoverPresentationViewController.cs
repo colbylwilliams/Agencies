@@ -4,13 +4,8 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public abstract class PopoverPresentationViewController : UIViewController, IUIPopoverPresentationControllerDelegate
+	public abstract class PopoverPresentationViewController : BaseViewController, IUIPopoverPresentationControllerDelegate
 	{
-		public PopoverPresentationViewController () : base ("PopoverPresentationViewController", null)
-		{
-		}
-
-
 		public PopoverPresentationViewController (IntPtr handle) : base (handle)
 		{
 		}
@@ -26,7 +21,7 @@ namespace Agencies.iOS
 		[Export ("presentationController:viewControllerForAdaptivePresentationStyle:")]
 		public UIViewController GetViewControllerForAdaptivePresentation (UIPresentationController controller, UIModalPresentationStyle style)
 		{
-			UINavigationController navController = new UINavigationController (controller.PresentedViewController);
+			var navController = new UINavigationController (controller.PresentedViewController);
 
 			if (navController != null)
 			{
@@ -47,7 +42,12 @@ namespace Agencies.iOS
 
 		public void DoneTapped (object sender, EventArgs e)
 		{
-			DismissViewController (true, null);
+			//noticing some memory being hung onto here, so explicitly disposing
+			var navController = PresentedViewController as UINavigationController;
+
+			PresentedViewController.PresentationController.PresentedViewController.Dispose ();
+			PresentedViewController.PresentingViewController.DismissViewController (true, null);
+			navController.Dispose ();
 		}
 	}
 }

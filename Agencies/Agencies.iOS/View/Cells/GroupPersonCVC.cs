@@ -6,11 +6,14 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class GroupPersonCVC : UICollectionViewCell
+	public partial class GroupPersonCVC : GestureCVC<UILongPressGestureRecognizer>
 	{
 		public GroupPersonCVC (IntPtr handle) : base (handle)
 		{
 		}
+
+
+		protected override UIView GestureView => ImageView;
 
 
 		public void SetPerson (Person person, int cellActionTag, int faceIndex)
@@ -32,15 +35,6 @@ namespace Agencies.iOS
 			{
 				ImageView.Image = null;
 				ImageView.AddBorder (UIColor.Red, 2);
-			}
-		}
-
-
-		public void SetLongPressAction (Action<UIGestureRecognizer> action)
-		{
-			if (ImageView.GestureRecognizers == null || ImageView.GestureRecognizers?.Length == 0)
-			{
-				ImageView.AddGestureRecognizer (new UILongPressGestureRecognizer (action));
 			}
 		}
 	}

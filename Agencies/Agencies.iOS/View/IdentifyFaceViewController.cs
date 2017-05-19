@@ -35,7 +35,7 @@ namespace Agencies.iOS
 			{
 				groupsTVC.AutoSelect = true;
 			}
-			else if (segue.Identifier == Segues.ShowResults && segue.DestinationViewController is FaceResultsTableViewController resultsTVC)
+			else if (segue.Identifier == Segues.ShowResults && segue.DestinationViewController is IdentifyResultsTableViewController resultsTVC)
 			{
 				resultsTVC.PopoverPresentationController.Delegate = this;
 				resultsTVC.Results = Results;
@@ -135,7 +135,7 @@ namespace Agencies.iOS
 
 				if (Results.Count == 0)
 				{
-					this.ShowSimpleHUD ("Not able to identify this face against the selected group");
+					this.ShowSimpleHUD ("Not able to identify this face");
 				}
 				else
 				{

@@ -1,13 +1,12 @@
 ﻿using System;
 using Foundation;
-using UIKit;
 using Agencies.Shared;
 using System.Threading.Tasks;
 using NomadCode.UIExtensions;
 
 namespace Agencies.iOS
 {
-	public partial class GroupDetailViewController : UIViewController
+	public partial class GroupDetailViewController : BaseViewController
 	{
 		internal static class Segues
 		{

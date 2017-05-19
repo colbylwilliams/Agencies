@@ -3,12 +3,20 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-    public abstract class BaseTableViewController : UITableViewController
-    {
-        protected bool IsInitialLoad { get; private set; } = true;
+	public abstract class BaseTableViewController : UITableViewController
+	{
+		protected bool IsInitialLoad { get; private set; } = true;
 
 		public BaseTableViewController (IntPtr handle) : base (handle)
-        {
+		{
+		}
+
+
+		protected override void Dispose (bool disposing)
+		{
+			Log.Info ($"Disposing {GetType ()}");
+
+			base.Dispose (disposing);
 		}
 
 
@@ -18,5 +26,5 @@ namespace Agencies.iOS
 
 			IsInitialLoad = false;
 		}
-    }
+	}
 }

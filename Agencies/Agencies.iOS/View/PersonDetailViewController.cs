@@ -39,7 +39,7 @@ namespace Agencies.iOS
 			{
 				faceSelectionController.PopoverPresentationController.Delegate = this;
 				faceSelectionController.ReturnSegue = Segues.FaceSelected;
-				faceSelectionController.DetectedFaces = DetectedFaces;
+				faceSelectionController.Faces = DetectedFaces;
 				faceSelectionController.SourceImage = SourceImage;
 			}
 		}

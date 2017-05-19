@@ -1,14 +1,19 @@
 using System;
+using Agencies.Shared;
 using UIKit;
 
 namespace Agencies.iOS
 {
 	public partial class PersonGroupHeader : UICollectionReusableView
 	{
-        public UILabel PersonGroupNameLabel => PersonGroupName;
-
 		public PersonGroupHeader (IntPtr handle) : base (handle)
 		{
+		}
+
+
+		internal void SetPerson (Person person)
+		{
+			PersonGroupName.Text = person.Name;
 		}
 	}
 }

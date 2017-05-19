@@ -9,7 +9,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class VerificationViewController : UIViewController
+	public partial class VerificationViewController : BaseViewController
 	{
 		class Segues
 		{

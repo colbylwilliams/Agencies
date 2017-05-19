@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class FaceViewController : UIViewController
+	public partial class FaceViewController : BaseViewController
 	{
 		class Segues
 		{

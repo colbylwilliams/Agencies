@@ -13,6 +13,7 @@ namespace Agencies.iOS
 
 		public PersonGroup Group => FaceState.Current.CurrentGroup;
 
+
 		public GroupPersonCollectionViewController (IntPtr handle) : base (handle)
 		{
 			//make our cells longer than they are wide - to account for the text we'll be adding
@@ -29,18 +30,11 @@ namespace Agencies.iOS
 				if (Group != null && Group.People?.Count == 0)
 				{
 					loadPeople ().Forget ();
+					return;
 				}
 			}
-			else
-			{
-				CollectionView.ReloadData ();
-			}
-		}
 
-
-		public override void WillMoveToParentViewController (UIViewController parent)
-		{
-			base.WillMoveToParentViewController (parent);
+			CollectionView.ReloadData ();
 		}
 
 
@@ -78,7 +72,7 @@ namespace Agencies.iOS
 			var person = Group.People [indexPath.Section];
 
 			var headerView = (PersonGroupHeader)collectionView.DequeueReusableSupplementaryView (elementKind, HeaderId, indexPath);
-			headerView.PersonGroupNameLabel.Text = person.Name;
+			headerView.SetPerson (person);
 
 			return headerView;
 		}
@@ -102,14 +96,21 @@ namespace Agencies.iOS
 			var cell = collectionView.Dequeue<GroupPersonCVC> (indexPath);
 
 			cell.SetPerson (Group.People [indexPath.Section], indexPath.Section, indexPath.Row);
-			cell.SetLongPressAction (longPressAction);
 
 			return cell;
 		}
 
 
-		async void longPressAction (UIGestureRecognizer gestureRecognizer)
+		protected override Action<NSObject> GetGestureActionForCell (UICollectionViewCell cell)
 		{
+			return longPressAction;
+		}
+
+
+		async void longPressAction (NSObject nsObj)
+		{
+			var gestureRecognizer = (UIGestureRecognizer)nsObj;
+
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
 				try

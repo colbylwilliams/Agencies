@@ -40,14 +40,21 @@ namespace Agencies.iOS
 			var cell = collectionView.Dequeue<GroupPersonCVC> (indexPath);
 
 			cell.SetPerson (Person, indexPath.Row, indexPath.Row);
-			cell.SetLongPressAction (longPressAction);
 
 			return cell;
 		}
 
 
-		async void longPressAction (UIGestureRecognizer gestureRecognizer)
+		protected override Action<NSObject> GetGestureActionForCell (UICollectionViewCell cell)
 		{
+			return longPressAction;
+		}
+
+
+		async void longPressAction (NSObject nsObj)
+		{
+			var gestureRecognizer = (UIGestureRecognizer)nsObj;
+
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
 				try

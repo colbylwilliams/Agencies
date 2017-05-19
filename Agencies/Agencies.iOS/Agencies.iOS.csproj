@@ -263,6 +263,7 @@
     <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
     <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
     <Folder Include="Extensions\" />
+    <Folder Include="View\Cells\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -311,10 +312,6 @@
     <Compile Include="View\GroupPersonCollectionViewController.designer.cs">
       <DependentUpon>GroupPersonCollectionViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\GroupPersonCVC.cs" />
-    <Compile Include="View\GroupPersonCVC.designer.cs">
-      <DependentUpon>GroupPersonCVC.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\PersonFaceCollectionViewController.cs" />
     <Compile Include="View\PersonFaceCollectionViewController.designer.cs">
       <DependentUpon>PersonFaceCollectionViewController.cs</DependentUpon>
@@ -325,16 +322,8 @@
     <Compile Include="View\FaceSelectionCollectionViewController.designer.cs">
       <DependentUpon>FaceSelectionCollectionViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\FaceCVC.cs" />
-    <Compile Include="View\FaceCVC.designer.cs">
-      <DependentUpon>FaceCVC.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\BaseCollectionViewController.cs" />
     <Compile Include="View\ItemsPerRowCollectionViewController.cs" />
-    <Compile Include="View\PersonGroupHeader.cs" />
-    <Compile Include="View\PersonGroupHeader.designer.cs">
-      <DependentUpon>PersonGroupHeader.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\IdentifyFaceViewController.cs" />
     <Compile Include="View\IdentifyFaceViewController.designer.cs">
       <DependentUpon>IdentifyFaceViewController.cs</DependentUpon>
@@ -349,10 +338,6 @@
     <Compile Include="View\FaceResultsTableViewController.designer.cs">
       <DependentUpon>FaceResultsTableViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\FaceResultTableViewCell.cs" />
-    <Compile Include="View\FaceResultTableViewCell.designer.cs">
-      <DependentUpon>FaceResultTableViewCell.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\DetectionViewController.cs" />
     <Compile Include="View\DetectionViewController.designer.cs">
       <DependentUpon>DetectionViewController.cs</DependentUpon>
@@ -361,16 +346,51 @@
     <Compile Include="View\DetectionResultsTableViewController.designer.cs">
       <DependentUpon>DetectionResultsTableViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\DetectionResultsTableViewCell.cs" />
-    <Compile Include="View\DetectionResultsTableViewCell.designer.cs">
-      <DependentUpon>DetectionResultsTableViewCell.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\VerificationViewController.cs" />
     <Compile Include="View\VerificationViewController.designer.cs">
       <DependentUpon>VerificationViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="View\PopoverPresentationViewController.cs" />
     <Compile Include="FaceState.cs" />
+    <Compile Include="View\FindSimilarFacesViewController.cs" />
+    <Compile Include="View\FindSimilarFacesViewController.designer.cs">
+      <DependentUpon>FindSimilarFacesViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\DetectionResultsTableViewCell.cs" />
+    <Compile Include="View\Cells\DetectionResultsTableViewCell.designer.cs">
+      <DependentUpon>DetectionResultsTableViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\GroupPersonCVC.cs" />
+    <Compile Include="View\Cells\GroupPersonCVC.designer.cs">
+      <DependentUpon>GroupPersonCVC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\IdentifyResultTableViewCell.cs" />
+    <Compile Include="View\Cells\IdentifyResultTableViewCell.designer.cs">
+      <DependentUpon>IdentifyResultTableViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\IHandleResults.cs" />
+    <Compile Include="View\Cells\FaceCVC.cs" />
+    <Compile Include="View\Cells\FaceCVC.designer.cs">
+      <DependentUpon>FaceCVC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\SimilarFaceResultTableViewCell.cs" />
+    <Compile Include="View\Cells\SimilarFaceResultTableViewCell.designer.cs">
+      <DependentUpon>SimilarFaceResultTableViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\IdentifyResultsTableViewController.cs" />
+    <Compile Include="View\IdentifyResultsTableViewController.designer.cs">
+      <DependentUpon>IdentifyResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\SimilarFaceResultsTableViewController.cs" />
+    <Compile Include="View\SimilarFaceResultsTableViewController.designer.cs">
+      <DependentUpon>SimilarFaceResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\PersonGroupHeader.cs" />
+    <Compile Include="View\Cells\PersonGroupHeader.designer.cs">
+      <DependentUpon>PersonGroupHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\ISupportActions.cs" />
+    <Compile Include="View\Cells\GestureCVC.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
