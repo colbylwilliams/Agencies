@@ -139,7 +139,7 @@ namespace Agencies.iOS
 			{
 				this.ShowHUD ("Finding similar faces");
 
-				Results = await FaceClient.Shared.FindSimilar (Face2SelectionController.SelectedFace, Face2SelectionController.Faces);
+				Results = await FaceClient.Shared.FindSimilar (Face2SelectionController.SelectedFace, Face1SelectionController.Faces);
 
 				this.HideHUD ();
 
