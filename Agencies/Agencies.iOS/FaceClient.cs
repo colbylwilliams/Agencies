@@ -638,6 +638,44 @@ namespace Agencies.Shared
 				Log.Error (ex);
 				throw;
 			}
+		}
+
+
+		public Task<List<SimilarFaceResult>> FindSimilar (Face targetFace, List<Face> faceList)
+		{
+			try
+			{
+				var tcs = new TaskCompletionSource<List<SimilarFaceResult>> ();
+				var faceIds = faceList.Select (f => f.Id).ToArray ();
+				var results = new List<SimilarFaceResult> ();
+
+				Client.FindSimilarWithFaceId (targetFace.Id, faceIds, (similarFaces, error) =>
+				{
+					tcs.FailTaskIfErrored (error.ToException ());
+					if (tcs.IsNullFinishCanceledOrFaulted ()) return;
+
+					foreach (var similarFace in similarFaces)
+					{
+						var face = faceList.FirstOrDefault (f => f.Id == similarFace.FaceId);
+
+						results.Add (new SimilarFaceResult
+						{
+							Face = face,
+							FaceId = similarFace.FaceId,
+							Confidence = similarFace.Confidence
+						});
+					}
+
+					tcs.SetResult (results);
+				}).Resume ();
+
+				return tcs.Task;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex);
+				throw;
+			}
 
 
 			#endregion
