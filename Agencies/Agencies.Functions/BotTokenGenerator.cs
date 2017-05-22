@@ -16,15 +16,9 @@ namespace Agencies.Functions
 		static string _botDirectLineSecret;
 		static string BotDirectLineSecret => _botDirectLineSecret ?? (_botDirectLineSecret = Environment.GetEnvironmentVariable ("MS_BotDirectLineSecret"));
 
-		// [FunctionName("GetBotToken")]
-		// public static async Task<HttpResponseMessage> GetBotToken(
-		//    [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tokens/bot/{conversationId=}")]HttpRequestMessage req,
-		//    [Bot] IDirectLineClient client, string conversationId, TraceWriter log)
-
 		// https://github.com/Azure/azure-webjobs-sdk-script/issues/1507
 		// This bug incorrectly sets the bot client's binding direction to 'out'
-		// as a workaround we're explicitly providing the function.json which means
-		// we can't us attribute-binding at all in this funciton.
+		// as a workaround we're explicitly creating the DirectLineClient
 		[FunctionName ("GetBotToken")]
 		public static async Task<HttpResponseMessage> GetBotToken ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/bot/{conversationId=}")]HttpRequestMessage req, /*IDirectLineClient client,*/ string conversationId, TraceWriter log)
 		{
