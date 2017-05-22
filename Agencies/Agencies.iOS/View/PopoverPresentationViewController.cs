@@ -6,7 +6,9 @@ namespace Agencies.iOS
 {
 	public abstract class PopoverPresentationViewController : BaseViewController, IUIPopoverPresentationControllerDelegate
 	{
-		public PopoverPresentationViewController (IntPtr handle) : base (handle)
+		UIBarButtonItem doneItem;
+
+		protected PopoverPresentationViewController (IntPtr handle) : base (handle)
 		{
 		}
 
@@ -26,8 +28,9 @@ namespace Agencies.iOS
 			if (navController != null)
 			{
 				var closeText = GetPopoverCloseText (navController.TopViewController);
-				var doneButton = new UIBarButtonItem (closeText, UIBarButtonItemStyle.Done, DoneTapped);
-				navController.TopViewController.NavigationItem.RightBarButtonItem = doneButton;
+				doneItem = new UIBarButtonItem (closeText, UIBarButtonItemStyle.Done, null);
+				doneItem.Clicked += DoneTapped;
+				navController.TopViewController.NavigationItem.RightBarButtonItem = doneItem;
 			}
 
 			return navController;
@@ -42,12 +45,37 @@ namespace Agencies.iOS
 
 		public void DoneTapped (object sender, EventArgs e)
 		{
+			doneItem.Clicked -= DoneTapped;
+			doneItem.Action = null;
+			doneItem.Dispose ();
+			doneItem = null;
+
+
 			//noticing some memory being hung onto here, so explicitly disposing
 			var navController = PresentedViewController as UINavigationController;
+			var presentationController = navController.PresentationController;
+			var presentedController = presentationController.PresentedViewController;
 
-			PresentedViewController.PresentationController.PresentedViewController.Dispose ();
-			PresentedViewController.PresentingViewController.DismissViewController (true, null);
-			navController.Dispose ();
+			navController.PresentingViewController.DismissViewController (true, () =>
+			{
+				navController.TopViewController.NavigationItem.RightBarButtonItem = null;
+
+				//presentedController.PopoverPresentationController.Delegate = null;
+				presentedController.PopoverPresentationController.Dispose ();
+
+				presentedController.Dispose ();
+				presentedController = null;
+
+				presentationController.Delegate = null;
+				presentationController.Dispose ();
+				presentationController = null;
+
+
+
+				navController.SetViewControllers (null, false);
+				navController.Dispose ();
+				navController = null;
+			});
 		}
 	}
 }

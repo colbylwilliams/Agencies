@@ -37,8 +37,10 @@ namespace Agencies.iOS
 			}
 			else if (segue.Identifier == Segues.ShowResults && segue.DestinationViewController is IdentifyResultsTableViewController resultsTVC)
 			{
-				resultsTVC.PopoverPresentationController.Delegate = this;
+				resultsTVC.PopoverPresentationController.WeakDelegate = this;
 				resultsTVC.Results = Results;
+
+				//segue.Dispose ();
 			}
 		}
 

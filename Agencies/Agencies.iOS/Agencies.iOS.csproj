@@ -335,9 +335,6 @@
     <Compile Include="View\BaseTableViewController.cs" />
     <Compile Include="View\BaseViewController.cs" />
     <Compile Include="View\FaceResultsTableViewController.cs" />
-    <Compile Include="View\FaceResultsTableViewController.designer.cs">
-      <DependentUpon>FaceResultsTableViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\DetectionViewController.cs" />
     <Compile Include="View\DetectionViewController.designer.cs">
       <DependentUpon>DetectionViewController.cs</DependentUpon>

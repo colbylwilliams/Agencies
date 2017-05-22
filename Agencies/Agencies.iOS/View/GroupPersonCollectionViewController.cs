@@ -27,7 +27,7 @@ namespace Agencies.iOS
 
 			if (IsInitialLoad)
 			{
-				if (Group != null && Group.People?.Count == 0)
+				if (Group != null)
 				{
 					loadPeople ().Forget ();
 					return;
@@ -44,11 +44,17 @@ namespace Agencies.iOS
 			{
 				this.ShowHUD ("Loading group");
 
-				await FaceClient.Shared.GetPeopleForGroup (Group);
+				if (Group.People?.Count == 0)
+				{
+					await FaceClient.Shared.GetPeopleForGroup (Group);
+				}
 
 				foreach (var person in Group.People)
 				{
-					await FaceClient.Shared.GetFacesForPerson (person, Group);
+					if (person.Faces?.Count == 0)
+					{
+						await FaceClient.Shared.GetFacesForPerson (person, Group);
+					}
 				}
 
 				CollectionView.ReloadData ();

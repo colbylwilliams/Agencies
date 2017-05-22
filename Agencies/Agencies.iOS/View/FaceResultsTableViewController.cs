@@ -6,7 +6,7 @@ using UIKit;
 
 namespace Agencies.iOS
 {
-	public partial class FaceResultsTableViewController<TCell, TResult> : BaseTableViewController
+	public class FaceResultsTableViewController<TCell, TResult> : BaseTableViewController
 	where TCell : UITableViewCell, IHandleResults<TResult>
 	{
 		public List<TResult> Results { get; set; }
