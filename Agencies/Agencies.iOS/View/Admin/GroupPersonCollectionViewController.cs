@@ -9,8 +9,6 @@ namespace Agencies.iOS
 {
 	public partial class GroupPersonCollectionViewController : ItemsPerRowCollectionViewController
 	{
-		const string HeaderId = "Header";
-
 		public PersonGroup Group => FaceState.Current.CurrentGroup;
 
 
@@ -76,17 +74,17 @@ namespace Agencies.iOS
 		public override UICollectionReusableView GetViewForSupplementaryElement (UICollectionView collectionView, NSString elementKind, NSIndexPath indexPath)
 		{
 			var person = Group.People [indexPath.Section];
+			var header = collectionView.Dequeue<SimpleCVHeader> (UICollectionElementKindSection.Header, indexPath);
 
-			var headerView = (PersonGroupHeader)collectionView.DequeueReusableSupplementaryView (elementKind, HeaderId, indexPath);
-			headerView.SetPerson (person);
+			header.SetTitle (person.Name);
 
-			return headerView;
+			return header;
 		}
 
 
 		public override nint GetItemsCount (UICollectionView collectionView, nint section)
 		{
-			var faces = Group?.People? [(int)section]?.Faces;
+			var faces = Group?.People? [(int) section]?.Faces;
 
 			if (faces != null)
 			{
@@ -115,14 +113,14 @@ namespace Agencies.iOS
 
 		async void longPressAction (NSObject nsObj)
 		{
-			var gestureRecognizer = (UIGestureRecognizer)nsObj;
+			var gestureRecognizer = (UIGestureRecognizer) nsObj;
 
 			if (gestureRecognizer.State == UIGestureRecognizerState.Began)
 			{
 				try
 				{
 					var personIndex = gestureRecognizer.View.Tag;
-					var person = Group.People [(int)personIndex];
+					var person = Group.People [(int) personIndex];
 
 					var result = await this.ShowActionSheet ($"Do you want to remove all of {person.Name}'s faces?", string.Empty, "Yes");
 

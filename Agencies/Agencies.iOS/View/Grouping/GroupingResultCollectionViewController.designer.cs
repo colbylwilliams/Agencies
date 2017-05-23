@@ -9,18 +9,12 @@ using System.CodeDom.Compiler;
 
 namespace Agencies.iOS
 {
-	[Register ("PersonGroupHeader")]
-	partial class PersonGroupHeader
+	[Register ("GroupingResultCollectionViewController")]
+	partial class GroupingResultCollectionViewController
 	{
-		[Outlet]
-		UIKit.UILabel PersonGroupName { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (PersonGroupName != null) {
-				PersonGroupName.Dispose ();
-				PersonGroupName = null;
-			}
 		}
 	}
 }

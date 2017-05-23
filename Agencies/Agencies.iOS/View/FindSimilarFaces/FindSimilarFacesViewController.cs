@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Agencies.Shared;
 using Foundation;
@@ -113,6 +112,7 @@ namespace Agencies.iOS
 						if (selectionController == Face1SelectionController)
 						{
 							selectionController.AppendDetectedFaces (image, detectedFaces);
+							TotalFacesLabel.Text = $"Total faces: {selectionController.Faces.Count}";
 						}
 						else //Face2SelectionController
 						{

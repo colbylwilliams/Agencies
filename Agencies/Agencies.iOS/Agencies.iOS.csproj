@@ -270,6 +270,7 @@
     <Folder Include="View\FindSimilarFaces\" />
     <Folder Include="View\Identification\" />
     <Folder Include="View\Verification\" />
+    <Folder Include="View\Grouping\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -325,10 +326,6 @@
     <Compile Include="View\Cells\SimilarFaceResultTableViewCell.cs" />
     <Compile Include="View\Cells\SimilarFaceResultTableViewCell.designer.cs">
       <DependentUpon>SimilarFaceResultTableViewCell.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\Cells\PersonGroupHeader.cs" />
-    <Compile Include="View\Cells\PersonGroupHeader.designer.cs">
-      <DependentUpon>PersonGroupHeader.cs</DependentUpon>
     </Compile>
     <Compile Include="View\Cells\ISupportActions.cs" />
     <Compile Include="View\Cells\GestureCVC.cs" />
@@ -394,6 +391,18 @@
       <DependentUpon>FaceSelectionCollectionViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="View\Shared\FaceResultsTableViewController.cs" />
+    <Compile Include="View\Grouping\FaceGroupingViewController.cs" />
+    <Compile Include="View\Grouping\FaceGroupingViewController.designer.cs">
+      <DependentUpon>FaceGroupingViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Grouping\GroupingResultCollectionViewController.cs" />
+    <Compile Include="View\Grouping\GroupingResultCollectionViewController.designer.cs">
+      <DependentUpon>GroupingResultCollectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Cells\SimpleCVHeader.cs" />
+    <Compile Include="View\Cells\SimpleCVHeader.designer.cs">
+      <DependentUpon>SimpleCVHeader.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

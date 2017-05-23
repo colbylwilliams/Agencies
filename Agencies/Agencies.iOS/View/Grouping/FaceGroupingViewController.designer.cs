@@ -9,31 +9,28 @@ using System.CodeDom.Compiler;
 
 namespace Agencies.iOS
 {
-	[Register ("FindSimilarFacesViewController")]
-	partial class FindSimilarFacesViewController
+	[Register ("FaceGroupingViewController")]
+	partial class FaceGroupingViewController
 	{
 		[Outlet]
-		UIKit.UIButton FindButton { get; set; }
+		UIKit.UIButton GroupButton { get; set; }
 
 		[Outlet]
 		UIKit.UILabel TotalFacesLabel { get; set; }
 
 		[Action ("AddFaceAction:")]
 		partial void AddFaceAction (Foundation.NSObject sender);
-
-		[Action ("ChooseImageAction:")]
-		partial void ChooseImageAction (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (FindButton != null) {
-				FindButton.Dispose ();
-				FindButton = null;
-			}
-
 			if (TotalFacesLabel != null) {
 				TotalFacesLabel.Dispose ();
 				TotalFacesLabel = null;
+			}
+
+			if (GroupButton != null) {
+				GroupButton.Dispose ();
+				GroupButton = null;
 			}
 		}
 	}
