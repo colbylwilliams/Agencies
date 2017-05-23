@@ -140,20 +140,8 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\monoandroid\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Cognitive.Face.Android">
-      <HintPath>..\packages\Xamarin.Cognitive.Face.0.2.3-preview\lib\monoandroid71\Cognitive.Face.Android.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Cognitive.Face">
-      <HintPath>..\packages\Xamarin.Cognitive.Face.0.2.3-preview\lib\monoandroid71\Xamarin.Cognitive.Face.dll</HintPath>
-    </Reference>
     <Reference Include="Square.OkIO">
       <HintPath>..\packages\Square.OkIO.1.11.0\lib\MonoAndroid\Square.OkIO.dll</HintPath>
-    </Reference>
-    <Reference Include="Cognitive.Face.Android">
-      <HintPath>..\packages\Xamarin.Cognitive.Face.0.2.3-preview\lib\monoandroid71\Cognitive.Face.Android.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Cognitive.Face">
-      <HintPath>..\packages\Xamarin.Cognitive.Face.0.2.3-preview\lib\monoandroid71\Xamarin.Cognitive.Face.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Android.Bindings">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.11.1\lib\MonoAndroid403\Microsoft.Azure.Mobile.Android.Bindings.dll</HintPath>
@@ -172,6 +160,12 @@
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Analytics">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Analytics.0.11.1\lib\MonoAndroid403\Microsoft.Azure.Mobile.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognitive.Face.Android">
+      <HintPath>..\packages\Xamarin.Cognitive.Face.0.3.0-preview\lib\monoandroid71\Cognitive.Face.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Cognitive.Face">
+      <HintPath>..\packages\Xamarin.Cognitive.Face.0.3.0-preview\lib\monoandroid71\Xamarin.Cognitive.Face.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
