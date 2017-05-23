@@ -42,7 +42,7 @@ namespace Agencies.iOS
 				if (sender is UITabBarController tabController)
 #endif
 				{
-					Settings.SelectedTabIndex = (int)tabController.SelectedIndex;
+					Settings.SelectedTabIndex = (int) tabController.SelectedIndex;
 				}
 			};
 		}

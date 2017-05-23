@@ -16,17 +16,6 @@ namespace Agencies.iOS
 		}
 
 
-		//public override void ViewWillAppear (bool animated)
-		//{
-		//	base.ViewWillAppear (animated);
-
-		//	if (!IsInitialLoad)
-		//	{
-		//		TableView.ReloadData ();
-		//	}
-		//}
-
-
 		public override void ViewWillDisappear (bool animated)
 		{
 			Results = null;
