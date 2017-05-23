@@ -264,6 +264,12 @@
     <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
     <Folder Include="Extensions\" />
     <Folder Include="View\Cells\" />
+    <Folder Include="View\Admin\" />
+    <Folder Include="View\Shared\" />
+    <Folder Include="View\Detection\" />
+    <Folder Include="View\FindSimilarFaces\" />
+    <Folder Include="View\Identification\" />
+    <Folder Include="View\Verification\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -295,64 +301,10 @@
     <Compile Include="View\RootTabBarController.designer.cs">
       <DependentUpon>RootTabBarController.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\GroupDetailViewController.cs" />
-    <Compile Include="View\GroupDetailViewController.designer.cs">
-      <DependentUpon>GroupDetailViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\GroupsViewController.cs" />
-    <Compile Include="View\GroupsViewController.designer.cs">
-      <DependentUpon>GroupsViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\PersonDetailViewController.cs" />
-    <Compile Include="View\PersonDetailViewController.designer.cs">
-      <DependentUpon>PersonDetailViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="Utilities\CommonUtil.cs" />
-    <Compile Include="View\GroupPersonCollectionViewController.cs" />
-    <Compile Include="View\GroupPersonCollectionViewController.designer.cs">
-      <DependentUpon>GroupPersonCollectionViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\PersonFaceCollectionViewController.cs" />
-    <Compile Include="View\PersonFaceCollectionViewController.designer.cs">
-      <DependentUpon>PersonFaceCollectionViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="FaceClient.cs" />
     <Compile Include="Extensions\FaceExtensions.cs" />
-    <Compile Include="View\FaceSelectionCollectionViewController.cs" />
-    <Compile Include="View\FaceSelectionCollectionViewController.designer.cs">
-      <DependentUpon>FaceSelectionCollectionViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\BaseCollectionViewController.cs" />
-    <Compile Include="View\ItemsPerRowCollectionViewController.cs" />
-    <Compile Include="View\IdentifyFaceViewController.cs" />
-    <Compile Include="View\IdentifyFaceViewController.designer.cs">
-      <DependentUpon>IdentifyFaceViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\GroupsTableViewController.cs" />
-    <Compile Include="View\GroupsTableViewController.designer.cs">
-      <DependentUpon>GroupsTableViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\BaseTableViewController.cs" />
-    <Compile Include="View\BaseViewController.cs" />
-    <Compile Include="View\FaceResultsTableViewController.cs" />
-    <Compile Include="View\DetectionViewController.cs" />
-    <Compile Include="View\DetectionViewController.designer.cs">
-      <DependentUpon>DetectionViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\DetectionResultsTableViewController.cs" />
-    <Compile Include="View\DetectionResultsTableViewController.designer.cs">
-      <DependentUpon>DetectionResultsTableViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\VerificationViewController.cs" />
-    <Compile Include="View\VerificationViewController.designer.cs">
-      <DependentUpon>VerificationViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\PopoverPresentationViewController.cs" />
     <Compile Include="FaceState.cs" />
-    <Compile Include="View\FindSimilarFacesViewController.cs" />
-    <Compile Include="View\FindSimilarFacesViewController.designer.cs">
-      <DependentUpon>FindSimilarFacesViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\Cells\DetectionResultsTableViewCell.cs" />
     <Compile Include="View\Cells\DetectionResultsTableViewCell.designer.cs">
       <DependentUpon>DetectionResultsTableViewCell.cs</DependentUpon>
@@ -374,20 +326,74 @@
     <Compile Include="View\Cells\SimilarFaceResultTableViewCell.designer.cs">
       <DependentUpon>SimilarFaceResultTableViewCell.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\IdentifyResultsTableViewController.cs" />
-    <Compile Include="View\IdentifyResultsTableViewController.designer.cs">
-      <DependentUpon>IdentifyResultsTableViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\SimilarFaceResultsTableViewController.cs" />
-    <Compile Include="View\SimilarFaceResultsTableViewController.designer.cs">
-      <DependentUpon>SimilarFaceResultsTableViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\Cells\PersonGroupHeader.cs" />
     <Compile Include="View\Cells\PersonGroupHeader.designer.cs">
       <DependentUpon>PersonGroupHeader.cs</DependentUpon>
     </Compile>
     <Compile Include="View\Cells\ISupportActions.cs" />
     <Compile Include="View\Cells\GestureCVC.cs" />
+    <Compile Include="View\Admin\GroupDetailViewController.cs" />
+    <Compile Include="View\Admin\GroupDetailViewController.designer.cs">
+      <DependentUpon>GroupDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Admin\GroupPersonCollectionViewController.cs" />
+    <Compile Include="View\Admin\GroupPersonCollectionViewController.designer.cs">
+      <DependentUpon>GroupPersonCollectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Admin\GroupsTableViewController.cs" />
+    <Compile Include="View\Admin\GroupsTableViewController.designer.cs">
+      <DependentUpon>GroupsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Admin\GroupsViewController.cs" />
+    <Compile Include="View\Admin\GroupsViewController.designer.cs">
+      <DependentUpon>GroupsViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Shared\BaseCollectionViewController.cs" />
+    <Compile Include="View\Shared\BaseTableViewController.cs" />
+    <Compile Include="View\Shared\BaseViewController.cs" />
+    <Compile Include="View\Shared\ItemsPerRowCollectionViewController.cs" />
+    <Compile Include="View\Admin\PersonDetailViewController.cs" />
+    <Compile Include="View\Admin\PersonDetailViewController.designer.cs">
+      <DependentUpon>PersonDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Admin\PersonFaceCollectionViewController.cs" />
+    <Compile Include="View\Admin\PersonFaceCollectionViewController.designer.cs">
+      <DependentUpon>PersonFaceCollectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Detection\DetectionResultsTableViewController.cs" />
+    <Compile Include="View\Detection\DetectionResultsTableViewController.designer.cs">
+      <DependentUpon>DetectionResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Detection\DetectionViewController.cs" />
+    <Compile Include="View\Detection\DetectionViewController.designer.cs">
+      <DependentUpon>DetectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\FindSimilarFaces\FindSimilarFacesViewController.cs" />
+    <Compile Include="View\FindSimilarFaces\FindSimilarFacesViewController.designer.cs">
+      <DependentUpon>FindSimilarFacesViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Identification\IdentifyFaceViewController.cs" />
+    <Compile Include="View\Identification\IdentifyFaceViewController.designer.cs">
+      <DependentUpon>IdentifyFaceViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Identification\IdentifyResultsTableViewController.cs" />
+    <Compile Include="View\Identification\IdentifyResultsTableViewController.designer.cs">
+      <DependentUpon>IdentifyResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\FindSimilarFaces\SimilarFaceResultsTableViewController.cs" />
+    <Compile Include="View\FindSimilarFaces\SimilarFaceResultsTableViewController.designer.cs">
+      <DependentUpon>SimilarFaceResultsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Verification\VerificationViewController.cs" />
+    <Compile Include="View\Verification\VerificationViewController.designer.cs">
+      <DependentUpon>VerificationViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Shared\PopoverPresentationViewController.cs" />
+    <Compile Include="View\Shared\FaceSelectionCollectionViewController.cs" />
+    <Compile Include="View\Shared\FaceSelectionCollectionViewController.designer.cs">
+      <DependentUpon>FaceSelectionCollectionViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Shared\FaceResultsTableViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

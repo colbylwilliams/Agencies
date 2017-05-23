@@ -56,7 +56,9 @@ namespace Agencies.iOS
 			var presentationController = navController.PresentationController;
 			var presentedController = presentationController.PresentedViewController;
 
-			navController.PresentingViewController.DismissViewController (true, () =>
+
+
+			DismissViewController (true, () =>
 			{
 				navController.TopViewController.NavigationItem.RightBarButtonItem = null;
 
@@ -67,6 +69,9 @@ namespace Agencies.iOS
 				presentedController = null;
 
 				presentationController.Delegate = null;
+				presentationController.WeakDelegate = null;
+				((UIPopoverPresentationController)presentationController).SourceView = new UIButton ();
+
 				presentationController.Dispose ();
 				presentationController = null;
 
