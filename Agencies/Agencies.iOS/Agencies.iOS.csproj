@@ -30,14 +30,6 @@
     <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>/bin/bash ../scripts/plist_utility.sh -p ${ProjectDir} -c "Copyright © 2017 Colby Williams"</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
     <CodesignEntitlements>EntitlementsDev.plist</CodesignEntitlements>
     <XamarinInspectorDisabled>True</XamarinInspectorDisabled>
   </PropertyGroup>
@@ -55,14 +47,6 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>/bin/bash ../scripts/plist_utility.sh -p ${ProjectDir} -c "Copyright © 2017 Colby Williams" -r true</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
     <MtouchUseLlvm>true</MtouchUseLlvm>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
@@ -79,14 +63,6 @@
     <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>/bin/bash ../scripts/plist_utility.sh -p ${ProjectDir} -c "Copyright © 2017 Colby Williams"</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
@@ -109,14 +85,6 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>/bin/bash ../scripts/plist_utility.sh -p ${ProjectDir} -c "Copyright © 2017 Colby Williams"</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MobileCenter|iPhone' ">
     <Optimize>true</Optimize>
@@ -129,15 +97,10 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command>
-          <type>BeforeBuild</type>
-          <command>/bin/bash ../scripts/plist_utility.sh -p ${ProjectDir} -c "Copyright © 2017 Colby Williams" -r true</command>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
+  <Target Name="RootPlist" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
+    <Exec Command="/bin/bash '$(SolutionDir)/scripts/plist_utility.sh' -p '$(ProjectDir)' -c 'Copyright © 2017 Colby Williams' -r '$(Configuration)'" />
+  </Target>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />

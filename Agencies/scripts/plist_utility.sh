@@ -28,6 +28,8 @@ rootPlist=
 projTypeMac="Mac"
 projTypeiOS="iOS"
 
+buildConfigRelease="Release"
+
 
 # Check for a couple common Keys that would be present in most iOS Info.plist files
 projType=$(/usr/libexec/PlistBuddy -c "Print :LSRequiresIPhoneOS" $infoPlist 2>/dev/null \
@@ -48,7 +50,7 @@ else
 fi
 
 
-if [ "$release" = true ]; then
+if [ "$release" = "$buildConfigRelease" ]; then
 	echo Project Config: Release
 else
 	echo Project Config: Debug
@@ -331,8 +333,8 @@ if [ "$projType" = "$projTypeiOS" ]; then
 
 	echo Root.plist Path: "$rootPlist"
 	echo Copyright Text: "$copyright"
-	#source "${BASH_SOURCE%/*}/root_plist.sh"
-	if [ "$release" = true ]; then
+	
+	if [ "$release" = "$buildConfigRelease" ]; then
 		source "$projectDir/root_plist.sh"
 	else
 		source "$projectDir/root_plist_debug.sh"
