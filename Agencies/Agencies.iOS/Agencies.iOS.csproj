@@ -86,18 +86,6 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MobileCenter|iPhone' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhone\MobileCenter</OutputPath>
-    <DefineConstants>__UNIFIED__;__MOBILE__;__IOS__;OFFLINE_SYNC_ENABLED;NC_AUTH_GOOGLE;NC_AUTH_FACEBOOK;NC_AUTH_MICROSOFT;NC_AUTH_TWITTER;CSHARP_6;</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-    <CodesignKey>iPhone Developer</CodesignKey>
-    <MtouchUseLlvm>true</MtouchUseLlvm>
-    <MtouchFloat32>true</MtouchFloat32>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
   <Target Name="RootPlist" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
     <Exec Command="/bin/bash '$(SolutionDir)/scripts/plist_utility.sh' -p '$(ProjectDir)' -c 'Copyright © 2017 Colby Williams' -r '$(Configuration)'" />
   </Target>
