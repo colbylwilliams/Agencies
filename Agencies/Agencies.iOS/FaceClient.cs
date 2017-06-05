@@ -692,25 +692,25 @@ namespace Agencies.Shared
 					tcs.FailTaskIfErrored (error.ToException ());
 					if (tcs.IsNullFinishCanceledOrFaulted ()) return;
 
-					for (var i = 0; i < groupResult.Groups.Count; i++)
-					{
-						var faceGroup = groupResult.Groups [i];
+					//for (var i = 0; i < groupResult.Groups.Count; i++)
+					//{
+					//	var faceGroup = groupResult.Groups [i];
 
-						results.Add (new FaceGroup
-						{
-							Title = $"Face Group #{i + 1}",
-							Faces = targetFaces.Where (f => faceGroup.Contains (f.Id)).ToList ()
-						});
-					}
+					//	results.Add (new FaceGroup
+					//	{
+					//		Title = $"Face Group #{i + 1}",
+					//		Faces = targetFaces.Where (f => faceGroup.Contains (f.Id)).ToList ()
+					//	});
+					//}
 
-					if (groupResult.MesseyGroup.Length > 0)
-					{
-						results.Add (new FaceGroup
-						{
-							Title = "Messy Group",
-							Faces = targetFaces.Where (f => groupResult.MesseyGroup.Contains (f.Id)).ToList ()
-						});
-					}
+					//if (groupResult.MesseyGroup.Length > 0)
+					//{
+					//	results.Add (new FaceGroup
+					//	{
+					//		Title = "Messy Group",
+					//		Faces = targetFaces.Where (f => groupResult.MesseyGroup.Contains (f.Id)).ToList ()
+					//	});
+					//}
 
 					tcs.SetResult (results);
 				}).Resume ();
