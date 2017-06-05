@@ -1,51 +1,56 @@
 ﻿namespace Agencies
 {
-    public static partial class Keys
-    {
-        public static partial class MobileCenter
-        {
+	public static partial class Keys
+	{
+		public static partial class MobileCenter
+		{
 #if __IOS__
             public const string AppSecret = @"";
 #elif __ANDROID__
-            public const string AppSecret = @"";
+			public const string AppSecret = @"";
 #endif
-        }
+		}
 
-        public static partial class Azure
-        {
+		public static partial class Azure
+		{
+			const string serviceUrl = @"https://digital-agencies-functions.azurewebsites.net/";
+
 #if DEBUG
-            public static string ServiceUrl = SettingsStudio.Settings.UseLocalServer ? @"http://10.0.0.167:59993/" : @"https://digital-agencies.azurewebsites.net/";
+			const string localServiceUrl = @"http://localhost:7071/";
+
+			public static string ServiceUrl => SettingsStudio.Settings.UseLocalServer ? localServiceUrl : serviceUrl;
 #else
-            public const string ServiceUrl = @"https://digital-agencies.azurewebsites.net/";
+            public const string ServiceUrl => serviceUrl;
 #endif
+			public static string AuthUrl => serviceUrl;
 
-            public static partial class Storage
-            {
-                public const string AccountKey = @"";
+			public static partial class Storage
+			{
+				public const string AccountKey = @"";
 
-                public const string AccountName = @"";
+				public const string AccountName = @"";
 
-                public const string EndpointSuffix = @"core.windows.net";
+				public const string EndpointSuffix = @"core.windows.net";
 
-                public static string ConnectionString = $"DefaultEndpointsProtocol=https;AccountName={AccountName};AccountKey={AccountKey};EndpointSuffix={EndpointSuffix}";
+				public static string ConnectionString = $"DefaultEndpointsProtocol=https;AccountName={AccountName};AccountKey={AccountKey};EndpointSuffix={EndpointSuffix}";
 
-                public static string BaseUrl = $"https://{AccountName}.blob.{EndpointSuffix}";
-            }
-        }
+				public static string BaseUrl = $"https://{AccountName}.blob.{EndpointSuffix}";
+			}
+		}
 
-        public static partial class CognitiveServices
-        {
-            public static partial class FaceApi
-            {
-                //public const string SubscriptionKey = @"";
-            }
-        }
+		public static partial class CognitiveServices
+		{
+			public static partial class FaceApi
+			{
+				//public const string SubscriptionKey = @"";
+			}
+		}
 
-        public static partial class Google
-        {
-            //public const string ServerClientId = @"";
+		public static partial class Google
+		{
+			//public const string ServerClientId = @"";
 
-            //public const string ClientId = @"";
-        }
-    }
+			//public const string ClientId = @"";
+		}
+	}
 }

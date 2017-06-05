@@ -11,7 +11,7 @@ PreparePreferenceFile
 
 	AddNewPreferenceGroup 	-t "Test Settings"
 
-		AddNewToggleSwitchPreference -k "UseLocalServer" 	-d false 	-t "Local Server"
+		AddNewToggleSwitchPreference -k "UseLocalServer" 	-d true 	-t "Local Server"
 		AddNewToggleSwitchPreference -k "ResetConversation" -d false 	-t "Reset Conversation"
 
 

@@ -1,172 +1,201 @@
 ﻿using System;
-
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using NomadCode.Auth;
 using NomadCode.BotFramework;
 
 namespace Agencies.Shared
 {
-    public class AgenciesClient
-    {
-        const string conversationIdKey = "conversationId";
+	public class AgenciesClient
+	{
+		const string conversationIdKey = "conversationId";
 
-        static AgenciesClient _shared;
-        public static AgenciesClient Shared => _shared ?? (_shared = new AgenciesClient ());
+		static AgenciesClient _shared;
+		public static AgenciesClient Shared => _shared ?? (_shared = new AgenciesClient ());
 
-        public AuthUserConfig AuthUser { get; set; }
+		public AuthUserConfig AuthUser { get; set; }
 
-        HttpClient _httpClient;
-        HttpClient httpClient => _httpClient ?? (_httpClient = new HttpClient { BaseAddress = new Uri ("https://digital-agencies-functions.azurewebsites.net/") });
+		HttpClient _httpClient;
+		HttpClient httpClient => _httpClient ?? (_httpClient = new HttpClient { BaseAddress = new Uri (Keys.Azure.ServiceUrl) });
 
-
-        AgenciesClient ()
-        {
-        }
+		AgenciesClient () { }
 
 
-        public async Task<Conversation> GetConversationAsync (string conversationId = null)
-        {
-            if (AuthUser == null)
-            {
-                throw new InvalidOperationException ("Must call GetAuthUserConfigAsync before calling this method");
-            }
+		public async Task<Conversation> GetConversationAsync (string conversationId = null)
+		{
+			if (AuthUser == null)
+			{
+				throw new InvalidOperationException ("Must call GetAuthUserConfigAsync before calling this method");
+			}
 
-            try
-            {
-                var conversationJson = await httpClient.GetStringAsync ($"api/tokens/bot/{conversationId}");
+			try
+			{
+				var conversationJson = await httpClient.GetStringAsync ($"api/tokens/bot/{conversationId}");
 
-                Log.Debug ($"conversationJson: {conversationJson}");
+				Log.Debug ($"conversationJson: {conversationJson}");
 
-                var conversation = JsonConvert.DeserializeObject<Conversation> (conversationJson);
+				var conversation = JsonConvert.DeserializeObject<Conversation> (conversationJson);
 
-                return conversation;
-            }
-            catch (Exception ex)
-            {
-                Log.Error (ex.Message);
-                throw;
-            }
-        }
+				return conversation;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex.Message);
+				throw;
+			}
+		}
 
-        public async Task<string> GetFaceApiTokenAsync ()
-        {
-            if (AuthUser == null)
-            {
-                throw new InvalidOperationException ("Must call GetAuthUserConfigAsync before calling this method");
-            }
+		public async Task<string> GetFaceApiTokenAsync ()
+		{
+			if (AuthUser == null)
+			{
+				throw new InvalidOperationException ("Must call GetAuthUserConfigAsync before calling this method");
+			}
 
-            try
-            {
-                var faceApiToken = (await httpClient.GetStringAsync ("api/tokens/face"))?.Trim ('"');
+			try
+			{
+				var faceApiToken = (await httpClient.GetStringAsync ("api/tokens/face"))?.Trim ('"');
 
-                Log.Debug ($"Token: {faceApiToken}");
+				Log.Debug ($"Token: {faceApiToken}");
 
-                return faceApiToken;
-            }
-            catch (Exception ex)
-            {
-                Log.Error (ex.Message);
-                throw;
-            }
-        }
-
-
-        public async Task<AuthUserConfig> GetAuthUserConfigAsync ()
-        {
-            try
-            {
-                var keychain = new Keychain ();
-
-                var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
-
-                if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
-                {
-                    httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
-
-                    httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, storedKeys.PrivateKey);
-
-                    var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
-
-                    Log.Debug ($"userConfigJson {userConfigJson}");
-
-                    AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
-
-                    return AuthUser;
-                }
-
-                return null;
-            }
-            catch (HttpRequestException reEx)
-            {
-                if (reEx.Message.Contains ("401"))
-                {
-                    new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
-
-                    return null;
-                }
-
-                Log.Error (reEx.Message);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Log.Error (ex.Message);
-                throw;
-            }
-        }
+				return faceApiToken;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex.Message);
+				throw;
+			}
+		}
 
 
-        public async Task<AuthUserConfig> GetAuthUserConfigAsync (string providerToken, string providerAuthCode)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
-                {
-                    var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
+		public async Task<AuthUserConfig> GetAuthUserConfigAsync ()
+		{
+			try
+			{
+#if DEBUG
+				if (SettingsStudio.Settings.UseLocalServer)
+				{
+					httpClient.BaseAddress = new Uri (Keys.Azure.AuthUrl);
+				}
+#endif
 
-                    var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
+				var keychain = new Keychain ();
 
-                    if (authResponse.IsSuccessStatusCode)
-                    {
-                        var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
+				var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
-                        Log.Debug ($"azureUserJson: {azureUserJson}");
+				if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
+				{
+					httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
 
-                        var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
+					httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, storedKeys.PrivateKey);
+
+					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+
+					Log.Debug ($"userConfigJson {userConfigJson}");
+
+					AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
+
+					return AuthUser;
+				}
+
+				return null;
+			}
+			catch (HttpRequestException reEx)
+			{
+				if (reEx.Message.Contains ("401"))
+				{
+					new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+
+					return null;
+				}
+
+				Log.Error (reEx.Message);
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex.Message);
+				throw;
+			}
+#if DEBUG
+			finally
+			{
+				if (SettingsStudio.Settings.UseLocalServer)
+				{
+					httpClient.BaseAddress = new Uri (Keys.Azure.ServiceUrl);
+				}
+			}
+#endif
+		}
 
 
-                        Log.Debug ($"azureUser.AuthenticationToken {azureUser.AuthenticationToken}");
+		public async Task<AuthUserConfig> GetAuthUserConfigAsync (string providerToken, string providerAuthCode)
+		{
+			try
+			{
+#if DEBUG
+				if (SettingsStudio.Settings.UseLocalServer)
+				{
+					httpClient.BaseAddress = new Uri (Keys.Azure.AuthUrl);
+				}
+#endif
 
-                        httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
+				if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
+				{
+					var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
 
-                        httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, azureUser.AuthenticationToken);
+					var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
 
-                        var keychain = new Keychain ();
+					if (authResponse.IsSuccessStatusCode)
+					{
+						var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
 
-                        keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+						Log.Debug ($"azureUserJson: {azureUserJson}");
 
-                        var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+						var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
 
-                        Log.Debug ($"userConfigJson {userConfigJson}");
 
-                        AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
+						Log.Debug ($"azureUser.AuthenticationToken {azureUser.AuthenticationToken}");
 
-                        return AuthUser;
-                    }
-                }
+						httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
 
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Log.Error (ex.Message);
-                throw;
-            }
-        }
-    }
+						httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, azureUser.AuthenticationToken);
+
+						var keychain = new Keychain ();
+
+						keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+
+						var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+
+						Log.Debug ($"userConfigJson {userConfigJson}");
+
+						AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
+
+						return AuthUser;
+					}
+				}
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex.Message);
+				throw;
+			}
+#if DEBUG
+			finally
+			{
+				if (SettingsStudio.Settings.UseLocalServer)
+				{
+					httpClient.BaseAddress = new Uri (Keys.Azure.ServiceUrl);
+				}
+			}
+#endif
+		}
+	}
 }

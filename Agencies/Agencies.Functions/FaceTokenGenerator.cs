@@ -15,16 +15,20 @@ namespace Agencies.Functions
 		static string _faceApiSubscription;
 		static string FaceApiSubscription => _faceApiSubscription ?? (_faceApiSubscription = Environment.GetEnvironmentVariable ("MS_FaceApiSubscriptionKey"));
 
+#if !DEBUG
 		[Authorize]
+#endif
 		[FunctionName ("GetFaceToken")]
 		public static HttpResponseMessage GetFaceToken ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/face")]HttpRequestMessage req, TraceWriter log)
 		{
+#if !DEBUG
 			if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
 			{
 				log.Info ("Not authenticated");
 
 				return req.CreateResponse (HttpStatusCode.Unauthorized);
 			}
+#endif
 
 			if (string.IsNullOrEmpty (FaceApiSubscription))
 			{
