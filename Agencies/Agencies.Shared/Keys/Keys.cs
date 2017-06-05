@@ -5,7 +5,7 @@
 		public static partial class MobileCenter
 		{
 #if __IOS__
-            public const string AppSecret = @"";
+			public const string AppSecret = @"";
 #elif __ANDROID__
 			public const string AppSecret = @"";
 #endif
@@ -20,7 +20,7 @@
 
 			public static string ServiceUrl => SettingsStudio.Settings.UseLocalServer ? localServiceUrl : serviceUrl;
 #else
-            public const string ServiceUrl => serviceUrl;
+			public static string ServiceUrl => serviceUrl;
 #endif
 			public static string AuthUrl => serviceUrl;
 

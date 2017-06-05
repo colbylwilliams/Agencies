@@ -1,13 +1,14 @@
-﻿#if DEBUG
+﻿using System;
+
+#if DEBUG
 using System.Runtime.CompilerServices;
 using System.Linq;
-using System;
 #endif
 
 namespace Agencies
 {
-    public static class Log
-    {
+	public static class Log
+	{
 #if DEBUG
 
         public static void Debug (object caller, string methodName, string message)
@@ -24,7 +25,7 @@ namespace Agencies
         }
 
 #else
-        public static void Debug (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
+		public static void Debug (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
 #endif
 
 #if DEBUG
@@ -36,7 +37,7 @@ namespace Agencies
             //System.Diagnostics.Trace.WriteLine ($"[{DateTime.Now:MM/dd/yyyy h:mm:ss.fff tt}] [{sourceFilePath}] [{memberName}] [{sourceLineNumber}] : {message}");
         }
 #else
-        public static void Info (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
+		public static void Info (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
 #endif
 
 #if DEBUG
@@ -48,12 +49,19 @@ namespace Agencies
             //System.Diagnostics.Trace.WriteLine ($"[{DateTime.Now:MM/dd/yyyy h:mm:ss.fff tt}] [{sourceFilePath}] [{memberName}] [{sourceLineNumber}] : {message}");
         }
 #else
-        public static void Error (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
+		public static void Error (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
 #endif
 
-        public static void Error (Exception error, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+#if DEBUG
+		public static void Error (Exception error, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             Error (error.Message, memberName, sourceFilePath, sourceLineNumber);
         }
-    }
+#else
+		public static void Error (Exception error, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+		{
+			Error (error.Message, memberName, sourceFilePath, sourceLineNumber);
+		}
+#endif
+	}
 }
